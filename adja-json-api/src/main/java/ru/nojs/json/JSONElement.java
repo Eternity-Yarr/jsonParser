@@ -9,7 +9,7 @@ public interface JSONElement {
     //convenience method to get this element as a BigInteger.
     BigInteger getAsBigInteger();
     // convenience method to get this element as a boolean value.
-    boolean	getAsBoolean();
+    boolean getAsBoolean();
     // convenience method to get this element as a primitive byte value.
     byte getAsByte();
     // convenience method to get this element as a primitive character value.
@@ -19,7 +19,7 @@ public interface JSONElement {
     // convenience method to get this element as a primitive float value.
     float getAsFloat();
     // convenience method to get this element as a primitive integer value.
-    int	getAsInt();
+    int getAsInt();
     // convenience method to get this element as a JsonArray.
     JSONArray getAsJsonArray();
     // convenience method to get this element as a JsonNull.
@@ -37,11 +37,11 @@ public interface JSONElement {
     // convenience method to get this element as a string value.
     String getAsString();
     // provides check for verifying if this element is an array or not.
-    boolean	isJsonArray();
+    boolean isJsonArray();
     // provides check for verifying if this element represents a null value or not.
-    boolean	isJsonNull();
+    boolean isJsonNull();
     // provides check for verifying if this element is a Json object or not.
-    boolean	isJsonObject();
+    boolean isJsonObject();
     // provides check for verifying if this element is a primitive or not.
-    boolean	isJsonPrimitive();
+    boolean isJsonPrimitive();
 }
