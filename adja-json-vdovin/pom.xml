@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>adja-json-vdovin</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>ru.nojs</groupId>

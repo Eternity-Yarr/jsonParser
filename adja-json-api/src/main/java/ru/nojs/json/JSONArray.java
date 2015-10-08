@@ -9,4 +9,6 @@ public interface JSONArray extends JSONElement, Iterable<JSONElement> {
     boolean contains(JSONElement element);
     // Returns the ith element of the array.
     JSONElement get(int i);
+    // Returns size of array.
+    int size();
 }
