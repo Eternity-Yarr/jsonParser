@@ -22,6 +22,21 @@ public class JsonParserTest {
                 .map(JSONElement::getAsInt)
                 .reduce(0, (acc, i) -> acc + i);
         Assert.assertEquals("Sum of elements matches", 10, sum);
-        /* .. */
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testWrongType() {
+        String jsonPrimitive = "66";
+        JSONElement je = sjp.parse(new StringReader(jsonPrimitive));
+        boolean invalid = je.getAsBoolean();
+        // It's not a boolean, exception should be thrown
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSyntaxError() {
+        String badSyntax = "{true";
+        JSONElement je = sjp.parse(new StringReader(badSyntax));
+        boolean invalid = je.getAsBoolean();
+        // It's not boolean either, we expect exception to be thrown
     }
 }
