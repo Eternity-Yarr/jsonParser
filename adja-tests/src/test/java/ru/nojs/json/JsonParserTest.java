@@ -39,4 +39,16 @@ public class JsonParserTest {
         boolean invalid = je.getAsBoolean();
         // It's not boolean either, we expect exception to be thrown
     }
+
+    @Test
+    public void testJsonObjectParse() {
+        String someDict = "{\"a\": 5, \"b\": \"apples\"}";
+        JSONElement je = sjp.parse(new StringReader(someDict));
+        Assert.assertTrue("We ve got object indeed", je.isJsonObject());
+        JSONObject jo = je.getAsJsonObject();
+        JSONPrimitive numPrimitive = jo.get("a").getAsJsonPrimitive();
+        Assert.assertEquals("Number parsed correctly", 5, numPrimitive.getAsInt());
+        JSONPrimitive stringPrimitive = jo.get("b").getAsJsonPrimitive();
+        Assert.assertEquals("String parsed correctly too", "apples", stringPrimitive.getAsString());
+    }
 }
