@@ -6,6 +6,7 @@ import ru.nojs.json.StreamingJsonParser;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -13,11 +14,11 @@ import java.util.regex.Pattern;
 
 public class ImplementedJsonParser implements StreamingJsonParser{
 
-    private Map<String, JSONObjectClass> objects;
-    private Map<String, JSONArrayClass> arrays;
+    String JSONString;
 
     @Override
     public JSONElement parse(Reader r) {
+        JSONString = read(r);
         JSONArray array = readAsArray(r);
         JSONElementClass element = new JSONElementClass(array);
         //read(r);
@@ -25,18 +26,15 @@ public class ImplementedJsonParser implements StreamingJsonParser{
     }
 
     public ImplementedJsonParser(){
-        objects = new HashMap<>();
-        arrays = new HashMap<>();
     }
 
     private JSONArray readAsArray(Reader r){
         JSONArray array = new JSONArrayClass();
-        String rawData = read(r);
-        rawData = eliminateBrackets(rawData);
+        //String rawData = read(r);
+        String rawData = eliminateBrackets(JSONString);
         String[] chunks = rawData.split(",");
         for(String chunk: chunks){
-            PrimitiveHelper pr = new PrimitiveHelper(chunk);
-            JSONPrimitiveClass p = new JSONPrimitiveClass(pr.getValue());
+            JSONPrimitiveClass p = new JSONPrimitiveClass(chunk);
             JSONElementClass el = new JSONElementClass(p);
             array.add(el);
         }
@@ -49,21 +47,16 @@ public class ImplementedJsonParser implements StreamingJsonParser{
         while(m.find()){
             return m.group(1);
         }
-        return "nothing found";
+        return "not array";
     }
 
     private String read(Reader r){
         //List<Character> rawData = new ArrayList<Character>();
         StringBuilder stringBuilder = new StringBuilder();
         try{
-
             int code = r.read();
             while(code != -1){
                 char c = (char) code;
-            //    rawData.add(c);
-            //    System.out.print(code);
-            //    System.out.print(" ");
-            //    System.out.println(c);
                 code = r.read();
                 stringBuilder.append(c);
             }

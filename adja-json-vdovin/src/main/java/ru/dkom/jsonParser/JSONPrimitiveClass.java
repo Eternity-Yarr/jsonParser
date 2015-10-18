@@ -12,9 +12,14 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     private String string = null;
     private Integer integer = null;
+    private Boolean bool = null;
 
     public JSONPrimitiveClass(String s){
-        this.string = s;
+        try {
+            integer = Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            this.string = s;
+        }
     }
 
     public JSONPrimitiveClass(Integer i){
