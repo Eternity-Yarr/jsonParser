@@ -2,7 +2,8 @@ package ru.nojs.json;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.vdovin.jsonParser.ImplementedJsonParser;
+import ru.dkom.jsonParser.ImplementedJsonParser;
+//import ru.vdovin.jsonParser.ImplementedJsonParser;
 
 import java.io.StringReader;
 import java.util.stream.StreamSupport;

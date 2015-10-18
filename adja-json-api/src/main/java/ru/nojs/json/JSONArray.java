@@ -1,5 +1,7 @@
 package ru.nojs.json;
 
+import java.util.Collection;
+
 public interface JSONArray extends JSONElement, Iterable<JSONElement> {
     // Adds the specified element to self.
     void add(JSONElement element);
