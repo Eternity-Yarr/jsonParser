@@ -61,14 +61,25 @@ public class JsonParserTest {
         JSONObject jo = je.getAsJsonObject();
         JSONPrimitive numPrimitive = jo.get("a").getAsJsonPrimitive();
         Assert.assertEquals("Number parsed correctly", 1, numPrimitive.getAsInt());
+    }
 
+    public void testSmallObject2() throws Exception {
         String someDict = "{\"b\":\"apples\"}";
         JSONElement je1 = sjp.parse(new StringReader(someDict));
         Assert.assertTrue("We ve got object indeed", je1.isJsonObject());
         JSONObject jo1 = je1.getAsJsonObject();
-        JSONPrimitive stringPimitive = jo1.get("b").getAsJsonPrimitive();
-        Assert.assertEquals("Number parsed correctly", "apples", stringPimitive.getAsString());
+        JSONPrimitive stringPrimitive = jo1.get("b").getAsJsonPrimitive();
+        Assert.assertEquals("Number parsed correctly", "apples", stringPrimitive.getAsString());
+    }
 
+    @Test
+    public void testAnotherLittleObject() throws Exception {
+        String str = "{\"a\":true}";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertTrue("We ve got an object", je.isJsonObject());
+        JSONObject jo = je.getAsJsonObject();
+        boolean b = jo.get("a").getAsBoolean();
+        Assert.assertTrue("Boolean parsed correctly", b);
     }
 
     @Test
@@ -87,6 +98,7 @@ public class JsonParserTest {
 
     }
 
+
     @Test(expected = IllegalArgumentException.class)
     public void testObjectSyntaxError() throws Exception {
         String badSyntax = "{\"true\":";
@@ -94,7 +106,6 @@ public class JsonParserTest {
         boolean invalid = je.getAsBoolean();
         // It's not boolean either, we expect exception to be thrown
     }
-
 
     @Test(expected = IllegalArgumentException.class)
     public void testSyntaxError() throws Exception {
