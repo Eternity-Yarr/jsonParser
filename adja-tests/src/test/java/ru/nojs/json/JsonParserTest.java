@@ -16,7 +16,7 @@ public class JsonParserTest {
 
     @Test
     public  void testStringPrimitive() throws Exception {
-        String str = "test";
+        String str = "\"test\"";
         JSONElement je = sjp.parse(new StringReader(str));
         Assert.assertTrue("We ve got a primitive", je.isJsonPrimitive());
         Assert.assertEquals("Primitive value parsed correctly too", "test", je.getAsString());
@@ -42,6 +42,14 @@ public class JsonParserTest {
         JSONElement je = sjp.parse(new StringReader(jsonPrimitive));
         boolean invalid = je.getAsBoolean();
         // It's not a boolean, exception should be thrown
+    }
+
+    @Test
+    public  void testBoolean() throws Exception {
+        String str = "true";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertTrue("We ve got a primitive", je.isJsonPrimitive());
+        Assert.assertTrue("Boolean value parsed correctly", je.getAsBoolean());
     }
 
 
@@ -78,6 +86,15 @@ public class JsonParserTest {
         Assert.assertEquals("String parsed correctly too", "it's work?", stringPrimitive1.getAsString());
 
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testObjectSyntaxError() throws Exception {
+        String badSyntax = "{\"true\":";
+        JSONElement je = sjp.parse(new StringReader(badSyntax));
+        boolean invalid = je.getAsBoolean();
+        // It's not boolean either, we expect exception to be thrown
+    }
+
 
     @Test(expected = IllegalArgumentException.class)
     public void testSyntaxError() throws Exception {

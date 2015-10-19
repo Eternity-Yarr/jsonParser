@@ -28,6 +28,10 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
         switch (current) {
             case '{': {return readJSONObject();}
+            case 'T':
+            case 't':
+            case 'F':
+            case 'f': {return readJSONBoolean();}
             default : {return readJSONPrimitive();}
         }
 
@@ -35,8 +39,8 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
     private MyJSONPrimitive readJSONPrimitive() throws IllegalArgumentException, IOException {
         StringBuilder primitive = new StringBuilder();
+        MyJSONPrimitive jp;
 
-       // current = this.reader.read();
         if (current == '"'){
             current = this.reader.read();
         }
@@ -47,8 +51,6 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         }
 
         String primitiveValue = primitive.toString();
-
-        MyJSONPrimitive jp;
 
         if (checkInt(primitiveValue)){
             jp = new MyJSONPrimitive(Integer.parseInt(primitiveValue));
@@ -70,24 +72,29 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
         MyJSONObject jo = new MyJSONObject();
 
-
         do {
-            current = this.reader.read();
             StringBuilder property = new StringBuilder();
-            current = this.reader.read();
+             current = this.reader.read();
+            if (current != '"'){
+                throw new IllegalArgumentException("Error sintax");
+            }else {
+                current = this.reader.read();
+            }
+
             while (current != '"') {
                 property.append((char) current);
                 current = this.reader.read();
             }
 
-            if (this.reader.read() != ':') {
+            current = this.reader.read();
+            if (current != ':') {
                 throw new IllegalArgumentException("Can't find ':' in object");
             }
 
             MyJSONElement value = readValue();
 
             jo.add(property.toString(), value);
-            if (current == '"'){
+            if (current == '"' ){
                 current = this.reader.read();
             }
         }while (current == ',');
@@ -100,8 +107,33 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         return jo;
     }
 
-    private void addValueJsonObject(){
+    private MyJSONPrimitive readJSONBoolean(){
+        MyJSONPrimitive jp = new MyJSONPrimitive(readBooleanValue());
+        return jp;
+    }
 
+
+    private boolean readBooleanValue(){
+        StringBuilder booleanValue = new StringBuilder();
+        while (current != ',' && current != -1){
+            booleanValue.append((char)current);
+            try {
+                current = reader.read();
+            }
+            catch (IOException e){
+                throw new IllegalArgumentException("Error Syntax");
+            }
+        }
+
+        if (booleanValue.toString().toUpperCase().equals("TRUE")){
+            return true;
+        }
+        else if (booleanValue.toString().toUpperCase().equals("FALSE")){
+            return false;
+        }
+        else {
+            throw new IllegalArgumentException("Error Syntax");
+        }
     }
 
     private boolean checkInt(String s){
