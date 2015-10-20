@@ -193,12 +193,25 @@ public class JsonParserTest {
     }
 
 
+    @Test
+    public void testObjectInObject() throws Exception {
+        String str = "{\"a\":{\"b\":\"test\"}}";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertTrue("We ve got an object", je.isJsonObject());
+        JSONObject jo1 = je.getAsJsonObject();
+        Assert.assertTrue("We ve got an object", jo1.get("a").isJsonObject());
+        JSONObject jo2 = jo1.get("a").getAsJsonObject();
+        Assert.assertEquals("String parsed correctly", "test", jo2.get("b").getAsString());
+    }
 
 
 
 
 
-   // @Test
+
+
+
+    // @Test
    // public void testCorrectArrayParse() {
    //     String jsonArray = "[1,2,3,4]";
     //    JSONElement je = sjp.parse(new StringReader(jsonArray));
