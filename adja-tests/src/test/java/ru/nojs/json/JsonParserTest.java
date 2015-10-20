@@ -5,6 +5,7 @@ import org.junit.Test;
 import ru.vdovin.jsonParser.ImplementedJsonParser;
 import ru.nojs.json.StreamingJsonParser;
 import ru.vdovin.jsonParser.MyJSONElement;
+import ru.vdovin.jsonParser.MyJSONNull;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -17,6 +18,22 @@ public class JsonParserTest {
     @Test
     public  void testStringPrimitive() throws Exception {
         String str = "\"test\"";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertTrue("We ve got a primitive", je.isJsonPrimitive());
+        Assert.assertEquals("Primitive string value parsed correctly too", "test", je.getAsString());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public  void testErrorStringPrimitive() throws Exception {
+        String str = "\"test";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertTrue("We ve got a primitive", je.isJsonPrimitive());
+        Assert.assertEquals("Primitive string value parsed correctly too", "test", je.getAsString());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public  void testErrorStringPrimitive2() throws Exception {
+        String str = "test\"";
         JSONElement je = sjp.parse(new StringReader(str));
         Assert.assertTrue("We ve got a primitive", je.isJsonPrimitive());
         Assert.assertEquals("Primitive string value parsed correctly too", "test", je.getAsString());
@@ -57,10 +74,16 @@ public class JsonParserTest {
 
     @Test
     public  void testBoolean2() throws Exception {
-        String str = "FALSE";
+        String str = "false";
         JSONElement je = sjp.parse(new StringReader(str));
         Assert.assertTrue("We ve got a primitive", je.isJsonPrimitive());
         Assert.assertFalse("Boolean value parsed correctly", je.getAsBoolean());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public  void testFailBoolean2() throws Exception {
+        String str = "FALSE";
+        JSONElement je = sjp.parse(new StringReader(str));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -73,10 +96,30 @@ public class JsonParserTest {
 
     @Test(expected = IllegalArgumentException.class)
     public  void testBoolean4() throws Exception {
-        String str = "FALSE\"";
+        String str = "false\"";
         JSONElement je = sjp.parse(new StringReader(str));
-        Assert.assertTrue("We ve got a primitive", je.isJsonPrimitive());
-        Assert.assertFalse("Boolean value parsed correctly", je.getAsBoolean());
+    }
+
+    @Test
+    public  void testNull() throws Exception {
+        String str = "null";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertTrue("We ve got a null", je.isJsonNull());
+    }
+
+    @Test
+    public  void testNull2() throws Exception {
+        String str = "null";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertTrue("We ve got a null", je.isJsonNull());
+        JSONNull jn = je.getAsJsonNull();
+    }
+
+    @Test
+    public  void testFailNull() throws Exception {
+        String str = "\"null\"";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertFalse("We ve got a null", je.isJsonNull());
     }
 
     @Test
@@ -110,6 +153,15 @@ public class JsonParserTest {
     }
 
     @Test
+    public void testAnotherLittleObject2() throws Exception {
+        String str = "{\"a\":null}";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertTrue("We ve got an object", je.isJsonObject());
+        JSONObject jo = je.getAsJsonObject();
+        Assert.assertTrue("Boolean parsed correctly", jo.get("a").isJsonNull());
+    }
+
+    @Test
     public void testJsonObjectParse() throws Exception {
         String someDict = "{\"a\":5,\"b\":\"apples\",\"c\":\"it's work?\"}";
         JSONElement je = sjp.parse(new StringReader(someDict));
@@ -121,7 +173,6 @@ public class JsonParserTest {
         Assert.assertEquals("String parsed correctly too", "apples", stringPrimitive.getAsString());
         JSONPrimitive stringPrimitive1 = jo.get("c").getAsJsonPrimitive();
         Assert.assertEquals("String parsed correctly too", "it's work?", stringPrimitive1.getAsString());
-
     }
 
 

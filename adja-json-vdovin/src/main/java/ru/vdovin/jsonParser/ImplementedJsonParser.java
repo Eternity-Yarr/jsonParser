@@ -10,27 +10,29 @@ import java.io.Reader;
 
 public class ImplementedJsonParser implements StreamingJsonParser {
 
+    private final char START_OBJECT = '{';
+    private final char START_ARRAY = '[';
+
     private Reader reader;
     private int current;
 
     public JSONElement parse(Reader r) throws IllegalArgumentException, IOException {
         this.reader = r;
-        JSONElement jo = readValue();
+        JSONElement jo = read();
         return  jo;
     }
 
-    private MyJSONElement readValue() throws IllegalArgumentException, IOException {
+    private MyJSONElement read() throws IllegalArgumentException, IOException {
         current = this.reader.read();
         switch (current) {
-            case '{': {return readJSONObject();}
-            default : {return readJSONPrimitive();}
+            case START_OBJECT: {return readJSONObject();}
+            default : {return readJSONValue();}
         }
-
     }
 
-    private MyJSONPrimitive readJSONPrimitive() throws IllegalArgumentException, IOException {
+    private MyJSONElement readJSONValue() throws IllegalArgumentException, IOException {
         StringBuilder primitive = new StringBuilder();
-        MyJSONPrimitive jp;
+        MyJSONElement jp;
 
         while (!isCharOfEndValue()){
             primitive.append((char)current);
@@ -39,20 +41,24 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
         String primitiveValue = primitive.toString();
 
-        if (checkInt(primitiveValue)){
+        if (isInteger(primitiveValue)){
             jp = new MyJSONPrimitive(Integer.parseInt(primitiveValue));
         }
-        else if (checkDouble(primitiveValue)){
+        else if (isDouble(primitiveValue)){
             jp = new MyJSONPrimitive(Double.parseDouble(primitiveValue));
         }
-        else if (checkFloat(primitiveValue)){
+        else if (isFloat(primitiveValue)){
             jp = new MyJSONPrimitive(Float.parseFloat(primitiveValue));
-        }else if (checkString(primitiveValue)) {
-            jp = new MyJSONPrimitive(primitiveValue.substring(1, primitiveValue.length() - 1));
-        }else{
-              jp = new MyJSONPrimitive(readBooleanValue(primitiveValue));
         }
-
+        else if (enclosedInQuotes(primitiveValue)) {
+            jp = new MyJSONPrimitive(primitiveValue.substring(1, primitiveValue.length() - 1));
+        }
+        else if (isNull(primitiveValue)) {
+            jp = MyJSONNull.INSTANCE;
+        }
+        else{
+            jp = new MyJSONPrimitive(parseBooleanValue(primitiveValue));
+        }
         return jp;
     }
 
@@ -80,7 +86,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
                 throw new IllegalArgumentException("Can't find ':' in object");
             }
 
-            MyJSONElement value = readValue();
+            MyJSONElement value = read();
 
             jo.add(property.toString(), value);
             if (current == '"' ){
@@ -95,11 +101,11 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         return jo;
     }
 
-    private boolean readBooleanValue(String s){
-        if (s.toUpperCase().equals("TRUE")){
+    private boolean parseBooleanValue(String value){
+        if (value.equals("true")){
             return true;
         }
-        else if (s.toUpperCase().equals("FALSE")){
+        else if (value.equals("false")){
             return false;
         }
         else {
@@ -107,9 +113,9 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         }
     }
 
-    private boolean checkInt(String s){
+    private boolean isInteger(String value){
         try {
-            Integer.parseInt(s);
+            Integer.parseInt(value);
         }
         catch (Exception e){
             return false;
@@ -117,9 +123,9 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         return true;
     }
 
-    private boolean checkFloat(String s){
+    private boolean isFloat(String value){
         try {
-            Float.parseFloat(s);
+            Float.parseFloat(value);
         }
         catch (Exception e){
             return false;
@@ -127,9 +133,9 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         return true;
     }
 
-    private boolean checkDouble(String s){
+    private boolean isDouble(String value){
         try {
-            Double.parseDouble(s);
+            Double.parseDouble(value);
         }
         catch (Exception e){
             return false;
@@ -137,8 +143,12 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         return true;
     }
 
-    private boolean checkString(String s){
-        if (s.startsWith("\"") && s.endsWith("\"")) {
+    private boolean  enclosedInQuotes(String value){
+        return value.startsWith("\"") && value.endsWith("\"");
+    }
+
+    private boolean isNull(String value){
+        if (value.equals("null")){
             return true;
         } else {
             return false;
