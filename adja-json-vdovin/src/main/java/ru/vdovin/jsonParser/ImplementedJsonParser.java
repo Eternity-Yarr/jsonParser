@@ -45,7 +45,8 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             current = this.reader.read();
         }
 
-        while (current != '"' && current != ',' && current != '}' && current != ']' && current != -1){
+        //while (current != '"' && current != ',' && current != '}' && current != ']' && current != -1){
+        while (!isEndPrimiteveValue()){
             primitive.append((char)current);
             current = this.reader.read();
         }
@@ -76,7 +77,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             StringBuilder property = new StringBuilder();
              current = this.reader.read();
             if (current != '"'){
-                throw new IllegalArgumentException("Error sintax");
+                throw new IllegalArgumentException("Error syntax");
             }else {
                 current = this.reader.read();
             }
@@ -115,13 +116,14 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
     private boolean readBooleanValue(){
         StringBuilder booleanValue = new StringBuilder();
-        while (current != ',' && current != -1){
+
+        while (!isCharOfEndValue()){
             booleanValue.append((char)current);
             try {
                 current = reader.read();
             }
             catch (IOException e){
-                throw new IllegalArgumentException("Error Syntax");
+                throw new IllegalArgumentException("Error Syntax1");
             }
         }
 
@@ -164,5 +166,21 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             return false;
         }
         return true;
+    }
+
+    private boolean isEndPrimiteveValue(){
+        if (current == '"' || isCharOfEndValue()){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    private boolean isCharOfEndValue(){
+        if (current == ',' || current == '}' || current == ']' || current == -1){
+            return true;
+        }else {
+            return false;
+        }
     }
 }

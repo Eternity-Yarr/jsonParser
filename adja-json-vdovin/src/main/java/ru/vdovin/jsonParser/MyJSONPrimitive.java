@@ -6,7 +6,6 @@ public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
 
     private Object value;
 
-
     public MyJSONPrimitive(String str){
         setValue(str);
     }

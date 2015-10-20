@@ -19,7 +19,7 @@ public class JsonParserTest {
         String str = "\"test\"";
         JSONElement je = sjp.parse(new StringReader(str));
         Assert.assertTrue("We ve got a primitive", je.isJsonPrimitive());
-        Assert.assertEquals("Primitive value parsed correctly too", "test", je.getAsString());
+        Assert.assertEquals("Primitive string value parsed correctly too", "test", je.getAsString());
     }
 
     @Test
@@ -27,13 +27,16 @@ public class JsonParserTest {
         String str = "66";
         JSONElement je = sjp.parse(new StringReader(str));
         Assert.assertTrue("We ve got a primitive", je.isJsonPrimitive());
-        Assert.assertEquals("Primitive value parsed correctly too", 66, je.getAsInt());
+        Assert.assertEquals("Primitive integer value parsed correctly too", 66, je.getAsInt());
+    }
 
+    @Test
+    public void testNumberPrimitive2() throws Exception {
         String str1 = "3.14";
         JSONElement je1 = sjp.parse(new StringReader(str1));
         Assert.assertTrue("We ve got a primitive", je1.isJsonPrimitive());
         //System.out.print(je1.toString());
-        Assert.assertEquals("Primitive value parsed correctly too", 3.14, je1.getAsDouble(), 0.001);
+        Assert.assertEquals("Primitive double value parsed correctly too", 3.14, je1.getAsDouble(), 0.001);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -52,6 +55,29 @@ public class JsonParserTest {
         Assert.assertTrue("Boolean value parsed correctly", je.getAsBoolean());
     }
 
+    @Test
+    public  void testBoolean2() throws Exception {
+        String str = "FALSE";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertTrue("We ve got a primitive", je.isJsonPrimitive());
+        Assert.assertFalse("Boolean value parsed correctly", je.getAsBoolean());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public  void testBoolean3() throws Exception {
+        String str = "\"FALSE\"";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertTrue("We ve got a primitive", je.isJsonPrimitive());
+        Assert.assertFalse("Boolean value parsed correctly", je.getAsBoolean());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public  void testBoolean4() throws Exception {
+        String str = "FALSE\"";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertTrue("We ve got a primitive", je.isJsonPrimitive());
+        Assert.assertFalse("Boolean value parsed correctly", je.getAsBoolean());
+    }
 
     @Test
     public  void testSmallObject() throws Exception {
@@ -63,13 +89,14 @@ public class JsonParserTest {
         Assert.assertEquals("Number parsed correctly", 1, numPrimitive.getAsInt());
     }
 
+    @Test
     public void testSmallObject2() throws Exception {
         String someDict = "{\"b\":\"apples\"}";
         JSONElement je1 = sjp.parse(new StringReader(someDict));
         Assert.assertTrue("We ve got object indeed", je1.isJsonObject());
         JSONObject jo1 = je1.getAsJsonObject();
         JSONPrimitive stringPrimitive = jo1.get("b").getAsJsonPrimitive();
-        Assert.assertEquals("Number parsed correctly", "apples", stringPrimitive.getAsString());
+        Assert.assertEquals("String parsed correctly", "apples", stringPrimitive.getAsString());
     }
 
     @Test
@@ -92,7 +119,6 @@ public class JsonParserTest {
         Assert.assertEquals("Number parsed correctly", 5, numPrimitive.getAsInt());
         JSONPrimitive stringPrimitive = jo.get("b").getAsJsonPrimitive();
         Assert.assertEquals("String parsed correctly too", "apples", stringPrimitive.getAsString());
-
         JSONPrimitive stringPrimitive1 = jo.get("c").getAsJsonPrimitive();
         Assert.assertEquals("String parsed correctly too", "it's work?", stringPrimitive1.getAsString());
 
