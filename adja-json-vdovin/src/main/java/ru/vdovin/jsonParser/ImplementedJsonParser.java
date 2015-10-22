@@ -10,8 +10,8 @@ import java.io.Reader;
 
 public class ImplementedJsonParser implements StreamingJsonParser {
 
-    private final char START_OBJECT = '{';
-    private final char START_ARRAY = '[';
+    private final static char START_OBJECT = '{';
+    private final static char START_ARRAY = '[';
 
     private Reader reader;
     private int current;
@@ -25,7 +25,8 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     private MyJSONElement read() throws IllegalArgumentException, IOException {
         current = this.reader.read();
         switch (current) {
-            case START_OBJECT: {return readJSONObject();}
+            case START_OBJECT: { return readJSONObject(); }
+            case START_ARRAY: { return  readJSONArray(); }
             default : {return readJSONValue();}
         }
     }
@@ -34,7 +35,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         StringBuilder primitive = new StringBuilder();
         MyJSONElement jp;
 
-        while (!isCharOfEndValue()){
+        while (!isEndMark()){
             primitive.append((char)current);
             current = this.reader.read();
         }
@@ -61,7 +62,6 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         }
         return jp;
     }
-
 
     private MyJSONObject readJSONObject() throws IllegalArgumentException, IOException {
 
@@ -97,8 +97,18 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         if (current != '}'){
             throw new IllegalArgumentException("Can't find '}'");
         }
+        current = this.reader.read();
 
         return jo;
+    }
+
+    private MyJSONArray readJSONArray() throws IOException {
+        MyJSONArray ja = new MyJSONArray();
+        do {
+            ja.add(read());
+            // System.out.println((char)current);
+        } while (current == ',');
+        return  ja;
     }
 
     private boolean parseBooleanValue(String value){
@@ -155,7 +165,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         }
     }
 
-    private boolean isCharOfEndValue(){
+    private boolean isEndMark(){
         if (current == ',' || current == '}' || current == ']' || current == -1){
             return true;
         }else {

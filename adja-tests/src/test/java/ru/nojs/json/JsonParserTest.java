@@ -204,6 +204,31 @@ public class JsonParserTest {
         Assert.assertEquals("String parsed correctly", "test", jo2.get("b").getAsString());
     }
 
+    @Test
+    public void  testArray_int() throws Exception {
+        String str = "[1,2,3]";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertTrue("We ve got an array", je.isJsonArray());
+    }
+
+    @Test
+    public void  testArray_String() throws Exception {
+        String str = "[\"a\",\"b\",\"c\",\"d\"]";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertTrue("We ve got an array", je.isJsonArray());
+    }
+
+    @Test
+    public void  testArray_obj() throws Exception {
+        String str = "[{\"a\":true},{\"a\":true},{\"a\":false}]";
+        JSONElement je = sjp.parse(new StringReader(str));
+        Assert.assertTrue("We ve got an array", je.isJsonArray());
+        JSONArray ja = je.getAsJsonArray();
+        JSONObject obj = ja.get(ja.size()-1).getAsJsonObject();
+        Assert.assertFalse("We ve got an obj", obj.get("a").getAsBoolean());
+
+    }
+
 
 
 
