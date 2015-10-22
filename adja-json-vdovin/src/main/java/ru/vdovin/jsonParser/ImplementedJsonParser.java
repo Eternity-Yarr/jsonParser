@@ -16,13 +16,16 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     private Reader reader;
     private int current;
 
-    public JSONElement parse(Reader r) throws IllegalArgumentException, IOException {
+    public JSONElement parse(Reader r) {
         this.reader = r;
-        JSONElement jo = read();
-        return  jo;
+        try {
+            return read();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("No can parse", e);
+        }
     }
 
-    private MyJSONElement read() throws IllegalArgumentException, IOException {
+    private MyJSONElement read() throws IOException {
         current = this.reader.read();
         switch (current) {
             case START_OBJECT: { return readJSONObject(); }
