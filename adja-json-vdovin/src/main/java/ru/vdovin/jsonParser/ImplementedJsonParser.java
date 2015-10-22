@@ -108,6 +108,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             ja.add(read());
             // System.out.println((char)current);
         } while (current == ',');
+        current = this.reader.read();
         return  ja;
     }
 

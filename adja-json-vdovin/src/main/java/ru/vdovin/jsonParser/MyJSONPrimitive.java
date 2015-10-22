@@ -58,7 +58,6 @@ public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
         throw new IllegalStateException("This is not a string");
     }
 
-
     @Override
     public int getAsInt(){
         if (isNumber()){
@@ -82,12 +81,5 @@ public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
         }
         throw new IllegalStateException("This is not a double");
     }
-
-
-
-
-
-
-
 
 }

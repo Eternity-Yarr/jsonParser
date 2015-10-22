@@ -229,26 +229,32 @@ public class JsonParserTest {
 
     }
 
+    @Test
+    public void testCorrectArrayParse() throws Exception {
+        String jsonArray = "[1,2,3,4]";
+        JSONElement je = sjp.parse(new StringReader(jsonArray));
+        Assert.assertTrue("We ve got an array", je.isJsonArray());
+        JSONArray array = je.getAsJsonArray();
+        Assert.assertEquals("It contains expected number of elements", 4, array.size());
+        int sum = StreamSupport
+                .stream(array.spliterator(), false)
+                .map(JSONElement::getAsInt)
+                .reduce(0, (acc, i) -> acc + i);
+        Assert.assertEquals("Sum of elements matches", 10, sum);
+    }
+
+    @Test
+    public void testArrayParse() throws Exception {
+        String jsonArray = "{\"test\":[1,1,1,1]}";
+        JSONElement je = sjp.parse(new StringReader(jsonArray));
+        Assert.assertTrue("We ve got an array", je.isJsonObject());
+        JSONObject jo = je.getAsJsonObject();
+        Assert.assertTrue("We ve got an array", jo.get("test").isJsonArray());
+        JSONArray array = jo.get("test").getAsJsonArray();
+        Assert.assertEquals("It contains expected number of elements", 4, array.size());
+    }
 
 
-
-
-
-
-
-    // @Test
-   // public void testCorrectArrayParse() {
-   //     String jsonArray = "[1,2,3,4]";
-    //    JSONElement je = sjp.parse(new StringReader(jsonArray));
-   //     Assert.assertTrue("We ve got an array", je.isJsonArray());
-   //     JSONArray array = je.getAsJsonArray();
-   //     Assert.assertEquals("It contains expected number of elements", 4, array.size());
-   //     int sum = StreamSupport
-   //             .stream(array.spliterator(), false)
-   //             .map(JSONElement::getAsInt)
-   //             .reduce(0, (acc, i) -> acc + i);
-   //     Assert.assertEquals("Sum of elements matches", 10, sum);
-   // }
 
 
 

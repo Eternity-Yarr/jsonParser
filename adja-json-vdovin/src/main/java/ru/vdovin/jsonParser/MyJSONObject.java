@@ -25,13 +25,11 @@ public class MyJSONObject extends MyJSONElement implements JSONObject {
     }
 
     private MyJSONElement createJsonElement(Object value) {
-        //return value == null ? JsonNull.INSTANCE : new JsonPrimitive(value);
         if (value == null) {
             return MyJSONNull.INSTANCE;
         } else {
             return new MyJSONPrimitive(value);
         }
-
     }
 
     @Override
@@ -61,12 +59,12 @@ public class MyJSONObject extends MyJSONElement implements JSONObject {
 
     @Override
     public JSONArray getAsJsonArray(String memberName) {
-        return null;
+        return super.getAsJsonArray();
     }
 
     @Override
     public JSONObject getAsJsonObject(String memberName) {
-        return null;
+        return super.getAsJsonObject();
     }
 
     @Override

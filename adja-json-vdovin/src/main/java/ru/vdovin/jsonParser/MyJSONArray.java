@@ -23,11 +23,14 @@ public class MyJSONArray extends MyJSONElement implements JSONArray {
 
     @Override
     public boolean contains(JSONElement element) {
-        return false;
+        return this.elements.contains(element);
     }
 
     @Override
     public JSONElement get(int i) {
+        if ( i < 0 || i >= elements.size() ){
+            throw new IndexOutOfBoundsException();
+        }
         return elements.get(i);
     }
 
@@ -38,6 +41,6 @@ public class MyJSONArray extends MyJSONElement implements JSONArray {
 
     @Override
     public Iterator<JSONElement> iterator() {
-        return null;
+        return this.elements.iterator();
     }
 }
