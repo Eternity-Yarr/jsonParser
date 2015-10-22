@@ -159,18 +159,10 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     }
 
     private boolean isNull(String value){
-        if (value.equals("null")){
-            return true;
-        } else {
-            return false;
-        }
+       return value.equals("null");
     }
 
     private boolean isEndMark(){
-        if (current == ',' || current == '}' || current == ']' || current == -1){
-            return true;
-        }else {
-            return false;
-        }
+        return current == ',' || current == '}' || current == ']' || current == -1;
     }
 }
