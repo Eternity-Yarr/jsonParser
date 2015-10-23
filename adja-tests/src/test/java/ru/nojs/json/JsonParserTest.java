@@ -205,21 +205,21 @@ public class JsonParserTest {
     }
 
     @Test
-    public void  testArray_int() throws Exception {
+    public void  testArrayOfInteger() throws Exception {
         String str = "[1,2,3]";
         JSONElement je = sjp.parse(new StringReader(str));
         Assert.assertTrue("We ve got an array", je.isJsonArray());
     }
 
     @Test
-    public void  testArray_String() throws Exception {
+    public void  testArrayOfString() throws Exception {
         String str = "[\"a\",\"b\",\"c\",\"d\"]";
         JSONElement je = sjp.parse(new StringReader(str));
         Assert.assertTrue("We ve got an array", je.isJsonArray());
     }
 
     @Test
-    public void  testArray_obj() throws Exception {
+    public void  testArrayOfObject() throws Exception {
         String str = "[{\"a\":true},{\"a\":true},{\"a\":false}]";
         JSONElement je = sjp.parse(new StringReader(str));
         Assert.assertTrue("We ve got an array", je.isJsonArray());
@@ -244,7 +244,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void testArrayParse() throws Exception {
+    public void testArrayInObject() throws Exception {
         String jsonArray = "{\"test\":[1,1,1,1]}";
         JSONElement je = sjp.parse(new StringReader(jsonArray));
         Assert.assertTrue("We ve got an array", je.isJsonObject());
