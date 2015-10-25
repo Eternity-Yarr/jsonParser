@@ -51,7 +51,10 @@ public abstract class MyJSONElement implements JSONElement {
 
     @Override
     public JSONArray getAsJsonArray() {
-        return null;
+       if (isJsonArray()){
+           return (MyJSONArray)this;
+       }
+        throw  new IllegalStateException("This is not a JSON array");
     }
 
     @Override
@@ -83,18 +86,6 @@ public abstract class MyJSONElement implements JSONElement {
     }
 
     @Override
-    public boolean isJsonArray() {
-        return false;
-    }
-
-    @Override
-    public boolean isJsonPrimitive() {
-        return this instanceof MyJSONPrimitive;
-    }
-
-    /////////////////////////////////////////////////////
-
-    @Override
     public JSONObject getAsJsonObject() {
         if (isJsonObject()) {
             return (MyJSONObject) this;
@@ -111,13 +102,19 @@ public abstract class MyJSONElement implements JSONElement {
     }
 
     @Override
-    public boolean isJsonNull() {
-        return this instanceof MyJSONNull;
+    public boolean isJsonNull() { return this instanceof MyJSONNull; }
+
+    @Override
+    public boolean isJsonObject() { return this instanceof MyJSONObject; }
+
+    @Override
+    public boolean isJsonArray() {
+        return this instanceof MyJSONArray;
     }
 
     @Override
-    public boolean isJsonObject() {
-        return this instanceof MyJSONObject;
+    public boolean isJsonPrimitive() {
+        return this instanceof MyJSONPrimitive;
     }
 
 }
