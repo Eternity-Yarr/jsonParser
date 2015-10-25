@@ -1,0 +1,55 @@
+    public JSONElement parse(Reader r) {
+        jsonStateStack.add(jsonState);
+
+        String currentValue = "";
+        StringBuilder stringBuilder = new StringBuilder();
+
+        Character symbol = readSymbol(r);
+        while(!jsonState.equals(END_OF_STREAM)){
+            JSONEvent ev = new JSONEvent();
+            String event = ev.checkEvent(symbol);
+
+            //currentValue = readJSONValue(r);
+            /*
+            if (event.equals(ev.READING_VALUE)){
+                jsonState = COMPILING_VALUE;
+            }else{
+                jsonState = VALUE_HAS_BEEN_READ;
+            }*/
+
+            updateState(event);
+
+            currentValue = readValue(stringBuilder, ev.getValue());
+
+            /*
+            if (jsonState.equals(COMPILING_VALUE)){
+                stringBuilder.append(ev.getValue());
+            }
+
+            if(jsonState.equals(VALUE_HAS_BEEN_READ)){
+                currentValue = stringBuilder.toString();
+                System.out.println(currentValue);
+                stringBuilder = new StringBuilder();
+            }*/
+
+            if (jsonState.equals(READING_ARRAY)){
+
+            }
+            //System.out.println(jsonState + " : " + event);
+            System.out.println(currentValue);
+            symbol = readSymbol(r);
+        }
+
+        jsonStateStack.add(jsonState);
+
+        for (String s:jsonStateStack){
+            System.out.println(s);
+        }
+
+        //JSONString = read(r);
+        //JSONArray array = readAsArray(r);
+        //JSONElementClass element = new JSONElementClass(array);
+
+        //return element;
+        return null;
+    }
