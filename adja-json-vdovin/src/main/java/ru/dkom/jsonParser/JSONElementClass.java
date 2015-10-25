@@ -11,10 +11,8 @@ import java.util.Map;
 
 public class JSONElementClass implements ru.nojs.json.JSONElement {
 
-    JSONArrayClass array = null;
-    JSONObjectClass object = null;
-    JSONPrimitiveClass primitive = null;
-
+    Object value = null;
+/*
     public JSONElementClass(JSONArray array){
         this.array = (JSONArrayClass)array;
     }
@@ -25,6 +23,11 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     public JSONElementClass(JSONPrimitive primitive){
         this.primitive = (JSONPrimitiveClass)primitive;
+    }
+*/
+
+    public JSONElementClass(Object jsonObject){
+        value = jsonObject;
     }
 
     @Override
@@ -39,7 +42,7 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public boolean getAsBoolean() {
-        return primitive.getAsBoolean();
+        return ((JSONPrimitiveClass)value).getAsBoolean();
     }
 
     @Override
@@ -64,12 +67,12 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public int getAsInt() {
-        return primitive.getAsInt();
+        return ((JSONPrimitiveClass)value).getAsInt();
     }
 
     @Override
     public JSONArray getAsJsonArray() {
-        return array;
+        return (JSONArrayClass)value;
     }
 
     @Override
@@ -84,7 +87,7 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public JSONPrimitive getAsJsonPrimitive() {
-        return null;
+        return (JSONPrimitiveClass)value;
     }
 
     @Override
@@ -104,12 +107,18 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public String getAsString() {
-        return null;
+        return ((JSONPrimitiveClass)value).getAsString();
     }
 
     @Override
     public boolean isJsonArray() {
-        return !isNull(array);
+        Boolean isJSONArray = true;
+        try{
+            this.getAsJsonArray();
+        }catch (Exception e){
+            isJSONArray = false;
+        }
+        return isJSONArray;
     }
 
     @Override
@@ -119,7 +128,7 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public boolean isJsonObject() {
-        return !isNull(object);
+        return false;
     }
 
     @Override

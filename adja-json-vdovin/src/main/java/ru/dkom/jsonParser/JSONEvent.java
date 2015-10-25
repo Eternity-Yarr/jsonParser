@@ -1,7 +1,5 @@
 package ru.dkom.jsonParser;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,10 +13,10 @@ public class JSONEvent {
     public final static String QUOTES_DETECTED = "QUOTES_DETECTED";
 
     public final static String READING_VALUE = "READING_VALUE";
-    public final static String NOTHING_HAPPENS = "EMPTY_SYMBOL";
+    public final static String INSIGNIFICANT_SYMBOL = "INSIGNIFICANT_SYMBOL";
 
 
-    private final static Character[] JSON_MEANINGLESS_SYMBOLS = {' ','\r','\n','\t'};
+    private final static Character[] JSON_MEANINGLESS_SYMBOLS = {' ','\r','\n','\t','\\'};
 
     private static Map<Character,String> CharEventMap = new HashMap<Character, String>();
     {
@@ -46,8 +44,23 @@ public class JSONEvent {
         value = "";
     }
 
+    public String checkEvent(Character symbol, Boolean readInQuotes){
+        String event = INSIGNIFICANT_SYMBOL;
+        if((!isMeaningless(symbol))||(readInQuotes)){
+            event = READING_VALUE;
+            value = Character.toString(symbol);
+
+            //if ((CharEventMap.get(symbol) != null)&&(!readInQuotes)){
+            if (CharEventMap.get(symbol) != null){
+                event = CharEventMap.get(symbol);
+                value = "";
+            }
+        }
+        return event;
+    }
+
     public String checkEvent(Character symbol){
-        String event = NOTHING_HAPPENS;
+        String event = INSIGNIFICANT_SYMBOL;
         if(!isMeaningless(symbol)){
             event = READING_VALUE;
             value = Character.toString(symbol);
