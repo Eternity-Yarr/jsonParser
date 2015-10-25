@@ -3,12 +3,12 @@ package ru.nojs.json;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.vdovin.jsonParser.ImplementedJsonParser;
-import ru.nojs.json.StreamingJsonParser;
-import ru.vdovin.jsonParser.MyJSONElement;
-import ru.vdovin.jsonParser.MyJSONNull;
 
-import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
 public class JsonParserTest {
@@ -205,21 +205,21 @@ public class JsonParserTest {
     }
 
     @Test
-    public void  testArray_int() throws Exception {
+    public void  testArrayOfInteger() throws Exception {
         String str = "[1,2,3]";
         JSONElement je = sjp.parse(new StringReader(str));
         Assert.assertTrue("We ve got an array", je.isJsonArray());
     }
 
     @Test
-    public void  testArray_String() throws Exception {
+    public void  testArrayOfString() throws Exception {
         String str = "[\"a\",\"b\",\"c\",\"d\"]";
         JSONElement je = sjp.parse(new StringReader(str));
         Assert.assertTrue("We ve got an array", je.isJsonArray());
     }
 
     @Test
-    public void  testArray_obj() throws Exception {
+    public void  testArrayOfObject() throws Exception {
         String str = "[{\"a\":true},{\"a\":true},{\"a\":false}]";
         JSONElement je = sjp.parse(new StringReader(str));
         Assert.assertTrue("We ve got an array", je.isJsonArray());
@@ -244,7 +244,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void testArrayParse() throws Exception {
+    public void testArrayInObject() throws Exception {
         String jsonArray = "{\"test\":[1,1,1,1]}";
         JSONElement je = sjp.parse(new StringReader(jsonArray));
         Assert.assertTrue("We ve got an array", je.isJsonObject());
@@ -252,6 +252,49 @@ public class JsonParserTest {
         Assert.assertTrue("We ve got an array", jo.get("test").isJsonArray());
         JSONArray array = jo.get("test").getAsJsonArray();
         Assert.assertEquals("It contains expected number of elements", 4, array.size());
+    }
+
+
+    @Test
+    public void testInsignificantSymbols() throws  Exception {
+        Assert.assertTrue(
+                "Leading spaces",
+                sjp.parse(new StringReader(" true")).getAsBoolean()
+        );
+        Assert.assertTrue(
+                "Trailing spaces",
+                sjp.parse(new StringReader("true ")).getAsBoolean()
+        );
+        Assert.assertTrue(
+                "All sorts of insignificance",
+                sjp.parse(new StringReader(" \t\t\n\n\r    true \r\t\n  ")).getAsBoolean()
+        );
+        Assert.assertTrue(
+                "Array indented weirdly",
+                sjp.parse(new StringReader("\t [\t\t\n\n\r    true , \r\t\n  false\r\t\n] \n")).getAsJsonArray().size() == 2
+        );
+
+        // Bonus level ^_^
+        Assert.assertEquals(
+                "Strings can have these symbols, and event an escaped quotes",
+                "\t\r\n\" ", sjp.parse(new StringReader("\"\t\r\n\\\" \"")).getAsString()
+        );
+
+    }
+
+    @Test // Bonus level 2 : Hard
+    public void testThreadSafety() throws Exception {
+        String jsonObject = "{\"test\":[1,1,1,1,1,1,1,11,1,1,11,1,1,11,1,1,11,1,1,11,1,1,11,1,1,11,1,1,11,1,1,11,1,1,11,1,1,11,1,1]}";
+        List<Reader> rdrs = IntStream
+                .range(0, 10)
+                .mapToObj(x -> new StringReader(jsonObject))
+                .collect(Collectors.toList());
+
+        boolean res = rdrs
+                .parallelStream()
+                .map(sjp::parse)
+                .allMatch( je -> je.getAsJsonObject().get("test").getAsJsonArray().size() == 40);
+        Assert.assertTrue(res);
     }
 
 
