@@ -2,7 +2,8 @@ package ru.nojs.json;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.vdovin.jsonParser.ImplementedJsonParser;
+//import ru.vdovin.jsonParser.ImplementedJsonParser;
+import ru.dkom.jsonParser.ImplementedJsonParser;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -224,7 +225,7 @@ public class JsonParserTest {
         JSONElement je = sjp.parse(new StringReader(str));
         Assert.assertTrue("We ve got an array", je.isJsonArray());
         JSONArray ja = je.getAsJsonArray();
-        JSONObject obj = ja.get(ja.size()-1).getAsJsonObject();
+        JSONObject obj = ja.get(ja.size() - 1).getAsJsonObject();
         Assert.assertFalse("We ve got an obj", obj.get("a").getAsBoolean());
 
     }
@@ -293,7 +294,7 @@ public class JsonParserTest {
         boolean res = rdrs
                 .parallelStream()
                 .map(sjp::parse)
-                .allMatch( je -> je.getAsJsonObject().get("test").getAsJsonArray().size() == 40);
+                .allMatch(je -> je.getAsJsonObject().get("test").getAsJsonArray().size() == 40);
         Assert.assertTrue(res);
     }
 
