@@ -41,8 +41,10 @@ public class ImplementedJsonParser implements StreamingJsonParser {
                 break;
             }
             evDescriptor = event.checkEvent(symbol);
-            updateState(evDescriptor);
+            //just reading value shouldn't change parser state
 
+
+            /*
             if (jsonState.equals(VALUE_HAS_BEEN_READ)){
             //if (!jsonState.equals(COMPILING_VALUE)){
                 currentValue = stringBuilder.toString();
@@ -52,9 +54,31 @@ public class ImplementedJsonParser implements StreamingJsonParser {
                 jsonStateStack.remove(jsonStateStack.size()-1);
                 jsonState = jsonStateStack.get(jsonStateStack.size()-1);
                 break;
-            }
+            }*/
 
-            if (jsonState.equals(COMPILING_VALUE)){
+            //if (jsonState.equals(COMPILING_VALUE)){
+            /*
+            if (evDescriptor.equals(JSONEvent.READING_VALUE)){
+                stringBuilder.append(symbol);
+            }
+            if (evDescriptor.equals(JSONEvent.JSON_OBJECT_SEPARATOR)){
+                updateState(evDescriptor);
+                currentValue = stringBuilder.toString();
+                stringBuilder = new StringBuilder();
+                break;
+            }*/
+            if (event.getValue().equals("")){
+
+                updateState(evDescriptor);
+
+                if (stringBuilder.length() == 0){
+                    continue;
+                }
+
+                currentValue = stringBuilder.toString();
+                stringBuilder = new StringBuilder();
+                break;
+            }else{
                 stringBuilder.append(symbol);
             }
         }
@@ -73,11 +97,15 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
         while(!jsonState.equals(END_OF_STREAM)){
             currentValue = readStream(r);
+            if (currentValue.equals("")){
+                continue;
+            }
             if (jsonState.equals(READING_ARRAY)){
                 JSONPrimitiveClass p = new JSONPrimitiveClass(currentValue);
                 JSONElementClass el = new JSONElementClass(p);
                 jsonArray.add(el);
             }
+            //System.out.println(currentValue + " : " + jsonStateStack.get(jsonStateStack.size() - 1));
             System.out.println(currentValue + " : " + jsonState);
         }
 
@@ -97,16 +125,9 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
 
     private void updateState(String event){
-        /*
-        if (event.equals(JSONEvent.READING_VALUE)){
-            jsonState = COMPILING_VALUE;
-        }else{
-            jsonState = VALUE_HAS_BEEN_READ;
-            jsonStateStack.add(jsonState);
-        }*/
         jsonState = COMPILING_VALUE;
 
-
+/*
         if (event.equals(JSONEvent.JSON_OBJECT_SEPARATOR)
                 ||event.equals(JSONEvent.JSON_ARRAY_END)
                 ||event.equals(JSONEvent.JSON_OBJECT_END)){
@@ -114,7 +135,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             jsonStateStack.add(jsonState);
             //jsonState = jsonStateStack.get(jsonStateStack.size()-1);
         }
-
+*/
         //if (event.equals(JSONEvent.JSON_OBJECT_SEPARATOR)){
         //    jsonState = VALUE_HAS_BEEN_READ;
         //    jsonStateStack.add(jsonState);
@@ -128,9 +149,17 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         if (event.equals(JSONEvent.JSON_ARRAY_END)){
             //jsonState = VALUE_HAS_BEEN_READ;
             //jsonStateStack.add(jsonState);
+            jsonState = ARRAY_HAS_BEEN_READ;
             jsonStateStack.add(ARRAY_HAS_BEEN_READ);
             //jsonStateStack.add(WAITING_FOR_INPUT);
         }
+
+        if (event.equals(JSONEvent.JSON_OBJECT_SEPARATOR)){
+            //jsonState = VALUE_HAS_BEEN_READ;
+            //jsonStateStack.add(jsonState);
+            jsonState = jsonStateStack.get(jsonStateStack.size()-1);
+        }
+
 
         //if (!jsonState.equals(COMPILING_VALUE)){
         //    jsonStateStack.add(jsonState);
@@ -139,15 +168,6 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
 
     }
-
-    /*
-    private String readJSONValue(Reader r){
-        while(!jsonState.equals(END_OF_STREAM)){
-
-        }
-    }*/
-
-
 
     public ImplementedJsonParser() {
         jsonStateStack = new ArrayList<>();
@@ -171,19 +191,6 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     }
 
 
-    private JSONArray readAsArray(Reader r) {
-        JSONArray array = new JSONArrayClass();
-        //String rawData = read(r);
-        String rawData = eliminateBrackets(JSONString);
-        String[] chunks = rawData.split(",");
-        for (String chunk : chunks) {
-            JSONPrimitiveClass p = new JSONPrimitiveClass(chunk);
-            JSONElementClass el = new JSONElementClass(p);
-            array.add(el);
-        }
-        return array;
-    }
-
     private String eliminateBrackets(String string) {
         String regex = "\\[([^]]+)\\]";
         Matcher m = Pattern.compile(regex).matcher(string);
@@ -193,28 +200,15 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         return "not array";
     }
 
-    private String read(Reader r) {
-        //List<Character> rawData = new ArrayList<Character>();
-        StringBuilder stringBuilder = new StringBuilder();
-        try {
-            int code = r.read();
-            while (code != -1) {
-                char c = (char) code;
-                code = r.read();
-                stringBuilder.append(c);
-            }
-            r.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ;
-        return stringBuilder.toString();
-    }
+
 
     public static void main(String[] args) {
         ImplementedJsonParser sjp = new ImplementedJsonParser();
-        String jsonArray = "[1,2,3,4,856]";
-        JSONElement je = sjp.parse(new StringReader(jsonArray));
+        //String jsonArray = "[1,2,3,4,856]";
+        //JSONElement je = sjp.parse(new StringReader(jsonArray));
+
+        String str = "\"test\"";
+        JSONElement je = sjp.parse(new StringReader(str));
     }
 
 

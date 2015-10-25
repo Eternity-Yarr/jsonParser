@@ -27,6 +27,14 @@ public class JSONEvent {
         CharEventMap.put(']',JSON_ARRAY_END);
         CharEventMap.put(':',JSON_PRIMITIVE_VALUE_START);
         CharEventMap.put('"',QUOTES_DETECTED);
+
+        /*CharEventMap.put('{',JSON_OBJECT_START);
+        CharEventMap.put('}',JSON_OBJECT_SEPARATOR);
+        CharEventMap.put(',',JSON_OBJECT_SEPARATOR);
+        CharEventMap.put('[',JSON_ARRAY_START);
+        CharEventMap.put(']',JSON_OBJECT_SEPARATOR);
+        CharEventMap.put(':',JSON_PRIMITIVE_VALUE_START);
+        CharEventMap.put('"',QUOTES_DETECTED);*/
     }
 
     private String value;
@@ -43,6 +51,7 @@ public class JSONEvent {
             value = Character.toString(symbol);
             if (CharEventMap.get(symbol) != null){
                 event = CharEventMap.get(symbol);
+                value = "";
             }
         }
         return event;
