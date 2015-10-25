@@ -14,6 +14,13 @@ public class JSONPrimitiveClass implements JSONPrimitive{
     private Integer integer = null;
     private Boolean bool = null;
 
+    private Object value;
+
+    public JSONPrimitiveClass(Object o){
+        value = o;
+    }
+
+    /*
     public JSONPrimitiveClass(String s){
         try {
             integer = Integer.parseInt(s);
@@ -24,7 +31,7 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     public JSONPrimitiveClass(Integer i){
         this.integer = i;
-    }
+    }*/
 
 
     @Override
@@ -39,7 +46,7 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     @Override
     public boolean getAsBoolean() {
-        return false;
+        return Boolean.valueOf(value.toString());
     }
 
     @Override

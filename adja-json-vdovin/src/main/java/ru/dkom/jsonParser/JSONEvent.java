@@ -1,5 +1,7 @@
 package ru.dkom.jsonParser;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +43,7 @@ public class JSONEvent {
 
 
     public JSONEvent(){
-        value = null;
+        value = "";
     }
 
     public String checkEvent(Character symbol){
@@ -49,6 +51,7 @@ public class JSONEvent {
         if(!isMeaningless(symbol)){
             event = READING_VALUE;
             value = Character.toString(symbol);
+
             if (CharEventMap.get(symbol) != null){
                 event = CharEventMap.get(symbol);
                 value = "";

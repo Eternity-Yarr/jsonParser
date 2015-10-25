@@ -53,3 +53,14 @@
         //return element;
         return null;
     }
+
+
+
+    private String eliminateBrackets(String string) {
+        String regex = "\\[([^]]+)\\]";
+        Matcher m = Pattern.compile(regex).matcher(string);
+        while (m.find()) {
+            return m.group(1);
+        }
+        return "not array";
+    }

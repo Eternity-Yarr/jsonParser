@@ -39,7 +39,7 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public boolean getAsBoolean() {
-        return false;
+        return primitive.getAsBoolean();
     }
 
     @Override

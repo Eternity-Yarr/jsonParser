@@ -1,8 +1,7 @@
 package ru.dkom.jsonParser;
 
-import ru.nojs.json.JSONArray;
-import ru.nojs.json.JSONElement;
-import ru.nojs.json.StreamingJsonParser;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import ru.nojs.json.*;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -19,6 +18,10 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     private final static String READING_ARRAY = "READING_ARRAY";
     private final static String ARRAY_HAS_BEEN_READ = "ARRAY_HAS_BEEN_READ";
     private final static String END_OF_STREAM = "END_OF_STREAM";
+
+    private final static String READING_PRIMITIVE = "READING_PRIMITIVE";
+
+    private final static String READING_JSON_PROPERTY = "READING_JSON_PROPERTY";
 
     private String jsonState;
     private List<String> jsonStateStack;
@@ -37,44 +40,31 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
         while (true){
             symbol = readSymbol(r);
+
             if (jsonState.equals(END_OF_STREAM)){
+                currentValue = stringBuilder.toString();
                 break;
             }
             evDescriptor = event.checkEvent(symbol);
-            //just reading value shouldn't change parser state
 
-
-            /*
-            if (jsonState.equals(VALUE_HAS_BEEN_READ)){
-            //if (!jsonState.equals(COMPILING_VALUE)){
-                currentValue = stringBuilder.toString();
-                stringBuilder = new StringBuilder();
-
-                //jsonState = jsonStateStack.get(jsonStateStack.size()-2);
-                jsonStateStack.remove(jsonStateStack.size()-1);
-                jsonState = jsonStateStack.get(jsonStateStack.size()-1);
-                break;
-            }*/
-
-            //if (jsonState.equals(COMPILING_VALUE)){
-            /*
-            if (evDescriptor.equals(JSONEvent.READING_VALUE)){
-                stringBuilder.append(symbol);
+            if (evDescriptor.equals(JSONEvent.NOTHING_HAPPENS)){
+                continue;
             }
-            if (evDescriptor.equals(JSONEvent.JSON_OBJECT_SEPARATOR)){
-                updateState(evDescriptor);
-                currentValue = stringBuilder.toString();
-                stringBuilder = new StringBuilder();
-                break;
-            }*/
-            if (event.getValue().equals("")){
 
-                updateState(evDescriptor);
+            //System.out.println(evDescriptor);
+
+            updateState(evDescriptor);
+            if (event.getValue().equals("")){
+                //updateState(evDescriptor);
+
+                if (evDescriptor.equals(JSONEvent.QUOTES_DETECTED)){
+                    stringBuilder.append("\"");
+                    continue;
+                }
 
                 if (stringBuilder.length() == 0){
                     continue;
                 }
-
                 currentValue = stringBuilder.toString();
                 stringBuilder = new StringBuilder();
                 break;
@@ -82,31 +72,53 @@ public class ImplementedJsonParser implements StreamingJsonParser {
                 stringBuilder.append(symbol);
             }
         }
-
         return currentValue;
     }
 
     @Override
     public JSONElement parse(Reader r) {
         JSONArray jsonArray = new JSONArrayClass();
+        JSONObject jsonObject = new JSONObjectClass();
+        JSONPrimitive jsonPrimitive = null;
+
+        Boolean itsObject = false;
+        Boolean itsPrimitive = false;
+
+        jsonState = WAITING_FOR_INPUT;
+        jsonStateStack = new ArrayList<>();
         jsonStateStack.add(jsonState);
 
         String currentValue = "";
-        StringBuilder stringBuilder = new StringBuilder();
-
+        List<String> values = new ArrayList<>();
 
         while(!jsonState.equals(END_OF_STREAM)){
-            currentValue = readStream(r);
+            //currentValue = readStream(r);
+            values.add(readStream(r));
+            currentValue = values.get(values.size()-1);
+
             if (currentValue.equals("")){
                 continue;
             }
             if (jsonState.equals(READING_ARRAY)){
+                
                 JSONPrimitiveClass p = new JSONPrimitiveClass(currentValue);
                 JSONElementClass el = new JSONElementClass(p);
                 jsonArray.add(el);
             }
-            //System.out.println(currentValue + " : " + jsonStateStack.get(jsonStateStack.size() - 1));
-            System.out.println(currentValue + " : " + jsonState);
+
+            if (jsonState.equals(READING_JSON_PROPERTY)){
+                itsObject = true;
+                String propName = values.get(values.size()-2);
+                jsonObject.addProperty(propName, currentValue);
+            }
+
+            if(jsonStateStack.get(jsonStateStack.size() - 1).equals(READING_PRIMITIVE)){
+                itsPrimitive = true;
+                jsonPrimitive = new JSONPrimitiveClass(currentValue);
+
+            }
+            System.out.println(currentValue + " : " + jsonStateStack.get(jsonStateStack.size() - 1));
+            //System.out.println(currentValue + " : " + jsonState);
         }
 
         jsonStateStack.add(jsonState);
@@ -115,31 +127,30 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             System.out.println(s);
         }
 
-        //JSONString = read(r);
-        //JSONArray array = readAsArray(r);
-        JSONElementClass element = new JSONElementClass(jsonArray);
+        JSONElementClass element = null;
+        if (itsObject){
+            element = new JSONElementClass(jsonObject);
+        }if (itsPrimitive){
+            element = new JSONElementClass(jsonPrimitive);
+        }else {
+            element = new JSONElementClass(jsonArray);
+        }
+
 
         return element;
-        //return null;
     }
 
 
     private void updateState(String event){
         jsonState = COMPILING_VALUE;
 
-/*
-        if (event.equals(JSONEvent.JSON_OBJECT_SEPARATOR)
-                ||event.equals(JSONEvent.JSON_ARRAY_END)
-                ||event.equals(JSONEvent.JSON_OBJECT_END)){
-            jsonState = VALUE_HAS_BEEN_READ;
-            jsonStateStack.add(jsonState);
-            //jsonState = jsonStateStack.get(jsonStateStack.size()-1);
+        //primitive detection
+        if(event.equals(JSONEvent.READING_VALUE)){
+            jsonState = READING_PRIMITIVE;
+            if(!jsonStateStack.get(jsonStateStack.size()-1).equals(READING_PRIMITIVE)){
+                jsonStateStack.add(jsonState);
+            }
         }
-*/
-        //if (event.equals(JSONEvent.JSON_OBJECT_SEPARATOR)){
-        //    jsonState = VALUE_HAS_BEEN_READ;
-        //    jsonStateStack.add(jsonState);
-        //}
 
         if (event.equals(JSONEvent.JSON_ARRAY_START)){
             jsonState = READING_ARRAY;
@@ -147,25 +158,18 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         }
 
         if (event.equals(JSONEvent.JSON_ARRAY_END)){
-            //jsonState = VALUE_HAS_BEEN_READ;
-            //jsonStateStack.add(jsonState);
             jsonState = ARRAY_HAS_BEEN_READ;
             jsonStateStack.add(ARRAY_HAS_BEEN_READ);
-            //jsonStateStack.add(WAITING_FOR_INPUT);
         }
 
         if (event.equals(JSONEvent.JSON_OBJECT_SEPARATOR)){
-            //jsonState = VALUE_HAS_BEEN_READ;
-            //jsonStateStack.add(jsonState);
             jsonState = jsonStateStack.get(jsonStateStack.size()-1);
         }
 
-
-        //if (!jsonState.equals(COMPILING_VALUE)){
-        //    jsonStateStack.add(jsonState);
-        //}
-
-
+        if (event.equals(JSONEvent.JSON_PRIMITIVE_VALUE_START)){
+            jsonState = READING_JSON_PROPERTY;
+            jsonStateStack.add(READING_JSON_PROPERTY);
+        }
 
     }
 
@@ -191,24 +195,22 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     }
 
 
-    private String eliminateBrackets(String string) {
-        String regex = "\\[([^]]+)\\]";
-        Matcher m = Pattern.compile(regex).matcher(string);
-        while (m.find()) {
-            return m.group(1);
-        }
-        return "not array";
-    }
 
 
 
     public static void main(String[] args) {
         ImplementedJsonParser sjp = new ImplementedJsonParser();
-        //String jsonArray = "[1,2,3,4,856]";
+        String jsonArray = "[1,2,3,4,856]";
         //JSONElement je = sjp.parse(new StringReader(jsonArray));
 
         String str = "\"test\"";
+        str = "test    ";
+        str = "\t [\t\t\n\n\r    true , \r\t\n  false\r\t\n] \n";
         JSONElement je = sjp.parse(new StringReader(str));
+        //je = sjp.parse(new StringReader(str));
+
+        //String jsnobj = "{\"a\":1}";
+        //je = sjp.parse(new StringReader(jsnobj));
     }
 
 
