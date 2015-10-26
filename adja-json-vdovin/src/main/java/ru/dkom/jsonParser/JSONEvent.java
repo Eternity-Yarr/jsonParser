@@ -16,7 +16,7 @@ public class JSONEvent {
     public final static String INSIGNIFICANT_SYMBOL = "INSIGNIFICANT_SYMBOL";
 
 
-    private final static Character[] JSON_MEANINGLESS_SYMBOLS = {' ','\r','\n','\t','\\'};
+    private final static Character[] JSON_MEANINGLESS_SYMBOLS = {' ','\r','\n','\t'};
 
     private static Map<Character,String> CharEventMap = new HashMap<Character, String>();
     {

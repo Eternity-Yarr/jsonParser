@@ -133,7 +133,13 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public boolean isJsonPrimitive() {
-        return false;
+        Boolean isJSONPrimitive = true;
+        try{
+            JSONPrimitiveClass t = (JSONPrimitiveClass)value;
+        }catch (Exception e){
+            isJSONPrimitive = true;
+        }
+        return isJSONPrimitive;
     }
 
     private boolean isNull(Object o){
