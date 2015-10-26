@@ -10,22 +10,12 @@ import java.math.BigInteger;
 
 public class JSONPrimitiveClass implements JSONPrimitive{
 
-    private String string = null;
-    private Integer integer = null;
-    private Boolean bool = null;
 
-    public JSONPrimitiveClass(String s){
-        try {
-            integer = Integer.parseInt(s);
-        } catch (NumberFormatException e) {
-            this.string = s;
-        }
+    private Object value;
+
+    public JSONPrimitiveClass(Object o){
+        value = o;
     }
-
-    public JSONPrimitiveClass(Integer i){
-        this.integer = i;
-    }
-
 
     @Override
     public BigDecimal getAsBigDecimal() {
@@ -39,7 +29,7 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     @Override
     public boolean getAsBoolean() {
-        return false;
+        return Boolean.valueOf(value.toString());
     }
 
     @Override
@@ -64,7 +54,8 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     @Override
     public int getAsInt() {
-        return integer;
+        // return (Integer)value;
+        return Integer.parseInt((String)value);
     }
 
     @Override
@@ -104,7 +95,7 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     @Override
     public String getAsString() {
-        return string;
+        return (String)value;
     }
 
     @Override
@@ -124,6 +115,6 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     @Override
     public boolean isJsonPrimitive() {
-        return false;
+        return true;
     }
 }
