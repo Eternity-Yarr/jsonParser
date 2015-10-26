@@ -128,7 +128,13 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public boolean isJsonObject() {
-        return false;
+        Boolean isJSONObject = true;
+        try{
+            JSONObjectClass t = (JSONObjectClass)value;
+        }catch(Exception e){
+            isJSONObject = false;
+        }
+        return isJSONObject;
     }
 
     @Override

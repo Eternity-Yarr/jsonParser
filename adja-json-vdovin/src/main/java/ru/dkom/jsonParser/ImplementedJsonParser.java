@@ -16,6 +16,9 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     private final static String ARRAY_HAS_BEEN_READ = "ARRAY_HAS_BEEN_READ";
     private final static String END_OF_STREAM = "END_OF_STREAM";
 
+    private final static String READING_OBJECT = "READING_OBJECT";
+    private final static String OBJECT_HAS_BEEN_READ = "OBJECT_HAS_BEEN_READ";
+
     private final static String READING_PRIMITIVE = "READING_PRIMITIVE";
 
     private final static String READING_JSON_PROPERTY = "READING_JSON_PROPERTY";
@@ -39,8 +42,6 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         List<Integer>codes = new ArrayList<>();
 
         while (true) {
-            //symbol = readSymbol(r);
-            //code = (int) symbol;
             code = readCode(r);
 
             System.out.println(code);
@@ -48,13 +49,64 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             if (code == -1){
                 updateState(JSONEvent.READING_VALUE);
                 streamState = END_OF_STREAM;
-                currentValue = stringBuilder.toString();
+                //currentValue = stringBuilder.toString();
                 break;
             }
+
+            evDescriptor = event.checkEvent((char)code,readInQuotes);
+
+            if (evDescriptor.equals(JSONEvent.INSIGNIFICANT_SYMBOL)){
+                continue;
+            }
+
+            int lastCode = -1;
+            /*
+            if (codes.size()>0){
+                lastCode = codes.get(codes.size() - 1);
+                if ((lastCode == 92)&&(code == 34)){
+                    readInQuotes = !readInQuotes;
+                }
+            }*/
+
+            if (code == 34){
+                readInQuotes = !readInQuotes;
+                if (codes.size()>0){
+                    lastCode = codes.get(codes.size() - 1);
+                    if ((lastCode == 92)&&(code == 34)){
+                        readInQuotes = !readInQuotes;
+                    }
+                }
+            }
+
             codes.add(code);
+
+            if (evDescriptor.equals(JSONEvent.JSON_OBJECT_START)){
+                updateState(evDescriptor);
+                codes.remove(codes.size()-1);
+                break;
+            }
+            if(evDescriptor.equals(JSONEvent.JSON_OBJECT_END)){
+                updateState(evDescriptor);
+                codes.remove(codes.size()-1);
+                break;
+            }
+            if (evDescriptor.equals(JSONEvent.JSON_ARRAY_START)){
+                updateState(evDescriptor);
+                codes.remove(codes.size()-1);
+                break;
+            }
+            if(evDescriptor.equals(JSONEvent.JSON_ARRAY_END)){
+                updateState(evDescriptor);
+                codes.remove(codes.size()-1);
+                break;
+            }
+            if(evDescriptor.equals(JSONEvent.JSON_OBJECT_SEPARATOR)){
+                updateState(evDescriptor);
+                codes.remove(codes.size()-1);
+                break;
+            }
         }
 
-        //symbols with code 34 throw out
         //symbols with code 92 34 replacing with 34
         int current = 65535;
         int previous = 65535;
@@ -73,56 +125,28 @@ public class ImplementedJsonParser implements StreamingJsonParser {
                 quotesPlaces.add(i);
             }
         };
+            /*
         //eliminate pairing quotes
-        quotesMode = false;
         //replace first and last
         for (int i = 0; i < quotesPlaces.size()/2; i ++){
             codesArray[quotesPlaces.get(i)] = 65535;
             codesArray[quotesPlaces.get(quotesPlaces.size() -1 - i)] = 65535;
             clearSize = clearSize - 2;
         }
-
+*/
         //removing /" combination
         for(int i = 0; i < codesArray.length; i++){
             if(i < 1){
                 continue;
             }
-            previous = codesArray[i - 1];
             current = codesArray[i];
+            previous = codesArray[i - 1];
 
             if ((previous == 92)&&(current == 34)){
                 codesArray[i - 1] = 65535;
                 clearSize--;
             }
         }
-
-
-
-
-            /*
-            current = codesArray[i];
-            if ((i > 1)){
-                previous = codesArray[i -1];
-            }
-            if ((previous == 92)&&(current ==34)&&(i > 1)){
-                codesArray[i - 1] = 65535;
-                clearSize--;
-                continue;
-            }
-
-            if ((current == 34)&&(i == 0)){
-                codesArray[i] = 65535;
-                clearSize--;
-                continue;
-            }
-
-            if ((current == 34)&&(previous != 92)){
-                codesArray[i] = 65535;
-                clearSize--;
-                continue;
-            }*/
-
-        //}
 
         char[]converter = new char[clearSize];
         int j = 0;
@@ -133,56 +157,20 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             converter[j] = (char)(int)codesArray[i];
             j++;
         }
+
+        if (converter.length > 0){
+            if ((!readInQuotes)&&(converter[0]==34)){
+                //remove first and last symbol
+                char[] swap = new char[converter.length - 2];
+                for (int i = 1; i < converter.length - 1; i ++){
+                    swap[i-1] = converter[i];
+                }
+                converter = swap;
+            }
+        }
+
+
         currentValue = new String(converter);
-
-    /*        if (jsonState.equals(END_OF_STREAM)){
-                updateState(JSONEvent.READING_VALUE);
-                streamState = END_OF_STREAM;
-                currentValue = stringBuilder.toString();
-                break;
-            }
-            evDescriptor = event.checkEvent(symbol,readInQuotes);
-
-            if (evDescriptor.equals(JSONEvent.INSIGNIFICANT_SYMBOL)){
-                continue;
-            }
-
-            if (event.getValue().equals("")){
-                updateState(evDescriptor);
-                if (evDescriptor.equals(JSONEvent.QUOTES_DETECTED)){
-                    System.out.println("quotes found");
-                    Character lastChar = 'a';
-                    if (stringBuilder.length() > 0){
-                        lastChar = stringBuilder.charAt(stringBuilder.length()-1);
-                    }
-
-                    if (!lastChar.equals(new Character((char)92))) {
-                        readInQuotes = !readInQuotes;
-                        System.out.println("quotes mode flipped");
-                    }else{
-                        char[] chars = stringBuilder.toString().toCharArray();
-                        chars[chars.length-1] = (char)34;
-                        String t = new String(chars);
-                        stringBuilder = new StringBuilder();
-                        stringBuilder.append(t);
-                    }
-                    continue;
-                }
-
-                if (stringBuilder.length() == 0){
-                    continue;
-                }
-                currentValue = stringBuilder.toString();
-                stringBuilder = new StringBuilder();
-                break;
-            }else{
-                //if (!symbol.equals((char)92)){
-                    stringBuilder.append(symbol);
-                //}else{
-                //    stringBuilder.append((char)34);
-                //}
-            }
-        }*/
         return currentValue;
     }
 
@@ -227,6 +215,20 @@ public class ImplementedJsonParser implements StreamingJsonParser {
                 jsonArray = new JSONArrayClass();
             }
 
+            if (jsonState.equals(READING_OBJECT)){
+                String propName = values.get(values.size()-2);
+                jsonObject.addProperty(propName, currentValue);
+
+            }
+
+            if (jsonState.equals(OBJECT_HAS_BEEN_READ)){
+                String propName = values.get(values.size()-2);
+                jsonObject.addProperty(propName, currentValue);
+                jsonStateStack.push(WAITING_FOR_INPUT);
+                element = new JSONElementClass(jsonObject);
+                jsonObject = new JSONObjectClass();
+            }
+
             if (jsonState.equals(READING_JSON_PROPERTY)){
 
                 String propName = values.get(values.size()-2);
@@ -265,6 +267,16 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             jsonStateStack.push(jsonState);
         }
 
+        if (event.equals(JSONEvent.JSON_OBJECT_START)){
+            jsonState = READING_OBJECT;
+            jsonStateStack.push(jsonState);
+        }
+
+        if (event.equals(JSONEvent.JSON_OBJECT_END)){
+            jsonState = OBJECT_HAS_BEEN_READ;
+            jsonStateStack.push(jsonState);
+        }
+
         if (event.equals(JSONEvent.JSON_ARRAY_START)){
             jsonState = READING_ARRAY;
             jsonStateStack.push(jsonState);
@@ -299,7 +311,8 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             code = r.read();
             //c = (char)code;
             if (code == -1){
-                jsonState = END_OF_STREAM;
+                //jsonState = END_OF_STREAM;
+                streamState = END_OF_STREAM;
                 r.close();
             }
 
@@ -342,11 +355,19 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
         //str = "\"test\"";
         //str = "test    ";
+        str = "  true";
+        je = sjp.parse(new StringReader(str));
+        Boolean t = je.getAsBoolean();
+        System.out.println(t);
+
+
         //str = "\t [\t\t\n\n\r    true , \r\t\n  false\r\t\n] \n";
         //je = sjp.parse(new StringReader(str));
         //a = je.getAsJsonArray();
         //size = a.size();
         //System.out.println(size);
+        //str = "    test    ";
+        //sjp.parse(new StringReader(str));
 
         //String jsnobj = "{\"a\":1}";
         //je = sjp.parse(new StringReader(jsnobj));

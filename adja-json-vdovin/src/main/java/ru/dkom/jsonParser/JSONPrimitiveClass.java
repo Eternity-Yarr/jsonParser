@@ -54,7 +54,8 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     @Override
     public int getAsInt() {
-        return (Integer)value;
+        // return (Integer)value;
+        return Integer.parseInt((String)value);
     }
 
     @Override

@@ -366,3 +366,53 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
 
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /*        if (jsonState.equals(END_OF_STREAM)){
+                updateState(JSONEvent.READING_VALUE);
+                streamState = END_OF_STREAM;
+                currentValue = stringBuilder.toString();
+                break;
+            }
+            evDescriptor = event.checkEvent(symbol,readInQuotes);
+
+            if (evDescriptor.equals(JSONEvent.INSIGNIFICANT_SYMBOL)){
+                continue;
+            }
+
+            if (event.getValue().equals("")){
+                updateState(evDescriptor);
+                if (evDescriptor.equals(JSONEvent.QUOTES_DETECTED)){
+                    System.out.println("quotes found");
+                    Character lastChar = 'a';
+                    if (stringBuilder.length() > 0){
+                        lastChar = stringBuilder.charAt(stringBuilder.length()-1);
+                    }
+
+                    if (!lastChar.equals(new Character((char)92))) {
+                        readInQuotes = !readInQuotes;
+                        System.out.println("quotes mode flipped");
+                    }else{
+                        char[] chars = stringBuilder.toString().toCharArray();
+                        chars[chars.length-1] = (char)34;
+                        String t = new String(chars);
+                        stringBuilder = new StringBuilder();
+                        stringBuilder.append(t);
+                    }
+                    continue;
+                }
+
+                if (stringBuilder.length() == 0){
+                    continue;
+                }
+                currentValue = stringBuilder.toString();
+                stringBuilder = new StringBuilder();
+                break;
+            }else{
+                //if (!symbol.equals((char)92)){
+                    stringBuilder.append(symbol);
+                //}else{
+                //    stringBuilder.append((char)34);
+                //}
+            }
+        }*/
