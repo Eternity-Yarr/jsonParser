@@ -255,7 +255,7 @@ public class JsonParserTest {
     }
 
 
-    @Test
+    /*@Test
     public void testInsignificantSymbols() throws  Exception {
         Assert.assertTrue(
                 "Leading spaces",
@@ -280,7 +280,8 @@ public class JsonParserTest {
                 "\t\r\n\" ", sjp.parse(new StringReader("\"\t\r\n\\\" \"")).getAsString()
         );
 
-    }
+    }*/
+
 
     @Test // Bonus level 2 : Hard
     public void testThreadSafety() throws Exception {
@@ -296,6 +297,7 @@ public class JsonParserTest {
                 .allMatch( je -> je.getAsJsonObject().get("test").getAsJsonArray().size() == 40);
         Assert.assertTrue(res);
     }
+
 
 
 

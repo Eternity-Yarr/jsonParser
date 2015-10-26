@@ -13,34 +13,33 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     private final static char START_OBJECT = '{';
     private final static char START_ARRAY = '[';
 
-    private Reader reader;
-    private int current;
-
     public JSONElement parse(Reader r) {
-        this.reader = r;
+        //this.reader = r;
+
+        JSONReader jr = new JSONReader(r);
         try {
-            return read();
+            return read(jr);
         } catch (IOException e) {
             throw new IllegalArgumentException("No can parse", e);
         }
     }
 
-    private MyJSONElement read() throws IOException {
-        current = this.reader.read();
-        switch (current) {
-            case START_OBJECT: { return readJSONObject(); }
-            case START_ARRAY: { return  readJSONArray(); }
-            default : {return readJSONValue();}
+    private MyJSONElement read(JSONReader jr) throws IOException {
+        jr.read();
+        switch (jr.getCurrent()) {
+            case START_OBJECT: { return readJSONObject(jr); }
+            case START_ARRAY: { return  readJSONArray(jr); }
+            default : {return readJSONValue(jr);}
         }
     }
 
-    private MyJSONElement readJSONValue() throws IllegalArgumentException, IOException {
+    private MyJSONElement readJSONValue(JSONReader jr) throws IllegalArgumentException, IOException {
         StringBuilder primitive = new StringBuilder();
         MyJSONElement jp;
 
-        while (!isEndMark()){
-            primitive.append((char)current);
-            current = this.reader.read();
+        while (!isEndMark(jr.getCurrent())){
+            primitive.append((char)jr.getCurrent());
+            jr.read();
         }
 
         String primitiveValue = primitive.toString();
@@ -66,52 +65,51 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         return jp;
     }
 
-    private MyJSONObject readJSONObject() throws IllegalArgumentException, IOException {
+    private MyJSONObject readJSONObject(JSONReader jr) throws IllegalArgumentException, IOException {
 
         MyJSONObject jo = new MyJSONObject();
 
         do {
             StringBuilder property = new StringBuilder();
-             current = this.reader.read();
-            if (current != '"'){
+            jr.read();
+            if (jr.getCurrent() != '"'){
                 throw new IllegalArgumentException("Error syntax");
             }else {
-                current = this.reader.read();
+                jr.read();
             }
 
-            while (current != '"') {
-                property.append((char) current);
-                current = this.reader.read();
+            while (jr.getCurrent() != '"') {
+                property.append((char)jr.getCurrent());
+                jr.read();
             }
 
-            current = this.reader.read();
-            if (current != ':') {
+            jr.read();
+            if (jr.getCurrent() != ':') {
                 throw new IllegalArgumentException("Can't find ':' in object");
             }
 
-            MyJSONElement value = read();
+            MyJSONElement value = read(jr);
 
             jo.add(property.toString(), value);
-            if (current == '"' ){
-                current = this.reader.read();
+            if (jr.getCurrent() == '"' ){
+                jr.read();
             }
-        } while (current == ',');
+        } while (jr.getCurrent() == ',');
 
-        if (current != '}'){
+        if (jr.getCurrent() != '}'){
             throw new IllegalArgumentException("Can't find '}'");
         }
-        current = this.reader.read();
+        jr.read();
 
         return jo;
     }
 
-    private MyJSONArray readJSONArray() throws IOException {
+    private MyJSONArray readJSONArray(JSONReader jr) throws IOException {
         MyJSONArray ja = new MyJSONArray();
         do {
-            ja.add(read());
-            // System.out.println((char)current);
-        } while (current == ',');
-        current = this.reader.read();
+            ja.add(read(jr));
+        } while (jr.getCurrent() == ',');
+        jr.read();
         return  ja;
     }
 
@@ -165,7 +163,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
        return value.equals("null");
     }
 
-    private boolean isEndMark(){
-        return current == ',' || current == '}' || current == ']' || current == -1;
+    private boolean isEndMark(int ch){
+        return ch == ',' || ch == '}' || ch == ']' || ch == -1;
     }
 }
