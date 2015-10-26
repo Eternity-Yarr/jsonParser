@@ -12,9 +12,9 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
     private final static char START_OBJECT = '{';
     private final static char START_ARRAY = '[';
+    private final static char START_STRING = '"';
 
     public JSONElement parse(Reader r) {
-        //this.reader = r;
 
         JSONReader jr = new JSONReader(r);
         try {
@@ -26,11 +26,29 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
     private MyJSONElement read(JSONReader jr) throws IOException {
         jr.read();
+        jr.readInsignificantSymbols();
         switch (jr.getCurrent()) {
-            case START_OBJECT: { return readJSONObject(jr); }
-            case START_ARRAY: { return  readJSONArray(jr); }
+            case START_OBJECT : { return readJSONObject(jr); }
+            case START_ARRAY : { return  readJSONArray(jr); }
+            case START_STRING : { return readJSONString(jr); }
             default : {return readJSONValue(jr);}
         }
+    }
+    private MyJSONElement readJSONString(JSONReader jr) {
+        StringBuilder jsonString = new StringBuilder();
+
+        while (!isEndMark(jr.getCurrent())) {
+            jsonString.append((char) jr.getCurrent());
+            jr.read();
+        }
+
+        String stringValue = jsonString.toString();
+        if (enclosedInQuotes(stringValue)) {
+            return new MyJSONPrimitive(stringValue.substring(1, stringValue.length() - 1));
+        } else {
+            throw new IllegalArgumentException("Error Syntax");
+        }
+
     }
 
     private MyJSONElement readJSONValue(JSONReader jr) throws IllegalArgumentException, IOException {
@@ -40,6 +58,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         while (!isEndMark(jr.getCurrent())){
             primitive.append((char)jr.getCurrent());
             jr.read();
+            jr.readInsignificantSymbols();
         }
 
         String primitiveValue = primitive.toString();

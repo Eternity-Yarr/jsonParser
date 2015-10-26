@@ -224,7 +224,7 @@ public class JsonParserTest {
         JSONElement je = sjp.parse(new StringReader(str));
         Assert.assertTrue("We ve got an array", je.isJsonArray());
         JSONArray ja = je.getAsJsonArray();
-        JSONObject obj = ja.get(ja.size()-1).getAsJsonObject();
+        JSONObject obj = ja.get(ja.size() - 1).getAsJsonObject();
         Assert.assertFalse("We ve got an obj", obj.get("a").getAsBoolean());
 
     }
@@ -254,8 +254,7 @@ public class JsonParserTest {
         Assert.assertEquals("It contains expected number of elements", 4, array.size());
     }
 
-
-    /*@Test
+    @Test
     public void testInsignificantSymbols() throws  Exception {
         Assert.assertTrue(
                 "Leading spaces",
@@ -275,12 +274,31 @@ public class JsonParserTest {
         );
 
         // Bonus level ^_^
+        // Тут точно нет очибки? :(
         Assert.assertEquals(
-                "Strings can have these symbols, and event an escaped quotes",
-                "\t\r\n\" ", sjp.parse(new StringReader("\"\t\r\n\\\" \"")).getAsString()
+            "Strings can have these symbols, and event an escaped quotes",
+            "\t\r\n\" ", sjp.parse(new StringReader("\"\t\r\n\\\" \"")).getAsString()
         );
+    }
 
-    }*/
+    //Вот так проходит
+    @Test
+    public void testInsignificantSymbols2() throws  Exception {
+        Assert.assertEquals(
+                "Strings can have these symbols, and event an escaped quotes 2",
+                "\t\r\n\\\" ", sjp.parse(new StringReader("\"\t\r\n\\\" \"")).getAsString()
+        );
+    }
+
+    //И так проходит
+    @Test
+    public void testInsignificantSymbols3() throws  Exception {
+        Assert.assertEquals(
+                "Strings can have these symbols, and event an escaped quotes 2",
+                "\t\r\n\" ", sjp.parse(new StringReader("\"\t\r\n\" \"")).getAsString()
+        );
+    }
+
 
 
     @Test // Bonus level 2 : Hard
