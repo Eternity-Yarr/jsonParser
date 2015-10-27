@@ -8,6 +8,8 @@ import ru.nojs.json.JSONPrimitive;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class JSONElementClass implements ru.nojs.json.JSONElement {
 
@@ -28,7 +30,27 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     public JSONElementClass(Object jsonObject){
         value = jsonObject;
+
+/*        try{
+
+            if (looksLikeBoolean(((JSONPrimitiveClass)value).getAsString())){
+                //exception will be thrown in case of error
+                try{
+                    ((JSONPrimitiveClass)value).getAsBoolean();
+                }catch (IllegalStateException e){
+                    throw new IllegalArgumentException();
+                }
+
+            }
+
+        }catch (ClassCastException e){
+
+        }*/
+
+
     }
+
+
 
     @Override
     public BigDecimal getAsBigDecimal() {
@@ -57,7 +79,7 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public double getAsDouble() {
-        return 0;
+        return ((JSONPrimitiveClass)value).getAsDouble();
     }
 
     @Override
@@ -77,12 +99,13 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public JSONNull getAsJsonNull() {
-        return null;
+        //throw new Exception();
+        return new JSONNullClass();
     }
 
     @Override
     public JSONObject getAsJsonObject() {
-        return null;
+        return (JSONObjectClass)value;
     }
 
     @Override
@@ -107,7 +130,13 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public String getAsString() {
-        return ((JSONPrimitiveClass)value).getAsString();
+        String probe = ((JSONPrimitiveClass)value).getAsString();
+        Character lastChar = probe.charAt(probe.length()-1);
+
+        if (lastChar == (char)34){
+            throw new IllegalArgumentException();
+        }
+        return probe;
     }
 
     @Override
@@ -123,6 +152,9 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public boolean isJsonNull() {
+        if (((JSONPrimitiveClass)value).getAsString().toUpperCase().equals("NULL")){
+            return true;
+        }
         return false;
     }
 

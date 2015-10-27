@@ -1,77 +1,14 @@
 package ru.dkom.jsonParser;
 
-import ru.nojs.json.*;
+import ru.nojs.json.JSONArray;
+import ru.nojs.json.JSONNull;
+import ru.nojs.json.JSONObject;
+import ru.nojs.json.JSONPrimitive;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
-public class JSONObjectClass implements JSONObject{
-
-    private Map<String,Object> properties;
-
-    public JSONObjectClass(){
-        properties = new HashMap<>();
-    }
-
-    @Override
-    public void add(String property, JSONElement value) {
-        properties.put(property,new JSONPrimitiveClass(value));
-    }
-
-    @Override
-    public void addProperty(String property, Boolean value) {
-        properties.put(property,value);
-    }
-
-    @Override
-    public void addProperty(String property, Number value) {
-        properties.put(property,value);
-    }
-
-    @Override
-    public void addProperty(String property, String value) {
-        properties.put(property,new JSONPrimitiveClass(value));
-    }
-
-    @Override
-    public Set<Map.Entry<String, JSONElement>> entrySet() {
-        return null;
-    }
-
-    @Override
-    public JSONElement get(String memberName) {
-
-        return (JSONPrimitive)properties.get(memberName);
-    }
-
-    @Override
-    public JSONArray getAsJsonArray(String memberName) {
-        return null;
-    }
-
-    @Override
-    public JSONObject getAsJsonObject(String memberName) {
-        return (JSONObject)properties.get(memberName);
-    }
-
-    @Override
-    public JSONPrimitive getAsJsonPrimitive(String memberName) {
-        return (JSONPrimitive)properties.get(memberName);
-    }
-
-    @Override
-    public boolean has(String memberName) {
-        return false;
-    }
-
-    @Override
-    public JSONElement remove(String property) {
-        return null;
-    }
-
+public class JSONNullClass implements JSONNull{
     @Override
     public BigDecimal getAsBigDecimal() {
         return null;
