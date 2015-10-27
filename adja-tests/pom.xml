@@ -18,6 +18,11 @@
             <artifactId>adja-json-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency> <!-- as reference implementation -->
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.3.1</version>
+        </dependency>
         <dependency>
             <groupId>ru.nojs</groupId>
             <artifactId>adja-json-vdovin</artifactId>

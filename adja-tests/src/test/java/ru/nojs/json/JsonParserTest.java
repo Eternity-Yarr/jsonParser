@@ -1,5 +1,7 @@
 package ru.nojs.json;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.vdovin.jsonParser.ImplementedJsonParser;
@@ -13,7 +15,7 @@ import java.util.stream.StreamSupport;
 
 public class JsonParserTest {
     final private StreamingJsonParser sjp = new ImplementedJsonParser();
-
+    final private JsonParser reference = new JsonParser();
 
     @Test
     public  void testStringPrimitive() throws Exception {
@@ -274,14 +276,14 @@ public class JsonParserTest {
         );
 
         // Bonus level ^_^
-        // Тут точно нет очибки? :(
+        // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ? :(
         Assert.assertEquals(
             "Strings can have these symbols, and event an escaped quotes",
             "\t\r\n\" ", sjp.parse(new StringReader("\"\t\r\n\\\" \"")).getAsString()
         );
     }
 
-    //Вот так проходит
+    //пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     @Test
     public void testInsignificantSymbols2() throws  Exception {
         Assert.assertEquals(
@@ -290,7 +292,7 @@ public class JsonParserTest {
         );
     }
 
-    //И так проходит
+    //пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     @Test
     public void testInsignificantSymbols3() throws  Exception {
         Assert.assertEquals(
@@ -299,7 +301,14 @@ public class JsonParserTest {
         );
     }
 
-
+    @Test
+    public void testOptimalSizeRepresentation() throws Exception {
+        String json = "1.4";
+        JSONElement je = sjp.parse(new StringReader(json));
+        JsonElement ref = reference.parse(new StringReader(json));
+        Assert.assertEquals("We both got primitives", ref.isJsonPrimitive(), je.isJsonPrimitive());
+        Assert.assertEquals("And they are equal, within delta", ref.getAsFloat(), je.getAsFloat(), 0.001);
+    }
 
     @Test // Bonus level 2 : Hard
     public void testThreadSafety() throws Exception {
