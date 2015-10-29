@@ -91,6 +91,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         do {
             StringBuilder property = new StringBuilder();
             jr.read();
+            jr.readInsignificantSymbols();
             if (jr.getCurrent() != '"'){
                 throw new IllegalArgumentException("Error syntax");
             }else {
@@ -103,6 +104,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             }
 
             jr.read();
+            jr.readInsignificantSymbols();
             if (jr.getCurrent() != ':') {
                 throw new IllegalArgumentException("Can't find ':' in object");
             }
@@ -110,11 +112,14 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             MyJSONElement value = read(jr);
 
             jo.add(property.toString(), value);
+
             if (jr.getCurrent() == '"' ){
                 jr.read();
             }
+            jr.readInsignificantSymbols();
         } while (jr.getCurrent() == ',');
 
+        jr.readInsignificantSymbols();
         if (jr.getCurrent() != '}'){
             throw new IllegalArgumentException("Can't find '}'");
         }

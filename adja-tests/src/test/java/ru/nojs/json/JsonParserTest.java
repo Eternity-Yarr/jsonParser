@@ -165,7 +165,7 @@ public class JsonParserTest {
 
     @Test
     public void testJsonObjectParse() throws Exception {
-        String someDict = "{\"a\":5,\"b\":\"apples\",\"c\":\"it's work?\"}";
+        String someDict = "{\"a\":  5,\"b\": \"apples\",\"c\":\"it's work?\"}";
         JSONElement je = sjp.parse(new StringReader(someDict));
         Assert.assertTrue("We ve got object indeed", je.isJsonObject());
         JSONObject jo = je.getAsJsonObject();
@@ -177,6 +177,13 @@ public class JsonParserTest {
         Assert.assertEquals("String parsed correctly too", "it's work?", stringPrimitive1.getAsString());
     }
 
+    @Test
+    public void testets() throws Exception {
+        String json = "{           \"a\" : \"abcdef\",             \"b\" : \"bgedf\"}";
+        JSONElement je = sjp.parse(new StringReader(json));
+        Assert.assertTrue("We ve got object indeed", je.isJsonObject());
+        JSONObject jo = je.getAsJsonObject();
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void testObjectSyntaxError() throws Exception {

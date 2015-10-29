@@ -3,7 +3,6 @@ package ru.nojs.json;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.vdovin.jsonParser.ImplementedJsonParser;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -13,9 +12,12 @@ import static org.mockito.Mockito.*;
 
 public class MappingJsonParserTest {
     private static final MappingJsonParser mjp =  new MappingJsonParser() {
+
+        private final ImplementedJsonParser sjp = new ImplementedJsonParser();
+
         @Override
         public <T> T parse(Reader r, Mapper<T> mapper) {
-            T result = mapper.map(new ImplementedJsonParser().parse(r));
+            T result = mapper.map(sjp.parse(r));
             return result;
         }
     };
@@ -34,13 +36,22 @@ public class MappingJsonParserTest {
         Mapper<String> stringMapper = JSONElement::getAsString;
         String result  = mjp.parse(r, stringMapper);
         Assert.assertEquals("I shall not crash", "abcdef", result);
+
+
+        Mapper<Boolean> sdf = JSONElement::getAsBoolean;
     }
 
     @Test
     public void testMapMapper() {
-        String json = "{\"a\": \"abcdef\", \"b\": \"bgedf\"}";
+        String json = "{\"a\":\"abcdef\", \"b\": \"bgedf\"}";
         Reader r = new StringReader(json);
-        Mapper<HashMap<String, String>> hashMapMapper = mock(Mapper.class, "replace me");
+        Mapper<HashMap<String, String>> hashMapMapper = e -> {
+            HashMap<String, String> result = new HashMap<>();
+            e.getAsJsonObject()
+                    .getAll()
+                    .forEach((k,v) -> result.put(k, v.getAsString()));
+            return result;
+        };
         HashMap<String, String> result = mjp.parse(r, hashMapMapper);
         Assert.assertEquals("key 'a' bounded correctly", "abcdef", result.get("a"));
         Assert.assertEquals("key 'b' bounded correctly", "bgedf", result.get("b"));
