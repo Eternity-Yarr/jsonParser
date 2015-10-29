@@ -1,9 +1,7 @@
 package ru.vdovin.jsonParser;
 
 import ru.nojs.json.JSONElement;
-import ru.nojs.json.JSONPrimitive;
 import ru.nojs.json.StreamingJsonParser;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -42,7 +40,9 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             jr.read();
         }
 
-        String stringValue = jsonString.toString();
+
+
+        String stringValue = jsonString.toString().replace("\\", "");
         if (enclosedInQuotes(stringValue)) {
             return new MyJSONPrimitive(stringValue.substring(1, stringValue.length() - 1));
         } else {
@@ -66,11 +66,11 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         if (isInteger(primitiveValue)){
             jp = new MyJSONPrimitive(Integer.parseInt(primitiveValue));
         }
-        else if (isDouble(primitiveValue)){
-            jp = new MyJSONPrimitive(Double.parseDouble(primitiveValue));
-        }
         else if (isFloat(primitiveValue)){
             jp = new MyJSONPrimitive(Float.parseFloat(primitiveValue));
+        }
+        else if (isDouble(primitiveValue)){
+            jp = new MyJSONPrimitive(Double.parseDouble(primitiveValue));
         }
         else if (enclosedInQuotes(primitiveValue)) {
             jp = new MyJSONPrimitive(primitiveValue.substring(1, primitiveValue.length() - 1));

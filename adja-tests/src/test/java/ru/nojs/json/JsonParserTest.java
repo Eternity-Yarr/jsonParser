@@ -276,28 +276,10 @@ public class JsonParserTest {
         );
 
         // Bonus level ^_^
-        // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ? :(
+        // Тест
         Assert.assertEquals(
-            "Strings can have these symbols, and event an escaped quotes",
-            "\t\r\n\" ", sjp.parse(new StringReader("\"\t\r\n\\\" \"")).getAsString()
-        );
-    }
-
-    //пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-    @Test
-    public void testInsignificantSymbols2() throws  Exception {
-        Assert.assertEquals(
-                "Strings can have these symbols, and event an escaped quotes 2",
-                "\t\r\n\\\" ", sjp.parse(new StringReader("\"\t\r\n\\\" \"")).getAsString()
-        );
-    }
-
-    //пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-    @Test
-    public void testInsignificantSymbols3() throws  Exception {
-        Assert.assertEquals(
-                "Strings can have these symbols, and event an escaped quotes 2",
-                "\t\r\n\" ", sjp.parse(new StringReader("\"\t\r\n\" \"")).getAsString()
+                "Strings can have these symbols, and event an escaped quotes",
+                "\t\r\n\" ", sjp.parse(new StringReader("\"\t\r\n\\\" \"")).getAsString()
         );
     }
 
@@ -309,6 +291,7 @@ public class JsonParserTest {
         Assert.assertEquals("We both got primitives", ref.isJsonPrimitive(), je.isJsonPrimitive());
         Assert.assertEquals("And they are equal, within delta", ref.getAsFloat(), je.getAsFloat(), 0.001);
     }
+
 
     @Test // Bonus level 2 : Hard
     public void testThreadSafety() throws Exception {

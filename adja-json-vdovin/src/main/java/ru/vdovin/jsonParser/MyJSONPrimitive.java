@@ -69,7 +69,8 @@ public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
     @Override
     public float getAsFloat(){
         if (isNumber()){
-            return (float)this.value;
+            //return (float)this.value;
+            return Float.parseFloat(this.value.toString());
         }
         throw new IllegalStateException("This is not a float");
     }
@@ -77,7 +78,8 @@ public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
     @Override
     public double getAsDouble(){
         if (isNumber()){
-            return (double)this.value;
+            //return (double)this.value;
+            return Double.parseDouble(this.value.toString());
         }
         throw new IllegalStateException("This is not a double");
     }
