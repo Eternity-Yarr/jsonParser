@@ -23,29 +23,29 @@ public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
     }
 
     void setValue(Object o){
-        this.value =  o;
+        value =  o;
     }
 
     public boolean isBoolean() {
-        return this.value instanceof Boolean;
+        return value instanceof Boolean;
     }
 
     public boolean isNumber() {
-        return this.value instanceof Number;
+        return value instanceof Number;
     }
 
     public boolean isString() {
-        return this.value instanceof String;
+        return value instanceof String;
     }
 
     public String toString(){
-        return this.value.toString();
+        return value.toString();
     }
 
     @Override
     public boolean getAsBoolean(){
         if (isBoolean()){
-            return (boolean)this.value;
+            return (boolean)value;
         }
         throw new IllegalStateException("this is no a boolean");
     }
@@ -53,7 +53,7 @@ public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
     @Override
     public String getAsString(){
         if (isString()) {
-            return this.value.toString();
+            return value.toString();
         }
         throw new IllegalStateException("This is not a string");
     }
@@ -61,16 +61,22 @@ public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
     @Override
     public int getAsInt(){
         if (isNumber()){
-           return (int)this.value;
+           return (int)value;
         }
         throw new IllegalStateException("This is not a int");
+    }
+
+    public Number getAsNumber(){
+        if (isNumber()){
+            return (Number)value;
+        }
+        throw new IllegalStateException("This is not number");
     }
 
     @Override
     public float getAsFloat(){
         if (isNumber()){
-            //return (float)this.value;
-            return Float.parseFloat(this.value.toString());
+            return getAsNumber().floatValue();
         }
         throw new IllegalStateException("This is not a float");
     }
@@ -78,8 +84,7 @@ public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
     @Override
     public double getAsDouble(){
         if (isNumber()){
-            //return (double)this.value;
-            return Double.parseDouble(this.value.toString());
+            return getAsNumber().doubleValue();
         }
         throw new IllegalStateException("This is not a double");
     }

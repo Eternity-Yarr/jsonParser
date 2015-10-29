@@ -276,7 +276,6 @@ public class JsonParserTest {
         );
 
         // Bonus level ^_^
-        // Тест тест тест
         Assert.assertEquals(
                 "Strings can have these symbols, and event an escaped quotes",
                 "\t\r\n\" ", sjp.parse(new StringReader("\"\t\r\n\\\" \"")).getAsString()
