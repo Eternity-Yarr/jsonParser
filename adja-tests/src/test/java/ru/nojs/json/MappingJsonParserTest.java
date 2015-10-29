@@ -2,6 +2,7 @@ package ru.nojs.json;
 
 import org.junit.Assert;
 import org.junit.Test;
+import ru.vdovin.jsonParser.ImplementedJsonParser;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Reader;
@@ -11,10 +12,20 @@ import java.util.HashMap;
 import static org.mockito.Mockito.*;
 
 public class MappingJsonParserTest {
-    private static final MappingJsonParser mjp = mock(MappingJsonParser.class);
+    private static final MappingJsonParser mjp =  new MappingJsonParser() {
+        @Override
+        public <T> T parse(Reader r, Mapper<T> mapper) {
+            T result = mapper.map(new ImplementedJsonParser().parse(r));
+            return result;
+        }
+    };
+
+
+
+  /*mock(MappingJsonParser.class);
     static { // replace me
         when(mjp.parse(any(), any())).thenThrow(new NotImplementedException());
-    }
+    }*/
 
     @Test
     public void testSimpleMapper() {
