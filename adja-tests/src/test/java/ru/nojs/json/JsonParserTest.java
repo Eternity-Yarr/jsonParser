@@ -178,7 +178,7 @@ public class JsonParserTest {
     }
 
     @Test
-    public void testets() throws Exception {
+    public void testInsignificantSymbolsInObject() throws Exception {
         String json = "{           \"a\" : \"abcdef\",             \"b\" : \"bgedf\"}";
         JSONElement je = sjp.parse(new StringReader(json));
         Assert.assertTrue("We ve got object indeed", je.isJsonObject());

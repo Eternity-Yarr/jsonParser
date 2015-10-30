@@ -27,6 +27,4 @@ public interface JSONObject extends JSONElement {
     boolean has(String memberName);
     // Removes the property from this JsonObject.
     JSONElement remove(String property);
-
-    HashMap<String,JSONElement> getAll();
 }

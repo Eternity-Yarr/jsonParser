@@ -3,10 +3,16 @@ package ru.nojs.json;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.vdovin.jsonParser.ImplementedJsonParser;
+import ru.vdovin.jsonParser.MyJSONObject;
+import ru.vdovin.jsonParser.MyJSONPrimitive;
+import sun.invoke.empty.Empty;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static org.mockito.Mockito.*;
 
@@ -17,17 +23,18 @@ public class MappingJsonParserTest {
 
         @Override
         public <T> T parse(Reader r, Mapper<T> mapper) {
-            T result = mapper.map(sjp.parse(r));
+            T result = null;
+            try {
+                result = mapper.map(sjp.parse(r));
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
             return result;
         }
     };
 
-
-
-  /*mock(MappingJsonParser.class);
-    static { // replace me
-        when(mjp.parse(any(), any())).thenThrow(new NotImplementedException());
-    }*/
 
     @Test
     public void testSimpleMapper() {
@@ -36,9 +43,6 @@ public class MappingJsonParserTest {
         Mapper<String> stringMapper = JSONElement::getAsString;
         String result  = mjp.parse(r, stringMapper);
         Assert.assertEquals("I shall not crash", "abcdef", result);
-
-
-        Mapper<Boolean> sdf = JSONElement::getAsBoolean;
     }
 
     @Test
@@ -46,10 +50,11 @@ public class MappingJsonParserTest {
         String json = "{\"a\":\"abcdef\", \"b\": \"bgedf\"}";
         Reader r = new StringReader(json);
         Mapper<HashMap<String, String>> hashMapMapper = e -> {
+            MyJSONObject mjo = (MyJSONObject)e.getAsJsonObject();
             HashMap<String, String> result = new HashMap<>();
-            e.getAsJsonObject()
-                    .getAll()
-                    .forEach((k,v) -> result.put(k, v.getAsString()));
+            mjo
+            .getAll()
+            .forEach((k, v) -> result.put(k, v.getAsString()));
             return result;
         };
         HashMap<String, String> result = mjp.parse(r, hashMapMapper);
@@ -61,7 +66,37 @@ public class MappingJsonParserTest {
     public void testHeterogeneousMapper() { // Is it even possible?!
         String json = "{\"a\": \"abcdef\", \"b\": 1234}";
         Reader r = new StringReader(json);
-        Mapper<HashMap<String, ?>> hashMapMapper = mock(Mapper.class, "replace me");
+        Mapper<HashMap<String, ?>> hashMapMapper = e -> {
+
+
+
+            //Class c = e.getAsJsonObject().getClass();
+            //Field field = c.getDeclaredField("members");
+            //System.out.println(field.get(HashMap.class).toString());
+            //Map<String,JSONElement> map = field.get(c);
+
+            MyJSONObject mjo = (MyJSONObject)e.getAsJsonObject();
+            HashMap<String,Object> result = new HashMap<>();
+            mjo
+                    .getAll()
+                    .forEach((k, v) -> {
+                        //try {
+                        //    System.out.println(v.getAsJsonPrimitive().getClass().getDeclaredField("value").getGenericType().getTypeName());
+                        //} catch (NoSuchFieldException e1) {
+                        //    e1.printStackTrace();
+                        // }
+                        MyJSONPrimitive jp = (MyJSONPrimitive) v.getAsJsonPrimitive();
+                        if (jp.isNumber()) {
+                            result.put(k, v.getAsInt());
+                        }
+                        else{
+                            result.put(k,v.getAsString());
+                        }
+
+                    });
+
+            return result;
+        };
         HashMap<String, ?> result = mjp.parse(r, hashMapMapper);
         Assert.assertEquals("key 'a' bounded correctly", "abcdef", result.get("a"));
         Assert.assertEquals("key 'b' bounded correctly", 1234, result.get("b"));
