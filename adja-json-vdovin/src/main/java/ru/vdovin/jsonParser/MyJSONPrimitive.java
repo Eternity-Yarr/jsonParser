@@ -89,4 +89,14 @@ public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
         throw new IllegalStateException("This is not a double");
     }
 
+    public Object getAsObject(){
+        return value;
+    }
+
+    @Override
+    public long getAsLong(){
+        if (isNumber()) return getAsNumber().longValue();
+        throw new IllegalStateException("this is no a boolean");
+    }
+
 }

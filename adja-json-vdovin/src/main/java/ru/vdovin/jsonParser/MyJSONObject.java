@@ -46,7 +46,7 @@ public class MyJSONObject extends MyJSONElement implements JSONObject {
 
     @Override
     public Set<Map.Entry<String, JSONElement>> entrySet() {
-        return null;
+        return members.entrySet();
     }
 
     @Override
@@ -82,7 +82,4 @@ public class MyJSONObject extends MyJSONElement implements JSONObject {
         return null;
     }
 
-    public HashMap<String,JSONElement> getAll(){
-        return members;
-    }
 }
