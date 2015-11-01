@@ -7,6 +7,8 @@ import ru.nojs.json.StreamingJsonParser;
 import ru.vdovin.Currency;
 
 import java.io.StringReader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -34,10 +36,33 @@ public class ReflectionMapperTest {
 
     @Test
     public void testMapper() {
+
+
+      /* Constructor[] asd =  SimplePOJO.class.getDeclaredConstructors();
+        Constructor cns = null;
+        try {
+            cns = SimplePOJO.class.getDeclaredConstructor(this.getClass());
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        try {
+            SimplePOJO smpl = (SimplePOJO) cns.newInstance(this);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+*/
+
+
+
+
         String simpleJson =
                 "{\n" +
                 "  \"a\": \"a\",\n" +
-                "  \"b\": 2,\n" +
+                "  \"b\": 2\n" +
                 "}";
         JSONElement je = new ImplementedJsonParser().parse(new StringReader(simpleJson));
         SimplePOJO sp = mapper.createObject(je, SimplePOJO.class);
@@ -57,7 +82,7 @@ public class ReflectionMapperTest {
         SimplePOJO sp = mapper.createObject(je, SimplePOJO.class);
     }
 
-    class SimplePOJO {
+    static class SimplePOJO {
         String a;
         int b;
 
@@ -76,6 +101,7 @@ public class ReflectionMapperTest {
         public void setB(int b) {
             this.b = b;
         }
+
     }
 
     @Test //Bonus level: hard

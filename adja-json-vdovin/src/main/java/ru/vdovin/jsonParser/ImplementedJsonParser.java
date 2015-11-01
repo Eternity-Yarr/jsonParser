@@ -91,7 +91,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             jr.read();
             jr.readInsignificantSymbols();
             if (jr.getCurrent() != '"'){
-                throw new IllegalArgumentException("Error syntax");
+                throw new IllegalArgumentException("Error syntax in object");
             }else {
                 jr.read();
             }
