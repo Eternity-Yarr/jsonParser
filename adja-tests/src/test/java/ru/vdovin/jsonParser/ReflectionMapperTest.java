@@ -40,6 +40,7 @@ public class ReflectionMapperTest {
                 "  \"b\": 2,\n" +
                 "}";
         JSONElement je = new ImplementedJsonParser().parse(new StringReader(simpleJson));
+        SimplePOJO sp = mapper.createObject(je, SimplePOJO.class);
 
     }
 

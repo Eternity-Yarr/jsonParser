@@ -40,8 +40,6 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             jr.read();
         }
 
-
-
         String stringValue = jsonString.toString().replace("\\", "");
         if (enclosedInQuotes(stringValue)) {
             return new MyJSONPrimitive(stringValue.substring(1, stringValue.length() - 1));

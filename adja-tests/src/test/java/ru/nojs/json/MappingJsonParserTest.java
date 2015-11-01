@@ -1,5 +1,6 @@
 package ru.nojs.json;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.vdovin.jsonParser.ImplementedJsonParser;
@@ -9,7 +10,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 
-import static org.mockito.Mockito.*;
 
 public class MappingJsonParserTest {
 
@@ -88,11 +88,9 @@ public class MappingJsonParserTest {
         Mapper<Human> someBeanMapper = e -> {
             Human result = new Human();
             JSONObject jo = e.getAsJsonObject();
-            result
+            return result
                     .setName(jo.get("name").getAsString())
                     .setAge(jo.get("age").getAsLong());
-
-            return  result;
         };
         Human result = mjp.parse(r, someBeanMapper);
         Assert.assertEquals("names match", "Connor McLeod", result.getName());
@@ -136,14 +134,17 @@ public class MappingJsonParserTest {
         }
 
         @Override
-        public boolean equals(Object o) {
-            Human human = (Human)o;
-            return this.equals(human);
+        public boolean equals(Object obj) {
+            if (obj == null) return false;
+            if (obj == this) return true;
+            if (obj.getClass() != getClass()) return false;
+            Human rhs = (Human) obj;
+            return new EqualsBuilder()
+                    .append(age, rhs.getAge())
+                    .append(name, rhs.getName())
+                    .isEquals();
         }
 
-        public boolean equals(Human h) {
-            return this.name.equals(h.getName()) && this.age == h.getAge();
-        }
 
     }
 
