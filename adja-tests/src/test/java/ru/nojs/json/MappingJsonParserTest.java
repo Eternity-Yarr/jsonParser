@@ -100,6 +100,14 @@ public class MappingJsonParserTest {
         Assert.assertEquals("we ve got our highlander", ref, result);
     }
 
+    @Test
+    public void testHumanEquality() {
+        Human h1 = new Human().setAge(123);
+        Human h2 = new Human().setAge(123).setName("Notnull Patrick");
+        Assert.assertNotEquals("No, they are not", h1, h2);
+
+    }
+
     private static class Human { //TODO: incomplete.
         private String name;
         private long age;
