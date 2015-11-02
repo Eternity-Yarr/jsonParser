@@ -1,16 +1,13 @@
 package ru.vdovin.jsonParser;
 
-import com.google.common.base.CaseFormat;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import ru.nojs.json.JSONElement;
 import ru.nojs.json.JSONObject;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
+import java.util.stream.Stream;
 
 
 public class ReflectionMapper {
@@ -20,65 +17,31 @@ public class ReflectionMapper {
 
         JSONObject jo = je.getAsJsonObject();
 
-       /* Constructor cnstr = null;
+        T obj;
         try {
-             cnstr = targetType.getDeclaredConstructor(targetType.getDeclaredConstructors()[0].getParameterTypes()[0]);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }*/
-
-        Constructor cnstr = null;
-        try {
-            cnstr = targetType.getDeclaredConstructor();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            Constructor<T> cnstr = targetType.getDeclaredConstructor();
+            obj = cnstr.newInstance();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Bean has no default constructor");
         }
 
-        T obj = null;
-
-        try {
-            obj = (T) cnstr.newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-
-
-        final T finalObj = obj;
         jo
-                .entrySet()
-                .forEach( (s) -> {
-                    String fieldName = s.getKey();
-                    String setterFieldName = setterNameOf(fieldName);
-                    Class[] paramTypes = null;
+            .entrySet()
+            .forEach(s -> {
+                String setterFieldName = setterNameOf(s.getKey());
+                try {
+                    Method m = Stream.of(targetType.getMethods())
+                            .filter(method -> method.getName().equals(setterFieldName))
+                            .findFirst()
+                            .orElseThrow(() -> new NoSuchMethodException("Can't map field " + s.getKey()));
+                    MyJSONPrimitive mjp = (MyJSONPrimitive) s.getValue().getAsJsonPrimitive();
+                    m.invoke(obj,mjp.getAsObject());
+                } catch (Exception e) {
+                    throw new RuntimeException("Some security violations, or I dunno", e);
+                }
+            });
 
-                    try {
-
-                        for (Method m : targetType.getMethods()){
-                            if (m.getName().equals(setterFieldName)) {
-                                paramTypes = m.getParameterTypes();
-                            }
-                        }
-
-                        MyJSONPrimitive mjp = (MyJSONPrimitive) s.getValue().getAsJsonPrimitive();
-                        Method m = targetType.getMethod(setterFieldName, paramTypes);
-                        m.invoke(finalObj,mjp.getAsObject());
-
-                    } catch (NoSuchMethodException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-
-                });
-
-
-        return finalObj;
+        return obj;
     }
 
     /**
