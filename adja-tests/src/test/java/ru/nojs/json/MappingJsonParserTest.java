@@ -13,7 +13,11 @@ import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+<<<<<<< HEAD
+import java.util.Map;
+=======
 import java.beans.Statement;
+>>>>>>> refs/remotes/origin/master
 
 
 public class MappingJsonParserTest {
@@ -113,6 +117,17 @@ public class MappingJsonParserTest {
 
     }
 
+    @Test
+    public void testBrokenHashCode() {
+        Human h1 = new Human().setAge(12).setName("NoHashCode Kenny");
+        Human h2 = new Human().setAge(12).setName("NoHashCode Kenny");
+
+        Map<Human, String> someInfo = new HashMap<>();
+        someInfo.put(h1, "related data");
+        Assert.assertEquals("they all created equal", h1, h2);
+        Assert.assertEquals("Can we get data we stored?", "related data", someInfo.get(h2));
+    }
+
     private static class Human { //TODO: incomplete.
         private String name;
         private long age;
@@ -151,8 +166,5 @@ public class MappingJsonParserTest {
                     .append(name, rhs.getName())
                     .isEquals();
         }
-
-
     }
-
 }
