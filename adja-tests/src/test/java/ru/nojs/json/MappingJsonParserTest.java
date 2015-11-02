@@ -1,23 +1,17 @@
 package ru.nojs.json;
 
-import org.apache.commons.lang3.StringUtils;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.vdovin.jsonParser.ImplementedJsonParser;
 import ru.vdovin.jsonParser.MyJSONPrimitive;
 import ru.vdovin.jsonParser.ReflectionMapper;
-
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
-<<<<<<< HEAD
 import java.util.Map;
-=======
-import java.beans.Statement;
->>>>>>> refs/remotes/origin/master
+
 
 
 public class MappingJsonParserTest {
