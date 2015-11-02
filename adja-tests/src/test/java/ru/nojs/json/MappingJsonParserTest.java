@@ -1,18 +1,28 @@
 package ru.nojs.json;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.vdovin.jsonParser.ImplementedJsonParser;
 import ru.vdovin.jsonParser.MyJSONPrimitive;
+import ru.vdovin.jsonParser.ReflectionMapper;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
+<<<<<<< HEAD
 import java.util.Map;
+=======
+import java.beans.Statement;
+>>>>>>> refs/remotes/origin/master
 
 
 public class MappingJsonParserTest {
+
+    private static final ReflectionMapper mapper = new ReflectionMapper();
 
     private static final ImplementedJsonParser sjp = new ImplementedJsonParser();
 
@@ -90,8 +100,8 @@ public class MappingJsonParserTest {
             Human result = new Human();
             JSONObject jo = e.getAsJsonObject();
             return result
-                    .setName(jo.get("name").getAsString())
-                    .setAge(jo.get("age").getAsLong());
+                   .setName(jo.get("name").getAsString())
+                   .setAge(jo.get("age").getAsLong());
         };
         Human result = mjp.parse(r, someBeanMapper);
         Assert.assertEquals("names match", "Connor McLeod", result.getName());
