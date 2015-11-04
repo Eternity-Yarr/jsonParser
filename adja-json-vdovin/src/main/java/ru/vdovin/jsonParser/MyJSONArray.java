@@ -23,7 +23,7 @@ public class MyJSONArray extends MyJSONElement implements JSONArray {
 
     @Override
     public boolean contains(JSONElement element) {
-        return this.elements.contains(element);
+        return elements.contains(element);
     }
 
     @Override
@@ -41,6 +41,6 @@ public class MyJSONArray extends MyJSONElement implements JSONArray {
 
     @Override
     public Iterator<JSONElement> iterator() {
-        return this.elements.iterator();
+        return elements.iterator();
     }
 }

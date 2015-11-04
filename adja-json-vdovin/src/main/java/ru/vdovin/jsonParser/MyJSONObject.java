@@ -5,14 +5,11 @@ import ru.nojs.json.JSONElement;
 import ru.nojs.json.JSONObject;
 import ru.nojs.json.JSONPrimitive;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 public class MyJSONObject extends MyJSONElement implements JSONObject {
 
-    private final LinkedHashMap<String, MyJSONElement> members = new LinkedHashMap<>();
+    private final HashMap<String, JSONElement> members = new LinkedHashMap<>();
 
     @Override
     public void add(String property, JSONElement value) {
@@ -20,7 +17,7 @@ public class MyJSONObject extends MyJSONElement implements JSONObject {
             value = MyJSONNull.INSTANCE;
         }
 
-        members.put(property,(MyJSONElement)value);
+        members.put(property,value);
 
     }
 
@@ -49,7 +46,7 @@ public class MyJSONObject extends MyJSONElement implements JSONObject {
 
     @Override
     public Set<Map.Entry<String, JSONElement>> entrySet() {
-        return null;
+        return members.entrySet();
     }
 
     @Override
@@ -84,4 +81,5 @@ public class MyJSONObject extends MyJSONElement implements JSONObject {
     public JSONElement remove(String property) {
         return null;
     }
+
 }
