@@ -7,6 +7,9 @@ import ru.nojs.json.JSONPrimitive;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.DoubleSummaryStatistics;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class JSONPrimitiveClass implements JSONPrimitive{
 
@@ -15,7 +18,11 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     public JSONPrimitiveClass(Object o){
         value = o;
+        if (((String)o).toLowerCase().equals(null)){
+            value = null;
+        }
     }
+
 
     @Override
     public BigDecimal getAsBigDecimal() {
@@ -29,7 +36,15 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     @Override
     public boolean getAsBoolean() {
-        return Boolean.valueOf(value.toString());
+        String probe = (String)value;
+        if (probe.toUpperCase().equals("TRUE")){
+            return true;
+        }
+        if (probe.toUpperCase().equals("FALSE")){
+            return false;
+        }
+        throw new IllegalStateException();
+        //return Boolean.valueOf(value.toString());
     }
 
     @Override
@@ -44,7 +59,7 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     @Override
     public double getAsDouble() {
-        return 0;
+        return Double.parseDouble((String)value);
     }
 
     @Override
@@ -95,7 +110,27 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     @Override
     public String getAsString() {
-        return (String)value;
+        // return (String)value;
+
+        String probe = (String)value;
+        Character firstChar = probe.charAt(0);
+        Character lastChar = probe.charAt(probe.length()-1);
+
+        if ((firstChar.equals((char)34))&&(lastChar.equals((char)34))){
+            //remove first and last symbol
+            char[] swap = new char[probe.length() - 2];
+            for (int i = 1; i < probe.length() - 1; i ++){
+                swap[i-1] = probe.charAt(i);
+            }
+            probe = new String(swap);
+            return probe;
+        }
+
+        if((firstChar.equals((char)34))||(lastChar.equals((char)34))){
+            throw new IllegalArgumentException();
+        }
+
+        return value.toString();
     }
 
     @Override
@@ -105,6 +140,12 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     @Override
     public boolean isJsonNull() {
+        if (value==null){
+            return true;
+        }
+        if (((String)value).toLowerCase().equals("null")){
+            return true;
+        }
         return false;
     }
 
