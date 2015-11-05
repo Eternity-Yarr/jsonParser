@@ -2,11 +2,13 @@ package ru.nojs.json;
 
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.vdovin.jsonParser.ImplementedJsonParser;
 import ru.vdovin.jsonParser.MyJSONPrimitive;
 import ru.vdovin.jsonParser.ReflectionMapper;
+
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
@@ -151,14 +153,15 @@ public class MappingJsonParserTest {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == null) return false;
-            if (obj == this) return true;
-            if (obj.getClass() != getClass()) return false;
-            Human rhs = (Human) obj;
-            return new EqualsBuilder()
-                    .append(age, rhs.getAge())
-                    .append(name, rhs.getName())
-                    .isEquals();
+            return new EqualsBuilder().reflectionEquals(this, obj);
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17,37)
+                    .append(getName())
+                    .append(getAge())
+                    .toHashCode();
         }
     }
 }

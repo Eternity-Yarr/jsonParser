@@ -3,16 +3,11 @@ package ru.vdovin.jsonParser;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.nojs.json.JSONElement;
-import ru.nojs.json.StreamingJsonParser;
 import ru.vdovin.Currency;
 
 import java.io.StringReader;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 public class ReflectionMapperTest {
 

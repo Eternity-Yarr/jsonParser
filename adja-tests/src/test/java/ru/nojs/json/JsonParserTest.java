@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.junit.Assert;
 import org.junit.Test;
-import ru.vdovin.jsonParser.ImplementedJsonParser;
+import ru.vdovin.jsonParser.*;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -310,8 +310,49 @@ public class JsonParserTest {
         boolean res = rdrs
                 .parallelStream()
                 .map(sjp::parse)
-                .allMatch( je -> je.getAsJsonObject().get("test").getAsJsonArray().size() == 40);
+                .allMatch(je -> je.getAsJsonObject().get("test").getAsJsonArray().size() == 40);
         Assert.assertTrue(res);
+    }
+
+    @Test
+    public void testEqualsPrimitive() {
+        JSONPrimitive jp1 = new MyJSONPrimitive("test");
+        JSONPrimitive jp2 = new MyJSONPrimitive("test");
+
+        Assert.assertTrue(jp1.equals(jp2));
+    }
+
+    @Test
+    public void testEqualsArray() {
+
+        JSONPrimitive jp1 = new MyJSONPrimitive("test");
+        JSONPrimitive jp2 = new MyJSONPrimitive("test");
+
+        JSONArray ja1 = new MyJSONArray();
+        ja1.add(jp1);
+        JSONArray ja2 = new MyJSONArray();
+        ja2.add(jp2);
+
+        Assert.assertTrue(ja1.equals(ja2));
+    }
+
+    @Test
+    public void testEqualsObj() {
+
+        JSONPrimitive jp1 = new MyJSONPrimitive("test");
+        JSONPrimitive jp2 = new MyJSONPrimitive("test");
+
+        JSONArray ja1 = new MyJSONArray();
+        ja1.add(jp1);
+        JSONArray ja2 = new MyJSONArray();
+        ja2.add(jp2);
+
+        JSONObject jo1 = new MyJSONObject();
+        jo1.add("test", ja1);
+        JSONObject jo2 = new MyJSONObject();
+        jo2.add("test", ja2);
+
+        Assert.assertTrue(jo1.equals(jo2));
     }
 
 

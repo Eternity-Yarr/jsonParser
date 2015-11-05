@@ -1,5 +1,7 @@
 package ru.vdovin.jsonParser;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ru.nojs.json.JSONPrimitive;
 
 public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
@@ -97,6 +99,18 @@ public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
     public long getAsLong(){
         if (isNumber()) return getAsNumber().longValue();
         throw new IllegalStateException("this is no a long");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return new EqualsBuilder().reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(this)
+                .toHashCode();
     }
 
 }

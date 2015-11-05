@@ -1,8 +1,11 @@
 package ru.vdovin.jsonParser;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ru.nojs.json.JSONArray;
 import ru.nojs.json.JSONElement;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -43,4 +46,18 @@ public class MyJSONArray extends MyJSONElement implements JSONArray {
     public Iterator<JSONElement> iterator() {
         return elements.iterator();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return new EqualsBuilder()
+                .reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(this)
+                .toHashCode();
+    }
+
 }
