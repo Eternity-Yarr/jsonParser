@@ -31,29 +31,6 @@ public class ReflectionMapperTest {
 
     @Test
     public void testMapper() {
-
-
-      /* Constructor[] asd =  SimplePOJO.class.getDeclaredConstructors();
-        Constructor cns = null;
-        try {
-            cns = SimplePOJO.class.getDeclaredConstructor(this.getClass());
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-        try {
-            SimplePOJO smpl = (SimplePOJO) cns.newInstance(this);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-*/
-
-
-
-
         String simpleJson =
                 "{\n" +
                 "  \"a\": \"a\",\n" +
@@ -61,7 +38,6 @@ public class ReflectionMapperTest {
                 "}";
         JSONElement je = new ImplementedJsonParser().parse(new StringReader(simpleJson));
         SimplePOJO sp = mapper.createObject(je, SimplePOJO.class);
-
     }
 
 
