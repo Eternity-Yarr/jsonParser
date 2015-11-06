@@ -53,6 +53,17 @@ public class ReflectionMapperTest {
         SimplePOJO sp = mapper.createObject(je, SimplePOJO.class);
     }
 
+    @Test(expected = NoSuchFieldException.class)
+    public void testTest() {
+        try {
+            throw new NoSuchFieldException("test");
+        }
+        catch (Exception e) {
+            throw new RuntimeException("test", e);
+        }
+
+    }
+
     static class SimplePOJO {
         String a;
         int b;

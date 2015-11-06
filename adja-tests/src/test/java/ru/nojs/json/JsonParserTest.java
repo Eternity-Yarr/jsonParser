@@ -356,6 +356,18 @@ public class JsonParserTest {
     }
 
 
+    @Test
+    public void testBigObj() {
+        String noSuchField =
+                "{\n" +
+                        "  \"a\": \"a\",\n" +
+                        "  \"b\": 2,\n" +
+                        "  \"c\": \"c\"\n" +
+                        "}";
+        JSONElement je = new ImplementedJsonParser().parse(new StringReader(noSuchField));
+    }
+
+
 
 
 
