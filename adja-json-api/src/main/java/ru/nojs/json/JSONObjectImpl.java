@@ -2,6 +2,7 @@ package ru.nojs.json;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -9,9 +10,11 @@ import java.util.Set;
  * Created by Юыху on 01.11.2015.
  */
 public class JSONObjectImpl implements JSONObject {
-    @Override
-    public void add(String property, JSONElement value) {
+    private final Map<String, JSONElement> map= new HashMap<String, JSONElement>();
 
+    @Override
+    public void add(String property, JSONElement obj) {
+        map.put(property, obj);
     }
 
     @Override
@@ -26,7 +29,6 @@ public class JSONObjectImpl implements JSONObject {
 
     @Override
     public void addProperty(String property, String value) {
-
     }
 
     @Override
@@ -36,7 +38,7 @@ public class JSONObjectImpl implements JSONObject {
 
     @Override
     public JSONElement get(String memberName) {
-        return null;
+        return map.get(memberName);
     }
 
     @Override
@@ -116,12 +118,18 @@ public class JSONObjectImpl implements JSONObject {
 
     @Override
     public JSONObject getAsJsonObject() {
-        return null;
+        if (isJsonObject()){
+            return (JSONObject) this;
+        }
+        throw new IllegalStateException("This is not JSONObject");
     }
 
     @Override
     public JSONPrimitive getAsJsonPrimitive() {
-        return null;
+        if (isJsonPrimitive()) {
+            return null;
+        }
+        throw new IllegalStateException("This is not JSONPromitive");
     }
 
     @Override
@@ -156,11 +164,11 @@ public class JSONObjectImpl implements JSONObject {
 
     @Override
     public boolean isJsonObject() {
-        return false;
+        return this instanceof JSONObject;
     }
 
     @Override
     public boolean isJsonPrimitive() {
-        return false;
+        return this instanceof JSONPrimitive;
     }
 }
