@@ -46,13 +46,7 @@ public class JSONPrimitiveImpl implements JSONPrimitive {
             return true;
         }
 
-        Class<?> classPrim = object.getClass();
-        for (Class<?> primitive: PRIMITIVE_TYPES) {
-            if (primitive.isAssignableFrom(classPrim)){
-                return true;
-            }
-        }
-        return false;
+        return object.getClass().isPrimitive();
     }
 
     @Override
