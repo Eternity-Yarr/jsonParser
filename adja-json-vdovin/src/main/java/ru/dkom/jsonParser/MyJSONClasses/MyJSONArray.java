@@ -19,6 +19,22 @@ public class MyJSONArray implements JSONArray{
     }
 
     @Override
+    public boolean equals(Object o){
+        JSONArray foreignArray = (JSONArray)o;
+
+        if (jsonArray.size() != foreignArray.size()){
+            return false;
+        }
+
+        for (int i = 0; i < jsonArray.size(); i ++){
+            if(!jsonArray.get(i).equals(foreignArray.get(i))){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public void add(JSONElement element) {
         jsonArray.add(element);
     }

@@ -20,6 +20,16 @@ public class MyJSONObject implements JSONObject{
     }
 
     @Override
+    public boolean equals(Object o){
+        /*
+        JSONObject foreignObject = (JSONObjectClass)o;
+        if (jsonObject.isJsonPrimitive()&&(foreignObject.isJsonPrimitive())){
+
+        }*/
+        return false;
+    }
+
+    @Override
     public void add(String property, JSONElement value) {
         jsonObject.add(property, value);
     }

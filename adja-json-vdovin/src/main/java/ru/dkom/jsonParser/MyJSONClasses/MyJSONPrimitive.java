@@ -16,6 +16,14 @@ public class MyJSONPrimitive implements JSONPrimitive{
 
     JSONPrimitive jsonPrimitive;
 
+    @Override
+    public boolean equals(Object primitive){
+        if (jsonPrimitive.getAsString().equals(((JSONPrimitive)primitive).getAsString())){
+            return true;
+        }
+        return false;
+    }
+
     public MyJSONPrimitive(Object o){
         jsonPrimitive = new JSONPrimitiveClass(o);
     }
