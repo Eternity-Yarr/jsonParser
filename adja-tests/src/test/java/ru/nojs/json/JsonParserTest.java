@@ -4,7 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.junit.Assert;
 import org.junit.Test;
-import ru.vdovin.jsonParser.*;
+import ru.dkom.jsonParser.ImplementedJsonParser;
+import ru.dkom.jsonParser.MyJSONClasses.MyJSONArray;
+import ru.dkom.jsonParser.MyJSONClasses.MyJSONObject;
+import ru.dkom.jsonParser.MyJSONClasses.MyJSONPrimitive;
+//import ru.vdovin.jsonParser.*;
 
 import java.io.Reader;
 import java.io.StringReader;
