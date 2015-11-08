@@ -3,16 +3,11 @@ package ru.vdovin.jsonParser;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.nojs.json.JSONElement;
-import ru.nojs.json.StreamingJsonParser;
 import ru.vdovin.Currency;
 
 import java.io.StringReader;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 public class ReflectionMapperTest {
 
@@ -36,29 +31,6 @@ public class ReflectionMapperTest {
 
     @Test
     public void testMapper() {
-
-
-      /* Constructor[] asd =  SimplePOJO.class.getDeclaredConstructors();
-        Constructor cns = null;
-        try {
-            cns = SimplePOJO.class.getDeclaredConstructor(this.getClass());
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-        try {
-            SimplePOJO smpl = (SimplePOJO) cns.newInstance(this);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-*/
-
-
-
-
         String simpleJson =
                 "{\n" +
                 "  \"a\": \"a\",\n" +
@@ -66,7 +38,6 @@ public class ReflectionMapperTest {
                 "}";
         JSONElement je = new ImplementedJsonParser().parse(new StringReader(simpleJson));
         SimplePOJO sp = mapper.createObject(je, SimplePOJO.class);
-
     }
 
 
@@ -80,6 +51,17 @@ public class ReflectionMapperTest {
                 "}";
         JSONElement je = new ImplementedJsonParser().parse(new StringReader(noSuchField));
         SimplePOJO sp = mapper.createObject(je, SimplePOJO.class);
+    }
+
+    @Test(expected = NoSuchFieldException.class)
+    public void testTest() {
+        try {
+            throw new NoSuchFieldException("test");
+        }
+        catch (Exception e) {
+            throw new RuntimeException("test", e);
+        }
+
     }
 
     static class SimplePOJO {

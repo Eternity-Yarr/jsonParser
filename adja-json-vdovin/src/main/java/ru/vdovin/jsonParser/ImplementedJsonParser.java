@@ -41,6 +41,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         }
 
         String stringValue = jsonString.toString().replace("\\", "");
+
         if (enclosedInQuotes(stringValue)) {
             return new MyJSONPrimitive(stringValue.substring(1, stringValue.length() - 1));
         } else {
@@ -178,6 +179,9 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     }
 
     private boolean  enclosedInQuotes(String value){
+        if (value.endsWith("\n") ||value.endsWith("\t") || value.endsWith("\r")){
+           return enclosedInQuotes(value.substring(0, value.length() - 1));
+        }
         return value.startsWith("\"") && value.endsWith("\"");
     }
 
