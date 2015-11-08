@@ -38,7 +38,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             element = new JSONObjectClass();
             while (!value.equals(StreamReader.JSON_OBJECT_END)) {
                 value = reader.readNext();//get rid of "{"
-                String propertyName = value;
+                String propertyName = getRidOfQoutes(value);
                 JSONElement propertyValue = null;
                 propertyValue = buildJSON(propertyValue, reader);
                 if (propertyValue == null) {
@@ -50,9 +50,19 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             return element;
         }
 
+        //element = new JSONPrimitiveClass(getRidOfQoutes(value));
         element = new JSONPrimitiveClass(value);
 
         return element;
+    }
+
+    private String getRidOfQoutes(String value){
+        Character firstChar = value.charAt(0);
+        Character lastChar = value.charAt(value.length()-1);
+        if ((firstChar.equals((char)34))&&(lastChar.equals((char)34))){
+            value = value.substring(1, value.length()-1);
+        }
+        return value;
     }
 
     public static void main(String[] args) {

@@ -23,9 +23,10 @@ public class SmartStreamReader {
 
         //chunk = removeLeadingQuotes(chunk);
         chunk = removeInsignificantSymbols(chunk);
-        chunk = removeLeadingQuotes(chunk);
-        chunk = removeUnscreenedQuotes(chunk);
+        //chunk = removeLeadingQuotes(chunk);
+        //chunk = removeUnscreenedQuotes(chunk);
         chunk = removeScreeningChar(chunk);
+        //chunk = removeLeadingQuotes(chunk);
 
         for (Integer i:chunk){
             //System.out.print(i);
@@ -85,7 +86,7 @@ public class SmartStreamReader {
         }
 
         if (quotesNumber > 0){
-            throw new IllegalArgumentException();
+            //throw new IllegalArgumentException();
         }
 
         return convertCodeSequenceToArray(result);
@@ -123,6 +124,7 @@ public class SmartStreamReader {
         for (int i:chunk){
             if (i == QUOTES_SYMBOL_CODE){
                 if (result.size() == 0){
+                    result.add(i);
                     continue;
                 }
                 if (result.get(result.size()-1) == SCREENING_SYMBOL_CODE) {

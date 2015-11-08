@@ -42,7 +42,15 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     @Override
     public boolean getAsBoolean() {
-        String probe = value.toString();
+
+        String probe = (String)value;
+
+        Character firstChar = probe.charAt(0);
+        Character lastChar = probe.charAt(probe.length()-1);
+
+        if ((firstChar.equals((char)34))&&(lastChar.equals((char)34))){
+            throw new IllegalStateException();
+        }
 
         /*
         if (looksLikeBoolean(probe)){
@@ -55,7 +63,12 @@ public class JSONPrimitiveClass implements JSONPrimitive{
             throw new IllegalArgumentException();
         }*/
 
+        /*
         if (!looksLikeBoolean(probe)){
+            throw new IllegalStateException();
+        }
+
+        if (!isBoolean(probe)){
             throw new IllegalStateException();
         }
 
@@ -67,28 +80,25 @@ public class JSONPrimitiveClass implements JSONPrimitive{
         }
 
         throw new IllegalArgumentException();
+        */
+
+        if (looksLikeBoolean(probe)){
+        //if(isBoolean(probe)){
+            //if(isBoolean(probe)){
+                if (probe.equals("true")){
+                    return true;
+                }
+                if (probe.equals("false")){
+                    return false;
+                }
+                throw new IllegalArgumentException();
+            //}else{
+                //throw new IllegalArgumentException();
+            //}
+        }
+        throw new IllegalStateException();
 
         //return Boolean.valueOf(value.toString());
-    }
-
-    private Boolean looksLikeBoolean(String string) {
-        //String regex = "\\[([^]]+)\\]";
-        String regex = "([fF][aA][lL][sS][eE])|([tT][rR][uU][eE])";
-        //String regex = "[f][a][l][s][e]|[t][r][u][e]]";
-        //String regex = "false|true";
-        Matcher m = Pattern.compile(regex).matcher(string);
-        if (m.matches()){
-            return true;
-        }
-        return false;
-        /*
-        while (m.find()) {
-            // return m.group(1);
-            String t = m.group(1);
-            return true;
-        }
-        return false;
-        */
     }
 
     @Override
@@ -108,7 +118,7 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     @Override
     public float getAsFloat() {
-        return 0;
+        return Float.parseFloat((String)value);
     }
 
     @Override
@@ -176,7 +186,26 @@ public class JSONPrimitiveClass implements JSONPrimitive{
         }
         */
 
-        return value.toString();
+        String probe = (String)value;
+        Character firstChar = probe.charAt(0);
+        Character lastChar = probe.charAt(probe.length()-1);
+
+        if ((firstChar.equals((char)34))&&(!lastChar.equals((char)34))){
+            throw new IllegalArgumentException();
+        }
+
+        if ((!firstChar.equals((char)34))&&(lastChar.equals((char)34))){
+            throw new IllegalArgumentException();
+        }
+        /*
+        for (int i = 0; i < probe.length(); i++){
+            Character c = probe.charAt(i);
+            if (c.equals((char)34)){
+                throw new IllegalArgumentException();
+            }
+        }*/
+
+        return getRidOfQoutes((String)value);
     }
 
     @Override
@@ -203,5 +232,33 @@ public class JSONPrimitiveClass implements JSONPrimitive{
     @Override
     public boolean isJsonPrimitive() {
         return true;
+    }
+
+    private Boolean looksLikeBoolean(String string) {
+        //String regex = "([fF][aA][lL][sS][eE])|([tT][rR][uU][eE])";
+        String regex = ".*([fF][aA][lL][sS][eE]).*|.*([tT][rR][uU][eE]).*";
+        Matcher m = Pattern.compile(regex).matcher(string);
+        if (m.matches()){
+            return true;
+        }
+        return false;
+    }
+
+    private Boolean isBoolean(String string){
+        String regex = ".*(false).*|.*(true).*";
+        Matcher m = Pattern.compile(regex).matcher(string);
+        if (m.matches()){
+            return true;
+        }
+        return false;
+    }
+
+    private String getRidOfQoutes(String value){
+        Character firstChar = value.charAt(0);
+        Character lastChar = value.charAt(value.length() - 1);
+        if ((firstChar.equals((char)34))&&(lastChar.equals((char)34))){
+            value = value.substring(1, value.length()-1);
+        }
+        return value;
     }
 }

@@ -127,10 +127,13 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public boolean isJsonNull() {
+        return ((JSONPrimitiveClass)value).isJsonNull();
+        /*
         if (((JSONPrimitiveClass)value).getAsString().toUpperCase().equals("NULL")){
             return true;
         }
         return false;
+        */
     }
 
     @Override
