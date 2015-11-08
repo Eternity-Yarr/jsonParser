@@ -20,19 +20,8 @@ public class SmartStreamReader {
         if (chunk[0] == -1){
             return "";
         }
-
-        //chunk = removeLeadingQuotes(chunk);
         chunk = removeInsignificantSymbols(chunk);
-        //chunk = removeLeadingQuotes(chunk);
-        //chunk = removeUnscreenedQuotes(chunk);
         chunk = removeScreeningChar(chunk);
-        //chunk = removeLeadingQuotes(chunk);
-
-        for (Integer i:chunk){
-            //System.out.print(i);
-            //System.out.print(" ");
-        }
-        //System.out.println();
 
         String value = convertCodeSequenceToString(chunk);
         if (value.equals(":")){
@@ -46,51 +35,6 @@ public class SmartStreamReader {
         return value;
     }
 
-    private Integer[] removeLeadingQuotes(Integer[] chunk){
-
-        if (chunk.length == 0){
-            return chunk;
-        }
-
-        int firstChar = chunk[0];
-        int lastChar = chunk[chunk.length - 1];
-
-        Integer[] noQoutes = chunk;
-        if ((firstChar == QUOTES_SYMBOL_CODE)&&(lastChar == QUOTES_SYMBOL_CODE)){
-            noQoutes = new Integer[chunk.length - 2];
-            for (int i = 0; i < noQoutes.length; i++){
-                noQoutes[i] = chunk[i+1];
-            }
-        }else{
-            noQoutes = removeInsignificantSymbols(chunk);
-            //noQoutes = removeLeadingQuotes(noQoutes);
-        }
-        return noQoutes;
-    }
-
-    private Integer[] removeUnscreenedQuotes(Integer[] chunk) throws IllegalArgumentException{
-        List<Integer> result = new ArrayList<>();
-        int quotesNumber = 0;
-        for (int i:chunk){
-            if (i == QUOTES_SYMBOL_CODE){
-                if (result.size() == 0){
-                    quotesNumber++;
-                    continue;
-                }
-                if (result.get(result.size()-1) != SCREENING_SYMBOL_CODE) {
-                    quotesNumber++;
-                    continue;
-                }
-            }
-            result.add(i);
-        }
-
-        if (quotesNumber > 0){
-            //throw new IllegalArgumentException();
-        }
-
-        return convertCodeSequenceToArray(result);
-    }
 
     private Integer[] removeInsignificantSymbols(Integer[] chunk){
         List<Integer> result = new ArrayList<>();

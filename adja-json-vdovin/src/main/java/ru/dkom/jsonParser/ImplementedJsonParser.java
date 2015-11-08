@@ -18,7 +18,6 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
     private JSONElement buildJSON(JSONElement element, SmartStreamReader reader) throws IllegalArgumentException{
         String value = reader.readNext();
-        System.out.println(value);
 
         if (value.equals(StreamReader.NO_MORE_SYMBOLS_TO_READ)) {
             return element;

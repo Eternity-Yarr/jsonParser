@@ -24,7 +24,9 @@ public class JSONArrayClass implements JSONArray{
 
     @Override
     public void addAll(JSONArray array) {
-
+        for (JSONElement element:array){
+            this.array.add(element);
+        }
     }
 
     @Override
