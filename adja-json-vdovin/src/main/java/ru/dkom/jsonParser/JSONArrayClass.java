@@ -18,7 +18,8 @@ public class JSONArrayClass implements JSONArray{
 
     @Override
     public void add(JSONElement element) {
-        this.array.add((JSONElementClass) element);
+        //this.array.add((JSONElementClass) element);
+        this.array.add(element);
     }
 
     @Override
@@ -131,7 +132,7 @@ public class JSONArrayClass implements JSONArray{
 
     @Override
     public boolean isJsonArray() {
-        return false;
+        return true;
     }
 
     @Override

@@ -1,3 +1,138 @@
+           private void parseJSON(JSONElement element, List<String> values, Reader reader){
+               //String chunk = new String();
+               while(!streamState.equals(END_OF_STREAM)){
+                   String chunk = readStream(reader);
+                   values.add(chunk);
+
+                   System.out.println("current state: " + jsonState);
+
+                   if (element.isJsonArray()){
+                       if (jsonState.equals(READING_PRIMITIVE)){
+                           JSONPrimitive jp = new JSONPrimitiveClass(chunk);
+                           ((JSONArray)element).add(jp);
+                       }
+                   }
+
+                   if (element.isJsonObject()){
+                       if (jsonState.equals(READING_PRIMITIVE)){
+                           JSONPrimitive jp = new JSONPrimitiveClass(chunk);
+                           String propName = values.get(values.size()-1);
+                           ((JSONObject)element).add(propName,jp);
+                       }
+                   }
+
+                   if (element.isJsonPrimitive()){
+                       if (jsonState.equals(READING_PRIMITIVE)){
+                           JSONPrimitive jp = new JSONPrimitiveClass(chunk);
+                           element = new JSONElementClass(jp);
+                       }
+                   }
+
+                   /*
+                   if (jsonState.equals(READING_PRIMITIVE)){
+                       JSONPrimitive jp = new JSONPrimitiveClass(chunk);
+                       element = new JSONElementClass(jp);
+                       return;
+                   }
+
+                   if (jsonState.equals(READING_ARRAY)){
+                       JSONArray ja = new JSONArrayClass();
+                       parseJSON(ja, values, reader);
+                       element = new JSONElementClass(ja);
+                   }
+
+                   if (jsonState.equals(READING_OBJECT)){
+                       JSONObject jo = new JSONObjectClass();
+                       parseJSON(jo, values, reader);
+                   }*/
+
+               }
+           }
+
+
+       @Override
+       public JSONElement parse(Reader r) {
+           JSONArray jsonArray = new JSONArrayClass();
+           JSONObject jsonObject = new JSONObjectClass();
+
+           jsonState = WAITING_FOR_INPUT;
+           streamState = WAITING_FOR_INPUT;
+           jsonStateStack = new JSONStateStack();
+           jsonStateStack.push(jsonState);
+
+           JSONElement element = null;
+
+           String currentValue = "";
+           List<String> values = new ArrayList<>();
+
+           while(!streamState.equals(END_OF_STREAM)){
+
+               values.add(readStream(r));
+               currentValue = values.get(values.size()-1);
+
+               if (currentValue.equals("")){
+                   values.remove(values.size()-1);
+                   continue;
+               }
+
+               jsonState = jsonStateStack.readLast();
+
+               if (jsonState.equals(READING_ARRAY)){
+                   JSONPrimitiveClass p = new JSONPrimitiveClass(currentValue);
+                   JSONElementClass el = new JSONElementClass(p);
+                   jsonArray.add(el);
+               }
+
+               if (jsonState.equals(ARRAY_HAS_BEEN_READ)){
+                   JSONPrimitiveClass p = new JSONPrimitiveClass(currentValue);
+                   JSONElementClass el = new JSONElementClass(p);
+                   jsonArray.add(el);
+                   jsonStateStack.push(WAITING_FOR_INPUT);
+                   element = new JSONElementClass(jsonArray);
+                   jsonArray = new JSONArrayClass();
+               }
+
+               if (jsonState.equals(READING_OBJECT)){
+                   String propName = values.get(values.size()-1);
+                   jsonObject.addProperty(propName, currentValue);
+
+               }
+
+               if (jsonState.equals(OBJECT_HAS_BEEN_READ)){
+                   String propName = values.get(values.size()-2);
+                   jsonObject.addProperty(propName, currentValue);
+                   jsonStateStack.push(WAITING_FOR_INPUT);
+                   element = new JSONElementClass(jsonObject);
+                   jsonObject = new JSONObjectClass();
+               }
+
+               if (jsonState.equals(READING_JSON_PROPERTY)){
+
+                   String propName = values.get(values.size()-1);
+                   jsonObject.addProperty(propName, currentValue);
+               }
+
+               if(jsonState.equals(READING_PRIMITIVE)){
+                   checkBoolean(currentValue);
+                   element = new JSONElementClass(new JSONPrimitiveClass(currentValue));
+               }
+               System.out.println(currentValue + " : " + jsonStateStack.readLast());
+           }
+
+
+           jsonStateStack.push(jsonState);
+
+           //JSONElementClass element = new JSONElementClass(jsonArray);
+
+
+           System.out.println(jsonStateStack.toString());
+
+           return element;
+       }
+
+
+
+
     public JSONElement parse(Reader r) {
         jsonStateStack.add(jsonState);
 

@@ -9,7 +9,7 @@ public class JSONEvent {
     public final static String JSON_OBJECT_SEPARATOR = "JSON_OBJECT_SEPARATOR";
     public final static String JSON_ARRAY_START = "JSON_ARRAY_START";
     public final static String JSON_ARRAY_END = "JSON_ARRAY_END";
-    public final static String JSON_PRIMITIVE_VALUE_START = "JSON_PRIMITIVE_VALUE_START";
+    public final static String JSON_OBJECT_VALUE_START = "JSON_OBJECT_VALUE_START";
     public final static String QUOTES_DETECTED = "QUOTES_DETECTED";
 
     public final static String READING_VALUE = "READING_VALUE";
@@ -25,16 +25,8 @@ public class JSONEvent {
         CharEventMap.put(',',JSON_OBJECT_SEPARATOR);
         CharEventMap.put('[',JSON_ARRAY_START);
         CharEventMap.put(']',JSON_ARRAY_END);
-        CharEventMap.put(':',JSON_PRIMITIVE_VALUE_START);
+        CharEventMap.put(':',JSON_OBJECT_VALUE_START);
         CharEventMap.put('"',QUOTES_DETECTED);
-
-        /*CharEventMap.put('{',JSON_OBJECT_START);
-        CharEventMap.put('}',JSON_OBJECT_SEPARATOR);
-        CharEventMap.put(',',JSON_OBJECT_SEPARATOR);
-        CharEventMap.put('[',JSON_ARRAY_START);
-        CharEventMap.put(']',JSON_OBJECT_SEPARATOR);
-        CharEventMap.put(':',JSON_PRIMITIVE_VALUE_START);
-        CharEventMap.put('"',QUOTES_DETECTED);*/
     }
 
     private String value;
@@ -50,7 +42,6 @@ public class JSONEvent {
             event = READING_VALUE;
             value = Character.toString(symbol);
 
-            //if ((CharEventMap.get(symbol) != null)&&(!readInQuotes)){
             if (CharEventMap.get(symbol) != null){
                 event = CharEventMap.get(symbol);
                 value = "";
@@ -59,19 +50,6 @@ public class JSONEvent {
         return event;
     }
 
-    public String checkEvent(Character symbol){
-        String event = INSIGNIFICANT_SYMBOL;
-        if(!isMeaningless(symbol)){
-            event = READING_VALUE;
-            value = Character.toString(symbol);
-
-            if (CharEventMap.get(symbol) != null){
-                event = CharEventMap.get(symbol);
-                value = "";
-            }
-        }
-        return event;
-    }
 
     public String getValue(){
         return value;

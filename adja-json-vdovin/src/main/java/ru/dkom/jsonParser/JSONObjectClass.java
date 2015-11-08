@@ -18,7 +18,8 @@ public class JSONObjectClass implements JSONObject{
 
     @Override
     public void add(String property, JSONElement value) {
-        properties.put(property,new JSONPrimitiveClass(value));
+        //properties.put(property,new JSONPrimitiveClass(value));
+        properties.put(property,value);
     }
 
     @Override
@@ -124,7 +125,8 @@ public class JSONObjectClass implements JSONObject{
 
     @Override
     public JSONObject getAsJsonObject() {
-        return null;
+        //return null;
+        return this;
     }
 
     @Override
@@ -164,7 +166,12 @@ public class JSONObjectClass implements JSONObject{
 
     @Override
     public boolean isJsonObject() {
-        return false;
+        return true;
+        /*
+        if (properties.size() > 0){
+            return true;
+        }
+        return false;*/
     }
 
     @Override

@@ -30,7 +30,11 @@ public class JSONStateStack {
     }
 
     String readLast(){
-        return stack.get(size - 1);
+        String last = "";
+        if (size > 0){
+            last = stack.get(size - 1);
+        }
+        return last;
     }
 
     @Override

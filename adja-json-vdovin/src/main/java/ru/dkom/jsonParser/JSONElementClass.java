@@ -14,43 +14,11 @@ import java.util.regex.Pattern;
 public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     Object value = null;
-/*
-    public JSONElementClass(JSONArray array){
-        this.array = (JSONArrayClass)array;
-    }
 
-    public JSONElementClass(JSONObject object){
-        this.object = (JSONObjectClass)object;
-    }
-
-    public JSONElementClass(JSONPrimitive primitive){
-        this.primitive = (JSONPrimitiveClass)primitive;
-    }
-*/
 
     public JSONElementClass(Object jsonObject){
         value = jsonObject;
-
-/*        try{
-
-            if (looksLikeBoolean(((JSONPrimitiveClass)value).getAsString())){
-                //exception will be thrown in case of error
-                try{
-                    ((JSONPrimitiveClass)value).getAsBoolean();
-                }catch (IllegalStateException e){
-                    throw new IllegalArgumentException();
-                }
-
-            }
-
-        }catch (ClassCastException e){
-
-        }*/
-
-
     }
-
-
 
     @Override
     public BigDecimal getAsBigDecimal() {
@@ -142,8 +110,15 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
     @Override
     public boolean isJsonArray() {
         Boolean isJSONArray = true;
+        /*
         try{
             this.getAsJsonArray();
+        }catch (Exception e){
+            isJSONArray = false;
+        }*/
+        try{
+            JSONArray ja = (JSONArray)this;
+            isJSONArray = true;
         }catch (Exception e){
             isJSONArray = false;
         }
@@ -161,12 +136,23 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
     @Override
     public boolean isJsonObject() {
         Boolean isJSONObject = true;
+
+        try{
+            JSONObject jp = (JSONObject)this;
+            isJSONObject = true;
+        }catch (Exception e){
+            isJSONObject = false;
+        }
+        return isJSONObject;
+
+        //isJSONObject = ((JSONObjectClass)value).isJsonObject();
+        /*
         try{
             JSONObjectClass t = (JSONObjectClass)value;
         }catch(Exception e){
             isJSONObject = false;
-        }
-        return isJSONObject;
+        }*/
+        //return isJSONObject;
     }
 
     @Override
