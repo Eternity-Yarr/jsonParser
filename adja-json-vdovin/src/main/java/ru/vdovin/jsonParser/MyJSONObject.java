@@ -1,11 +1,16 @@
 package ru.vdovin.jsonParser;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ru.nojs.json.JSONArray;
 import ru.nojs.json.JSONElement;
 import ru.nojs.json.JSONObject;
 import ru.nojs.json.JSONPrimitive;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class MyJSONObject extends MyJSONElement implements JSONObject {
 
@@ -80,6 +85,19 @@ public class MyJSONObject extends MyJSONElement implements JSONObject {
     @Override
     public JSONElement remove(String property) {
         return null;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return new EqualsBuilder()
+                .reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(this)
+                .toHashCode();
     }
 
 }
