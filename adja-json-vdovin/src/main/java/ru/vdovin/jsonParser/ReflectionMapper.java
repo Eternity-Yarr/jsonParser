@@ -1,19 +1,19 @@
 package ru.vdovin.jsonParser;
 
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.text.WordUtils;
 import ru.nojs.json.JSONElement;
 import ru.nojs.json.JSONObject;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
 
 public class ReflectionMapper {
     public <T> T createObject(JSONElement je, Class<T> targetType) {
-        if (je == null) throw new IllegalArgumentException("je null");
-        if (!je.isJsonObject()) throw new IllegalArgumentException("je isn't object");
+        Preconditions.checkNotNull(je, "source json can't be null");
+        Preconditions.checkArgument(je.isJsonObject(),"It isn't JSON object");
 
         JSONObject jo = je.getAsJsonObject();
 

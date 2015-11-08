@@ -1,6 +1,7 @@
 package ru.vdovin.jsonParser;
 
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import ru.nojs.json.*;
 
 import java.math.BigDecimal;
@@ -116,5 +117,7 @@ public abstract class MyJSONElement implements JSONElement {
     public boolean isJsonPrimitive() {
         return this instanceof MyJSONPrimitive;
     }
+
+
 
 }
