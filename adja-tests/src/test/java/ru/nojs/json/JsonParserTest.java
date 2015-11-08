@@ -4,8 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.junit.Assert;
 import org.junit.Test;
-//import ru.vdovin.jsonParser.ImplementedJsonParser;
-import ru.dkom.jsonParser.ImplementedJsonParser;
+import ru.vdovin.jsonParser.ImplementedJsonParser;
+//import ru.dkom.jsonParser.ImplementedJsonParser;
 
 import java.io.Reader;
 import java.io.StringReader;
