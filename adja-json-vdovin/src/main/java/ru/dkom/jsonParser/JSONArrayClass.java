@@ -92,7 +92,7 @@ public class JSONArrayClass implements JSONArray{
 
     @Override
     public JSONArray getAsJsonArray() {
-        return null;
+        return this;
     }
 
     @Override

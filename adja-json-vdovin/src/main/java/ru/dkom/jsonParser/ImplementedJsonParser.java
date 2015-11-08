@@ -8,80 +8,50 @@ import java.io.StringReader;
 public class ImplementedJsonParser implements StreamingJsonParser {
 
     @Override
-    public JSONElement parse(Reader r) {
+    public JSONElement parse(Reader r) throws IllegalArgumentException{
         SmartStreamReader reader = new SmartStreamReader(r);
         JSONElement element = null;
         element = buildJSON(element, reader);
 
-        //if (element == null){
-        //    throw new IllegalArgumentException();
-        //}
-
-        /*
-        String value = reader.readNext();
-        while (!value.equals(StreamReader.NO_MORE_SYMBOLS_TO_READ)){
-            element = buildJSON(element, reader);
-            value = reader.readNext();
-        }
-        */
-
         return element;
     }
 
-    private JSONElement buildJSON(JSONElement element, SmartStreamReader reader){
+    private JSONElement buildJSON(JSONElement element, SmartStreamReader reader) throws IllegalArgumentException{
         String value = reader.readNext();
         System.out.println(value);
 
-        if (value.equals(StreamReader.NO_MORE_SYMBOLS_TO_READ)){
+        if (value.equals(StreamReader.NO_MORE_SYMBOLS_TO_READ)) {
             return element;
         }
 
-        if (element==null){
-            //creating new
-            if (value.equals(StreamReader.JSON_ARRAY_START)){
-                element = new JSONArrayClass();
-                while (!value.equals(StreamReader.JSON_ARRAY_END)){
-                    JSONElement arrayMember = null;
-                    arrayMember = buildJSON(arrayMember, reader);
-                    ((JSONArrayClass)element).add(arrayMember);
-                    value = reader.readNext();
-                }
-                return element;
+        if (value.equals(StreamReader.JSON_ARRAY_START)) {
+            element = new JSONArrayClass();
+            while (!value.equals(StreamReader.JSON_ARRAY_END)) {
+                JSONElement arrayMember = null;
+                arrayMember = buildJSON(arrayMember, reader);
+                ((JSONArrayClass) element).add(arrayMember);
+                value = reader.readNext();
             }
-            if (value.equals(StreamReader.JSON_OBJECT_START)){
-                element = new JSONObjectClass();
-                while (!value.equals(StreamReader.JSON_OBJECT_END)){
-                    value = reader.readNext();//get rid of "{"
-                    String propertyName = value;
-                    JSONElement propertyValue = null;
-                    propertyValue = buildJSON(propertyValue,reader);
-                    if (propertyValue == null){
-                        throw new IllegalArgumentException();
-                    }
-                    ((JSONObjectClass) element).add(propertyName, propertyValue);
-                    value = reader.readNext();
-                }
-                //buildJSON(element, reader);
-                return element;
-            }
-
-            element = new JSONPrimitiveClass(value);
-        }else{
-            /*
-            if(element.isJsonArray()){
-                JSONElement arrayValue = null;
-                arrayValue = buildJSON(arrayValue,reader);
-                ((JSONArrayClass)element).add(arrayValue);
-            }
-            if (element.isJsonObject()){
+            return element;
+        }
+        if (value.equals(StreamReader.JSON_OBJECT_START)) {
+            element = new JSONObjectClass();
+            while (!value.equals(StreamReader.JSON_OBJECT_END)) {
+                value = reader.readNext();//get rid of "{"
                 String propertyName = value;
                 JSONElement propertyValue = null;
-                propertyValue = buildJSON(propertyValue,reader);
+                propertyValue = buildJSON(propertyValue, reader);
+                if (propertyValue == null) {
+                    throw new IllegalArgumentException();
+                }
                 ((JSONObjectClass) element).add(propertyName, propertyValue);
+                value = reader.readNext();
             }
             return element;
-            */
         }
+
+        element = new JSONPrimitiveClass(value);
+
         return element;
     }
 
@@ -92,14 +62,14 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         String str = "";
         int size = 0;
 
-        String badSyntax = "{true";
-        je = sjp.parse(new StringReader(badSyntax));
-        size = 0;
+        //String badSyntax = "{true";
+        //je = sjp.parse(new StringReader(badSyntax));
+        //size = 0;
 
 
-        str = "[{\"a\":true},{\"a\":true},{\"a\":false}]";
-        je = sjp.parse(new StringReader(str));
-        size = 0;
+        //str = "[{\"a\":true},{\"a\":true},{\"a\":false}]";
+        //je = sjp.parse(new StringReader(str));
+        //size = 0;
 
         //String jsonArray = "[1,2,3,4,856]";
         //je = sjp.parse(new StringReader(jsonArray));
@@ -117,11 +87,11 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         //Boolean t = je.getAsBoolean();
         //System.out.println(t);
 
-        str = "{\"a\":1}";
-        je = sjp.parse(new StringReader(str));
-        JSONObject jo = je.getAsJsonObject();
-        JSONPrimitive numPrimitive = jo.get("a").getAsJsonPrimitive();
-        size = 0;
+        //str = "{\"a\":1}";
+        //je = sjp.parse(new StringReader(str));
+        //JSONObject jo = je.getAsJsonObject();
+        //JSONPrimitive numPrimitive = jo.get("a").getAsJsonPrimitive();
+        //size = 0;
 
 
         //str = "\t [\t\t\n\n\r    true , \r\t\n  false\r\t\n] \n";
@@ -135,9 +105,9 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         //String jsnobj = "{\"a\":1}";
         //je = sjp.parse(new StringReader(jsnobj));
 
-        /*
-        je = sjp.parse(new StringReader("test\""));
-        System.out.println(je.getAsString());
+
+        //je = sjp.parse(new StringReader("test\""));
+        //System.out.println(je.getAsString());
 
         je = sjp.parse(new StringReader("\"\t\r\n\\\" \""));
         String test = je.getAsString();
@@ -161,7 +131,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         System.out.print("test: ");
         for (char c: testChars){
             System.out.print((int) c + " ");
-        }*/
+        }
 
 
     }

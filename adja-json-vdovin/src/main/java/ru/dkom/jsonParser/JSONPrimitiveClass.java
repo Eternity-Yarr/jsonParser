@@ -112,6 +112,7 @@ public class JSONPrimitiveClass implements JSONPrimitive{
     public String getAsString() {
         // return (String)value;
 
+        /*
         String probe = (String)value;
         Character firstChar = probe.charAt(0);
         Character lastChar = probe.charAt(probe.length()-1);
@@ -129,6 +130,7 @@ public class JSONPrimitiveClass implements JSONPrimitive{
         if((firstChar.equals((char)34))||(lastChar.equals((char)34))){
             throw new IllegalArgumentException();
         }
+        */
 
         return value.toString();
     }

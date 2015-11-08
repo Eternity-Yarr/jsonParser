@@ -45,7 +45,7 @@ public class JSONObjectClass implements JSONObject{
     @Override
     public JSONElement get(String memberName) {
 
-        return (JSONPrimitive)properties.get(memberName);
+        return (JSONElement)properties.get(memberName);
     }
 
     @Override

@@ -71,45 +71,9 @@ public class StreamReader {
             }
             markStreamPosition();
         }
-        //codes.add(code);
 
         return convertCodeSequenceToArray(codes);
     }
-
-
-    /*
-    public String readNext(){
-        return buildSequence();
-    }
-
-    private String buildSequence(){
-        List<Integer> codes = new ArrayList<>();
-        int code = readCharCodeFromStream();
-        markStreamPosition();
-
-        if((isTerminal(code))){
-            return NO_MORE_SYMBOLS_TO_READ;
-        }
-
-        if (CharEventMap.get((char)code) != null){
-            codes = new ArrayList<>();
-            codes.add(code);
-            return convertCodeSequenceToString(codes);
-        }
-
-        while (!isTerminal(code)){
-            codes.add(code);
-            code = readCharCodeFromStream();
-            if (CharEventMap.get((char)code) != null){
-                restoreStreamPosition();
-                return convertCodeSequenceToString(codes);
-            }
-            markStreamPosition();
-        }
-        codes.add(code);
-
-        return convertCodeSequenceToString(codes);
-    }*/
 
     private Integer[] convertCodeSequenceToArray(List<Integer> codes) {
         Integer[] codesSeq = new Integer[codes.size()];
@@ -120,13 +84,6 @@ public class StreamReader {
 
     }
 
-    private String convertCodeSequenceToString(List<Integer> codes){
-        char[] codesSeq = new char[codes.size()];
-        for (int i = 0; i < codes.size(); i++){
-            codesSeq[i] = (char)(int)(codes.get(i));
-        }
-        return new String(codesSeq);
-    }
 
     private Boolean isTerminal(Integer code){
         Boolean isTerminal = false;
