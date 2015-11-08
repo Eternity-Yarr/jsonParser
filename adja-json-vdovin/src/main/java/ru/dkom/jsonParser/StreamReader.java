@@ -21,7 +21,6 @@ public class StreamReader {
     public final static String JSON_ARRAY_START = "[";
     public final static String JSON_ARRAY_END = "]";
     public final static String JSON_OBJECT_VALUE_START = ":";
-    public final static String QUOTES_DETECTED = Character.toString('"');
 
 
     private static int READ_AHEAD_BUFFER_SIZE = 10;
@@ -35,7 +34,6 @@ public class StreamReader {
         CharEventMap.put('[',JSON_ARRAY_START);
         CharEventMap.put(']',JSON_ARRAY_END);
         CharEventMap.put(':',JSON_OBJECT_VALUE_START);
-        //CharEventMap.put('"',QUOTES_DETECTED);
     }
 
     public StreamReader(Reader r){
@@ -84,7 +82,6 @@ public class StreamReader {
 
     }
 
-
     private Boolean isTerminal(Integer code){
         Boolean isTerminal = false;
         if (code == END_OF_STREAM){
@@ -114,7 +111,6 @@ public class StreamReader {
     }
 
     private int readCharCodeFromStream() {
-        //int code = 65535;
         int code = -1;
         try {
             if (reader != null){

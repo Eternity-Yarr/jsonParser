@@ -23,7 +23,6 @@ public class JSONPrimitiveClass implements JSONPrimitive{
         }
 
         if (looksLikeBoolean((String)o)){
-            //value = Boolean.parseBoolean((String)o);
             value = o;
             Boolean b = this.getAsBoolean();
         }
@@ -43,87 +42,50 @@ public class JSONPrimitiveClass implements JSONPrimitive{
     @Override
     public boolean getAsBoolean() {
 
-        String probe = (String)value;
+        String probe = (String) value;
 
         Character firstChar = probe.charAt(0);
-        Character lastChar = probe.charAt(probe.length()-1);
+        Character lastChar = probe.charAt(probe.length() - 1);
 
-        if ((firstChar.equals((char)34))&&(lastChar.equals((char)34))){
+        if ((firstChar.equals((char) 34)) && (lastChar.equals((char) 34))) {
             throw new IllegalStateException();
         }
 
-        /*
-        if (looksLikeBoolean(probe)){
-            if (probe.equals("true")){
+        if (looksLikeBoolean(probe)) {
+            if (probe.equals("true")) {
                 return true;
             }
-            if (probe.equals("false")){
+            if (probe.equals("false")) {
                 return false;
             }
             throw new IllegalArgumentException();
-        }*/
-
-        /*
-        if (!looksLikeBoolean(probe)){
-            throw new IllegalStateException();
-        }
-
-        if (!isBoolean(probe)){
-            throw new IllegalStateException();
-        }
-
-        if (probe.equals("true")){
-            return true;
-        }
-        if (probe.equals("false")){
-            return false;
-        }
-
-        throw new IllegalArgumentException();
-        */
-
-        if (looksLikeBoolean(probe)){
-        //if(isBoolean(probe)){
-            //if(isBoolean(probe)){
-                if (probe.equals("true")){
-                    return true;
-                }
-                if (probe.equals("false")){
-                    return false;
-                }
-                throw new IllegalArgumentException();
-            //}else{
-                //throw new IllegalArgumentException();
-            //}
         }
         throw new IllegalStateException();
 
-        //return Boolean.valueOf(value.toString());
     }
 
     @Override
     public byte getAsByte() {
-        return 0;
+        return Byte.parseByte((String)value);
     }
 
     @Override
     public char getAsCharacter() {
-        return 0;
+        return (Character)value;
     }
 
     @Override
     public double getAsDouble() {
-        return Double.parseDouble((String)value);
+        return Double.parseDouble((String) value);
     }
 
     @Override
     public float getAsFloat() {
-        return Float.parseFloat((String)value);
+        return Float.parseFloat((String) value);
     }
 
     @Override
     public int getAsInt() {
-        // return (Integer)value;
         return Integer.parseInt((String)value);
     }
 
@@ -149,42 +111,21 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     @Override
     public long getAsLong() {
-        return 0;
+        return Long.parseLong((String)value);
     }
 
     @Override
     public Number getAsNumber() {
-        return null;
+        return (Number)value;
     }
 
     @Override
     public short getAsShort() {
-        return 0;
+        return Short.parseShort((String)value);
     }
 
     @Override
     public String getAsString() {
-        // return (String)value;
-
-        /*
-        String probe = (String)value;
-        Character firstChar = probe.charAt(0);
-        Character lastChar = probe.charAt(probe.length()-1);
-
-        if ((firstChar.equals((char)34))&&(lastChar.equals((char)34))){
-            //remove first and last symbol
-            char[] swap = new char[probe.length() - 2];
-            for (int i = 1; i < probe.length() - 1; i ++){
-                swap[i-1] = probe.charAt(i);
-            }
-            probe = new String(swap);
-            return probe;
-        }
-
-        if((firstChar.equals((char)34))||(lastChar.equals((char)34))){
-            throw new IllegalArgumentException();
-        }
-        */
 
         String probe = (String)value;
         Character firstChar = probe.charAt(0);
@@ -197,13 +138,6 @@ public class JSONPrimitiveClass implements JSONPrimitive{
         if ((!firstChar.equals((char)34))&&(lastChar.equals((char)34))){
             throw new IllegalArgumentException();
         }
-        /*
-        for (int i = 0; i < probe.length(); i++){
-            Character c = probe.charAt(i);
-            if (c.equals((char)34)){
-                throw new IllegalArgumentException();
-            }
-        }*/
 
         return getRidOfQoutes((String)value);
     }
@@ -235,17 +169,7 @@ public class JSONPrimitiveClass implements JSONPrimitive{
     }
 
     private Boolean looksLikeBoolean(String string) {
-        //String regex = "([fF][aA][lL][sS][eE])|([tT][rR][uU][eE])";
         String regex = ".*([fF][aA][lL][sS][eE]).*|.*([tT][rR][uU][eE]).*";
-        Matcher m = Pattern.compile(regex).matcher(string);
-        if (m.matches()){
-            return true;
-        }
-        return false;
-    }
-
-    private Boolean isBoolean(String string){
-        String regex = ".*(false).*|.*(true).*";
         Matcher m = Pattern.compile(regex).matcher(string);
         if (m.matches()){
             return true;

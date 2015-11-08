@@ -22,12 +22,12 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public BigDecimal getAsBigDecimal() {
-        return null;
+        return ((JSONPrimitiveClass)value).getAsBigDecimal();
     }
 
     @Override
     public BigInteger getAsBigInteger() {
-        return null;
+        return ((JSONPrimitiveClass)value).getAsBigInteger();
     }
 
     @Override
@@ -37,12 +37,12 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public byte getAsByte() {
-        return 0;
+        return ((JSONPrimitiveClass)value).getAsByte();
     }
 
     @Override
     public char getAsCharacter() {
-        return 0;
+        return ((JSONPrimitiveClass)value).getAsCharacter();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public float getAsFloat() {
-        return 0;
+        return ((JSONPrimitiveClass)value).getAsFloat();
     }
 
     @Override
@@ -67,7 +67,6 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public JSONNull getAsJsonNull() {
-        //throw new Exception();
         return new JSONNullClass();
     }
 
@@ -83,90 +82,43 @@ public class JSONElementClass implements ru.nojs.json.JSONElement {
 
     @Override
     public long getAsLong() {
-        return 0;
+        return ((JSONPrimitiveClass)value).getAsLong();
     }
 
     @Override
     public Number getAsNumber() {
-        return null;
+        return ((JSONPrimitiveClass)value).getAsNumber();
     }
 
     @Override
     public short getAsShort() {
-        return 0;
+        return ((JSONPrimitiveClass)value).getAsShort();
     }
 
     @Override
     public String getAsString() {
-        String probe = ((JSONPrimitiveClass)value).getAsString();
-        Character lastChar = probe.charAt(probe.length()-1);
-
-        if (lastChar == (char)34){
-            throw new IllegalArgumentException();
-        }
-        return probe;
+        return ((JSONPrimitiveClass)value).getAsString();
     }
 
     @Override
     public boolean isJsonArray() {
-        Boolean isJSONArray = true;
-        /*
-        try{
-            this.getAsJsonArray();
-        }catch (Exception e){
-            isJSONArray = false;
-        }*/
-        try{
-            JSONArray ja = (JSONArray)this;
-            isJSONArray = true;
-        }catch (Exception e){
-            isJSONArray = false;
-        }
-        return isJSONArray;
+        return ((JSONArrayClass)value).isJsonArray();
     }
 
     @Override
     public boolean isJsonNull() {
         return ((JSONPrimitiveClass)value).isJsonNull();
-        /*
-        if (((JSONPrimitiveClass)value).getAsString().toUpperCase().equals("NULL")){
-            return true;
-        }
-        return false;
-        */
     }
 
     @Override
     public boolean isJsonObject() {
-        Boolean isJSONObject = true;
+        return ((JSONObjectClass)value).isJsonObject();
 
-        try{
-            JSONObject jp = (JSONObject)this;
-            isJSONObject = true;
-        }catch (Exception e){
-            isJSONObject = false;
-        }
-        return isJSONObject;
-
-        //isJSONObject = ((JSONObjectClass)value).isJsonObject();
-        /*
-        try{
-            JSONObjectClass t = (JSONObjectClass)value;
-        }catch(Exception e){
-            isJSONObject = false;
-        }*/
-        //return isJSONObject;
     }
 
     @Override
     public boolean isJsonPrimitive() {
-        Boolean isJSONPrimitive = true;
-        try{
-            JSONPrimitiveClass t = (JSONPrimitiveClass)value;
-        }catch (Exception e){
-            isJSONPrimitive = true;
-        }
-        return isJSONPrimitive;
+        return ((JSONPrimitiveClass)value).isJsonPrimitive();
     }
 
     private boolean isNull(Object o){

@@ -50,7 +50,6 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             return element;
         }
 
-        //element = new JSONPrimitiveClass(getRidOfQoutes(value));
         element = new JSONPrimitiveClass(value);
 
         return element;
