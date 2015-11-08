@@ -18,8 +18,14 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     public JSONPrimitiveClass(Object o){
         value = o;
-        if (((String)o).toLowerCase().equals(null)){
+        if (((String)o).toLowerCase().equals("null")){
             value = null;
+        }
+
+        if (looksLikeBoolean((String)o)){
+            //value = Boolean.parseBoolean((String)o);
+            value = o;
+            Boolean b = this.getAsBoolean();
         }
     }
 
@@ -36,15 +42,53 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     @Override
     public boolean getAsBoolean() {
-        String probe = (String)value;
-        if (probe.toUpperCase().equals("TRUE")){
+        String probe = value.toString();
+
+        /*
+        if (looksLikeBoolean(probe)){
+            if (probe.equals("true")){
+                return true;
+            }
+            if (probe.equals("false")){
+                return false;
+            }
+            throw new IllegalArgumentException();
+        }*/
+
+        if (!looksLikeBoolean(probe)){
+            throw new IllegalStateException();
+        }
+
+        if (probe.equals("true")){
             return true;
         }
-        if (probe.toUpperCase().equals("FALSE")){
+        if (probe.equals("false")){
             return false;
         }
-        throw new IllegalStateException();
+
+        throw new IllegalArgumentException();
+
         //return Boolean.valueOf(value.toString());
+    }
+
+    private Boolean looksLikeBoolean(String string) {
+        //String regex = "\\[([^]]+)\\]";
+        String regex = "([fF][aA][lL][sS][eE])|([tT][rR][uU][eE])";
+        //String regex = "[f][a][l][s][e]|[t][r][u][e]]";
+        //String regex = "false|true";
+        Matcher m = Pattern.compile(regex).matcher(string);
+        if (m.matches()){
+            return true;
+        }
+        return false;
+        /*
+        while (m.find()) {
+            // return m.group(1);
+            String t = m.group(1);
+            return true;
+        }
+        return false;
+        */
     }
 
     @Override

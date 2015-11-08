@@ -73,6 +73,7 @@ public class SmartStreamReader {
         for (int i:chunk){
             if (i == QUOTES_SYMBOL_CODE){
                 if (result.size() == 0){
+                    quotesNumber++;
                     continue;
                 }
                 if (result.get(result.size()-1) != SCREENING_SYMBOL_CODE) {
