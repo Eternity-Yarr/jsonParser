@@ -1,13 +1,18 @@
 package ru.vdovin.jsonParser;
 
-import org.junit.Assert;
 import org.junit.Test;
+import ru.nojs.json.JSONCreator;
 import ru.nojs.json.JSONElement;
+import ru.nojs.json.JSONField;
 import ru.vdovin.Currency;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 public class ReflectionMapperTest {
 
@@ -16,17 +21,17 @@ public class ReflectionMapperTest {
     @Test
     public void testFieldNameOf() throws Exception {
         String nothingToDo = "noop";
-        Assert.assertEquals("nothing to do", nothingToDo, mapper.fieldNameOf(nothingToDo));
+        assertEquals("nothing to do", nothingToDo, mapper.fieldNameOf(nothingToDo));
 
         String idempotent = "alreadyCamelCased";
-        Assert.assertEquals("shouldn't change nothing", idempotent, mapper.fieldNameOf(idempotent));
-        Assert.assertEquals("get prefixed", "getAlreadyCamelCased", mapper.getterNameOf(idempotent));
+        assertEquals("shouldn't change nothing", idempotent, mapper.fieldNameOf(idempotent));
+        assertEquals("get prefixed", "getAlreadyCamelCased", mapper.getterNameOf(idempotent));
 
         // Bonus level
         // In reality no one(i think) but spring handles this kind of nonsense
         String snakeCased = "i_am_snake_cased";
-        Assert.assertEquals("We can handle snakes", "iAmSnakeCased", mapper.fieldNameOf(snakeCased));
-        Assert.assertEquals("get is prefixed", "getIAmSnakeCased", mapper.getterNameOf(snakeCased));
+        assertEquals("We can handle snakes", "iAmSnakeCased", mapper.fieldNameOf(snakeCased));
+        assertEquals("get is prefixed", "getIAmSnakeCased", mapper.getterNameOf(snakeCased));
     }
 
     @Test
@@ -100,13 +105,13 @@ public class ReflectionMapperTest {
                 "}";
         JSONElement je = new ImplementedJsonParser().parse(new StringReader(paymentInfo));
         PaymentInfo pi = mapper.createObject(je, PaymentInfo.class);
-        Assert.assertEquals("ids matches", 1254817343741L, pi.getId());
-        Assert.assertEquals("to account matches", "R12334", pi.getToAccount());
-        Assert.assertEquals("from account matches", "R33212", pi.getFromAccount());
-        Assert.assertEquals("currency set correctly", Currency.RUB, pi.getCurrency());
-        Assert.assertEquals("from amount matches", new BigDecimal(100.0), pi.getFromAmount());
-        Assert.assertEquals("to amount matches", new BigDecimal(95.0), pi.getToAmount());
-        Assert.assertEquals("date parsed correctly", 1446361200000L, pi.getDate());
+        assertEquals("ids matches", 1254817343741L, pi.getId());
+        assertEquals("to account matches", "R12334", pi.getToAccount());
+        assertEquals("from account matches", "R33212", pi.getFromAccount());
+        assertEquals("currency set correctly", Currency.RUB, pi.getCurrency());
+        assertEquals("from amount matches", new BigDecimal(100.0), pi.getFromAmount());
+        assertEquals("to amount matches", new BigDecimal(95.0), pi.getToAmount());
+        assertEquals("date parsed correctly", 1446361200000L, pi.getDate());
     }
 
     @Test //Bonus level: hardcore
@@ -127,15 +132,15 @@ public class ReflectionMapperTest {
                 "}";
         JSONElement je = new ImplementedJsonParser().parse(new StringReader(paymentInfo));
         PaymentInfo pi = mapper.createObject(je, PaymentInfo.class);
-        Assert.assertEquals("ids matches", 1254817343741L, pi.getId());
-        Assert.assertEquals("to account matches", "R12334", pi.getToAccount());
-        Assert.assertEquals("from account matches", "R33212", pi.getFromAccount());
-        Assert.assertEquals("currency set correctly", Currency.RUB, pi.getCurrency());
-        Assert.assertEquals("from amount matches", new BigDecimal(100.0), pi.getFromAmount());
-        Assert.assertEquals("to amount matches", new BigDecimal(95.0), pi.getToAmount());
-        Assert.assertEquals("date parsed correctly", 1446361200000L, pi.getDate());
-        Assert.assertEquals("extra 'a' parsed", "b", pi.getExtras().get("a"));
-        Assert.assertEquals("extra 'b' parsed", "d", pi.getExtras().get("c"));
+        assertEquals("ids matches", 1254817343741L, pi.getId());
+        assertEquals("to account matches", "R12334", pi.getToAccount());
+        assertEquals("from account matches", "R33212", pi.getFromAccount());
+        assertEquals("currency set correctly", Currency.RUB, pi.getCurrency());
+        assertEquals("from amount matches", new BigDecimal(100.0), pi.getFromAmount());
+        assertEquals("to amount matches", new BigDecimal(95.0), pi.getToAmount());
+        assertEquals("date parsed correctly", 1446361200000L, pi.getDate());
+        assertEquals("extra 'a' parsed", "b", pi.getExtras().get("a"));
+        assertEquals("extra 'b' parsed", "d", pi.getExtras().get("c"));
     }
 
     static class PaymentInfo {
@@ -213,4 +218,59 @@ public class ReflectionMapperTest {
         }
     }
 
+    @Test
+    public void testMappingByCtor() {
+        String json = "{\"R01\" : \"NIC\", \"X07\": \"+1 555 CALLME\", \"PRI\": -1}";
+        JSONElement je = new ImplementedJsonParser().parse(new StringReader(json));
+        ProprietaryPOJO info = mapper.createObject(je, ProprietaryPOJO.class);
+        assertEquals("Contractor Id mapped right", "NIC", info.getContractorId());
+        assertEquals("Extra info mapped too", "+1 555 CALLME", info.getExtraInfo());
+        assertEquals("Obligatory field found", -1, info.getPriority().intValue());
+    }
+
+    @Test
+    public void testMappingByCtorMissingObligatoryField() {
+        String json = "{\"R01\" : \"NIC\", \"X07\": \"+1 555 CALLME\"}";
+        JSONElement je = new ImplementedJsonParser().parse(new StringReader(json));
+        ProprietaryPOJO info = mapper.createObject(je, ProprietaryPOJO.class);
+        assertEquals("Contractor Id mapped right", "NIC", info.getContractorId());
+        assertEquals("Extra info mapped too", "+1 555 CALLME", info.getExtraInfo());
+        assertNull("Field must be empty", info.getPriority());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMappingByCtorMissingRequiredField() {
+        String json = "{\"X07\": \"+1 555 CALLME\"}";
+        JSONElement je = new ImplementedJsonParser().parse(new StringReader(json));
+        ProprietaryPOJO info = mapper.createObject(je, ProprietaryPOJO.class);
+        fail("Should've throw excpetion by now, missing required field!");
+    }
+
+    static class ProprietaryPOJO {
+        private final String contractorId;
+        private final String extraInfo;
+        private final Integer priority;
+        @JSONCreator
+        public ProprietaryPOJO(
+                @JSONField(name = "R01") String contractorId,
+                @JSONField(name = "X07") String extraInfo,
+                @JSONField(name = "PRI", required = false)  int priority
+        ) {
+            this.contractorId = contractorId;
+            this.extraInfo = extraInfo;
+            this.priority = priority;
+        }
+
+        public String getContractorId() {
+            return contractorId;
+        }
+
+        public String getExtraInfo() {
+            return extraInfo;
+        }
+
+        public Integer getPriority() {
+            return priority;
+        }
+    }
 }
