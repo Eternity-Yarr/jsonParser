@@ -4,6 +4,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import ru.nojs.json.JSONPrimitive;
 
+import java.math.BigDecimal;
+
 public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
 
     private Object value;
@@ -54,10 +56,7 @@ public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
 
     @Override
     public String getAsString(){
-        if (isString()) {
-            return value.toString();
-        }
-        throw new IllegalStateException("This is not a string");
+        return value.toString();
     }
 
     @Override
@@ -77,18 +76,22 @@ public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
 
     @Override
     public float getAsFloat(){
-        if (isNumber()){
+        try{
             return getAsNumber().floatValue();
         }
-        throw new IllegalStateException("This is not a float");
+        catch (Exception e) {
+            throw new IllegalStateException("This is not a float");
+        }
     }
 
     @Override
     public double getAsDouble(){
-        if (isNumber()){
+        try {
             return getAsNumber().doubleValue();
         }
-        throw new IllegalStateException("This is not a double");
+        catch (Exception e) {
+            throw new IllegalStateException("This is not a double");
+        }
     }
 
     public Object getAsObject(){
@@ -99,6 +102,16 @@ public class MyJSONPrimitive extends MyJSONElement implements JSONPrimitive{
     public long getAsLong(){
         if (isNumber()) return getAsNumber().longValue();
         throw new IllegalStateException("this is no a long");
+    }
+
+    @Override
+    public BigDecimal getAsBigDecimal() {
+        try {
+            return new BigDecimal(getAsString());
+        }
+        catch (Exception e) {
+            throw  new IllegalStateException("Can't parse BigDecimal");
+        }
     }
 
     @Override

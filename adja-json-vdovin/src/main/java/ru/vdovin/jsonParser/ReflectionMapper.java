@@ -4,9 +4,14 @@ import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.text.WordUtils;
 import ru.nojs.json.JSONElement;
 import ru.nojs.json.JSONObject;
+import ru.vdovin.Currency;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 
@@ -33,10 +38,41 @@ public class ReflectionMapper {
                     Method m = Stream.of(targetType.getMethods())
                             .filter(method -> method.getName().equals(setterFieldName))
                             .findFirst()
-                            .orElseThrow(() -> new NoSuchMethodException("Can't map field " + s.getKey()));
-                    MyJSONPrimitive mjp = (MyJSONPrimitive) s.getValue().getAsJsonPrimitive();
-                    m.invoke(obj,mjp.getAsObject());
-                } catch (Exception e) {
+                            .orElseThrow(() -> new IllegalArgumentException("Can't find setter for " + s.getKey()));
+                    if (m.getParameterCount() > 1 ) {
+                        throw new IllegalArgumentException("too many parameters in the method" + setterFieldName);
+                    }
+                    Class parameterClass = m.getParameterTypes()[0];
+                    if (parameterClass.isEnum()) {
+                        Object enumValue = Stream.of(parameterClass.getEnumConstants())
+                               .filter(e -> e.toString().equals(s.getValue().getAsJsonPrimitive().getAsString()))
+                               .findFirst()
+                               .orElseThrow( () -> new IllegalArgumentException("Can't find enum value of " + s.getValue().getAsJsonPrimitive().getAsString()));
+                        m.invoke(obj, enumValue);
+                    }
+                    else if (parameterClass == Map.class){
+                        Map<Object,Object> mapValue = new HashMap<>();
+                        MyJSONObject mjo = (MyJSONObject)s.getValue().getAsJsonObject();
+                        mjo
+                                .entrySet()
+                                .forEach(k -> {
+                                    MyJSONPrimitive mjp = (MyJSONPrimitive) k.getValue().getAsJsonPrimitive();
+                                    mapValue.put(k.getKey(), mjp.getAsObject());
+                                });
+                        m.invoke(obj, mapValue);
+                    }
+                    else if (parameterClass == BigDecimal.class){
+                        m.invoke(obj, s.getValue().getAsJsonPrimitive().getAsBigDecimal());
+                    }
+                    else {
+                        MyJSONPrimitive mjp = (MyJSONPrimitive)s.getValue().getAsJsonPrimitive();
+                        m.invoke(obj, mjp.getAsObject());
+                    }
+                }
+                catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException("Can't map field");
+                }
+                catch (Exception e) {
                     throw new RuntimeException("Some security violations, or I dunno", e);
                 }
             });

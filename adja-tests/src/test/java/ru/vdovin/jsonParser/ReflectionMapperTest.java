@@ -46,7 +46,7 @@ public class ReflectionMapperTest {
     }
 
 
-    @Test(expected = NoSuchFieldException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testIllegalArgument() {
         String noSuchField =
                 "{\n" +
@@ -56,17 +56,6 @@ public class ReflectionMapperTest {
                 "}";
         JSONElement je = new ImplementedJsonParser().parse(new StringReader(noSuchField));
         SimplePOJO sp = mapper.createObject(je, SimplePOJO.class);
-    }
-
-    @Test(expected = NoSuchFieldException.class)
-    public void testTest() {
-        try {
-            throw new NoSuchFieldException("test");
-        }
-        catch (Exception e) {
-            throw new RuntimeException("test", e);
-        }
-
     }
 
     static class SimplePOJO {
@@ -109,8 +98,8 @@ public class ReflectionMapperTest {
         assertEquals("to account matches", "R12334", pi.getToAccount());
         assertEquals("from account matches", "R33212", pi.getFromAccount());
         assertEquals("currency set correctly", Currency.RUB, pi.getCurrency());
-        assertEquals("from amount matches", new BigDecimal(100.0), pi.getFromAmount());
-        assertEquals("to amount matches", new BigDecimal(95.0), pi.getToAmount());
+        assertEquals("from amount matches", new BigDecimal("100.0"), pi.getFromAmount());
+        assertEquals("to amount matches", new BigDecimal("95.0"), pi.getToAmount());
         assertEquals("date parsed correctly", 1446361200000L, pi.getDate());
     }
 
@@ -136,8 +125,8 @@ public class ReflectionMapperTest {
         assertEquals("to account matches", "R12334", pi.getToAccount());
         assertEquals("from account matches", "R33212", pi.getFromAccount());
         assertEquals("currency set correctly", Currency.RUB, pi.getCurrency());
-        assertEquals("from amount matches", new BigDecimal(100.0), pi.getFromAmount());
-        assertEquals("to amount matches", new BigDecimal(95.0), pi.getToAmount());
+        assertEquals("from amount matches", new BigDecimal("100.0"), pi.getFromAmount());
+        assertEquals("to amount matches", new BigDecimal("95.0"), pi.getToAmount());
         assertEquals("date parsed correctly", 1446361200000L, pi.getDate());
         assertEquals("extra 'a' parsed", "b", pi.getExtras().get("a"));
         assertEquals("extra 'b' parsed", "d", pi.getExtras().get("c"));
