@@ -39,28 +39,28 @@ public class ReflectionMapper {
         return obj;
     }
 
-    private <T> T createObjByCnstr(JSONObject jo, Constructor<T> cnstr) {
-        T obj;
-        List<Object> param = new ArrayList<>();
+    private <T> T createObjByCnstr(JSONObject jo, Constructor<T> ctor) {
         try {
-            Parameter[] prm =  cnstr.getParameters();
-            Stream.of(prm)
-                    .filter(f -> f.isAnnotationPresent(JSONField.class))
-                    .forEach(p -> {
-                            if (!jo.has(p.getAnnotation(JSONField.class).name()) && p.getAnnotation(JSONField.class).required()) {
-                                throw new IllegalArgumentException(" Can't find required parametr " + p.getAnnotation(JSONField.class).name());
-                            }
-                            else {
-                                MyJSONPrimitive jp = (MyJSONPrimitive) jo.get(p.getAnnotation(JSONField.class).name()).getAsJsonPrimitive();
+            Parameter[] ctorParams =  ctor.getParameters();
+            Preconditions.checkArgument(
+                    Stream.of(ctorParams).allMatch(f->f.isAnnotationPresent(JSONField.class)),
+                    "All constructor parameters must have @JSONField annotation"
+            );
+            List<Object> param = new ArrayList<>(ctorParams.length);
+            Stream.of(ctorParams)
+                    .map(f -> f.getAnnotation(JSONField.class))
+                    .forEach(a -> {
+                            if (!jo.has(a.name()) && a.required()) {
+                                throw new IllegalArgumentException("Missing required parameter " + a.name());
+                            } else {
+                                MyJSONPrimitive jp = (MyJSONPrimitive) jo.get(a.name()).getAsJsonPrimitive();
                                 param.add(jp.getAsObject());
                             }
                     });
-            obj = cnstr.newInstance(param);
+            return ctor.newInstance(param.toArray());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Bean has no JSONCreator annotation or something bad happened", e);
         }
-        catch (Exception e) {
-            throw new IllegalArgumentException("Bean has no JSONCreator annotation");
-        }
-        return obj;
     }
 
     private <T> T createObjByDefultCnstr(JSONObject jo, Class<T> targetType) {
