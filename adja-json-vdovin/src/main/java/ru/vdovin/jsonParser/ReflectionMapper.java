@@ -26,14 +26,22 @@ public class ReflectionMapper {
 
         Constructor[] cnstrs  = targetType.getConstructors();
         try {
-            obj = (T)Stream.of(cnstrs)
+
+            Optional<Object> optional = Stream.of(cnstrs)
                     .filter(c -> c.isAnnotationPresent(JSONCreator.class))
                     .findFirst()
-                    .map(cnst -> createObjByCnstr(jo, cnst))
-                    .orElse(createObjByDefultCnstr(jo, targetType));
+                    .map(cnst -> createObjByCnstr(jo, cnst));
+
+            if (optional.isPresent()){
+                obj =  (T)optional.get();
+            }
+            else {
+                obj = createObjByDefultCnstr(jo, targetType);
+            }
+
         }
         catch (Exception e) {
-            throw new IllegalArgumentException("Bean has no default or with \"JSONCreate\" annotation constructor ");
+            throw new IllegalArgumentException("Bean has no default or with \"JSONCreate\" annotation constructor ", e);
         }
 
         return obj;

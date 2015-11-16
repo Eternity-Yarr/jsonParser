@@ -243,7 +243,7 @@ public class ReflectionMapperTest {
         public ProprietaryPOJO(
                 @JSONField(name = "R01") String contractorId,
                 @JSONField(name = "X07") String extraInfo,
-                @JSONField(name = "PRI", required = false)  int priority
+                @JSONField(name = "PRI", required = false)  Integer priority
         ) {
             this.contractorId = contractorId;
             this.extraInfo = extraInfo;
