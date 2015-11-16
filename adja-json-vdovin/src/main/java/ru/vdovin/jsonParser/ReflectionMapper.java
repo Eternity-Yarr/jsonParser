@@ -24,20 +24,14 @@ public class ReflectionMapper {
 
         T obj;
 
-        Constructor[] cnstrs  = targetType.getConstructors();
+        Constructor[] ctors  = targetType.getConstructors();
         try {
 
-            Optional<Object> optional = Stream.of(cnstrs)
-                    .filter(c -> c.isAnnotationPresent(JSONCreator.class))
+                    obj = (T)Stream.of(ctors)
+                    .filter(ctor -> ctor.isAnnotationPresent(JSONCreator.class))
                     .findFirst()
-                    .map(cnst -> createObjByCnstr(jo, cnst));
-
-            if (optional.isPresent()){
-                obj =  (T)optional.get();
-            }
-            else {
-                obj = createObjByDefultCnstr(jo, targetType);
-            }
+                    .map(ctor -> createObjByCnstr(jo, ctor))
+                    .orElseGet(() -> createObjByDefaultCnstr(jo, targetType));
 
         }
         catch (Exception e) {
@@ -57,12 +51,17 @@ public class ReflectionMapper {
             List<Object> param = new ArrayList<>(ctorParams.length);
             Stream.of(ctorParams)
                     .map(f -> f.getAnnotation(JSONField.class))
-                    .forEach(a -> {
-                            if (!jo.has(a.name()) && a.required()) {
-                                throw new IllegalArgumentException("Missing required parameter " + a.name());
+                    .forEach(field -> {
+                            if (!jo.has(field.name()) && field.required()) {
+                                throw new IllegalArgumentException("Missing required parameter " + field.name());
                             } else {
-                                MyJSONPrimitive jp = (MyJSONPrimitive) jo.get(a.name()).getAsJsonPrimitive();
-                                param.add(jp.getAsObject());
+                                if (jo.has(field.name())) {
+                                    MyJSONPrimitive jp = (MyJSONPrimitive) jo.get(field.name()).getAsJsonPrimitive();
+                                    param.add(jp.getAsObject());
+                                }
+                                else {
+                                    param.add(null);
+                                }
                             }
                     });
             return ctor.newInstance(param.toArray());
@@ -71,59 +70,54 @@ public class ReflectionMapper {
         }
     }
 
-    private <T> T createObjByDefultCnstr(JSONObject jo, Class<T> targetType) {
+    private <T> T createObjByDefaultCnstr(JSONObject jo, Class<T> targetType) {
         T obj;
         try {
-            Constructor<T> cnstr = targetType.getDeclaredConstructor();
-            obj = (T)cnstr.newInstance();
+            Constructor<T> ctor = targetType.getDeclaredConstructor();
+            obj = ctor.newInstance();
         }
         catch (Exception e) {
             throw new IllegalArgumentException("Bean has no default constructor");
         }
 
+
         jo
                 .entrySet()
-                .forEach(s -> {
-                    String setterFieldName = setterNameOf(s.getKey());
+                .forEach(je -> {
+                    String setterFieldName = setterNameOf(je.getKey());
                     try {
-                        Method m = Stream.of(targetType.getMethods())
-                                .filter(method -> method.getName().equals(setterFieldName))
+                        Method method = Stream.of(targetType.getMethods())
+                                .filter(mtd -> mtd.getName().equals(setterFieldName))
+                                .filter(mtd -> mtd.getParameterCount() == 1)
                                 .findFirst()
-                                .orElseThrow(() -> new IllegalArgumentException("Can't find setter for " + s.getKey()));
-                        if (m.getParameterCount() != 1 ) {
-                            throw new IllegalArgumentException("too many parameters in the method" + setterFieldName);
-                        }
-                        Class parameterClass = m.getParameterTypes()[0];
+                                .orElseThrow(() -> new IllegalArgumentException("Can't find setter for " + je.getKey() + " or too many parameters in the method"));
+
+                        Class parameterClass = method.getParameterTypes()[0];
                         if (parameterClass.isEnum()) {
                             Object enumValue = Stream.of(parameterClass.getEnumConstants())
-                                    .filter(e -> e.toString().equals(s.getValue().getAsJsonPrimitive().getAsString()))
+                                    .filter(enumName -> enumName.toString().equals(je.getValue().getAsJsonPrimitive().getAsString()))
                                     .findFirst()
-                                    .orElseThrow( () -> new IllegalArgumentException("Can't find enum value of " + s.getValue().getAsJsonPrimitive().getAsString()));
-                            m.invoke(obj, enumValue);
-                        }
-                        else if (parameterClass == Map.class){
-                            Map<Object,Object> mapValue = new HashMap<>();
-                            JSONObject mjo = s.getValue().getAsJsonObject();
+                                    .orElseThrow(() -> new IllegalArgumentException("Can't find enum value of " + je.getValue().getAsJsonPrimitive().getAsString()));
+                            method.invoke(obj, enumValue);
+                        } else if (parameterClass == Map.class) {
+                            Map<Object, Object> mapValue = new HashMap<>();
+                            JSONObject mjo = je.getValue().getAsJsonObject();
                             mjo
                                     .entrySet()
                                     .forEach(k -> {
                                         MyJSONPrimitive mjp = (MyJSONPrimitive) k.getValue().getAsJsonPrimitive();
                                         mapValue.put(k.getKey(), mjp.getAsObject());
                                     });
-                            m.invoke(obj, mapValue);
+                            method.invoke(obj, mapValue);
+                        } else if (parameterClass == BigDecimal.class) {
+                            method.invoke(obj, je.getValue().getAsJsonPrimitive().getAsBigDecimal());
+                        } else {
+                            MyJSONPrimitive mjp = (MyJSONPrimitive) je.getValue().getAsJsonPrimitive();
+                            method.invoke(obj, mjp.getAsObject());
                         }
-                        else if (parameterClass == BigDecimal.class){
-                            m.invoke(obj, s.getValue().getAsJsonPrimitive().getAsBigDecimal());
-                        }
-                        else {
-                            MyJSONPrimitive mjp = (MyJSONPrimitive)s.getValue().getAsJsonPrimitive();
-                            m.invoke(obj, mjp.getAsObject());
-                        }
-                    }
-                    catch (IllegalArgumentException e) {
-                        throw new IllegalArgumentException("Can't map field");
-                    }
-                    catch (Exception e) {
+                    } catch (IllegalArgumentException e) {
+                        throw new IllegalArgumentException("Can't map field", e);
+                    } catch (Exception e) {
                         throw new RuntimeException("Some security violations, or I dunno", e);
                     }
                 });
