@@ -87,12 +87,12 @@ public class ReflectionMapper {
                     String setterFieldName = setterNameOf(je.getKey());
                     try {
                         Method method = Stream.of(targetType.getMethods())
-                                .filter(mtd -> mtd.getName().equals(setterFieldName))
-                                .filter(mtd -> mtd.getParameterCount() == 1)
+                                .filter(mtd -> mtd.getName().equals(setterFieldName) && mtd.getParameterCount() == 1)
                                 .findFirst()
                                 .orElseThrow(() -> new IllegalArgumentException("Can't find setter for " + je.getKey() + " or too many parameters in the method"));
 
                         Class parameterClass = method.getParameterTypes()[0];
+
                         if (parameterClass.isEnum()) {
                             Object enumValue = Stream.of(parameterClass.getEnumConstants())
                                     .filter(enumName -> enumName.toString().equals(je.getValue().getAsJsonPrimitive().getAsString()))

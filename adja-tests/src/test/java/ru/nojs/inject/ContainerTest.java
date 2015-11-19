@@ -1,15 +1,51 @@
 package ru.nojs.inject;
 
 import org.junit.Assert;
+import java.lang.reflect.*;
+import java.util.stream.Stream;
+
 import org.junit.Test;
-import org.mockito.Mockito;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 public class ContainerTest {
-    static Container container = Mockito.mock(Container.class); // replace me
+    static Container container = new Container() {
+        @Override
+        public <T> T getInstance(Class<T> clazz) {
+
+            T obj;
+            try {
+                Constructor<T> ctor =
+                        Stream.of(clazz.getConstructors())
+                                .findFirst()
+                                .map(c -> (Constructor<T>) c)
+                                .orElseThrow(() -> new IllegalArgumentException("Beans not have default constructor"));
+                if ( ctor.getParameterCount() == 0 ) {
+                    //ctor.isAnnotationPresent(Singleton);
+                    obj = ctor.newInstance();
+                }
+                else {
+                    throw new NotImplementedException();
+                }
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Can't create instance", e);
+            }
+            return obj;
+        }
+
+        @Override
+        public <T> T getInstance(String name, Class<T> requiredType) {
+            return null;
+        }
+
+        @Override
+        public Object getInstance(String name) {
+            return null;
+        }
+    };
 
     @Test
     public void testSimpleInstance() {
