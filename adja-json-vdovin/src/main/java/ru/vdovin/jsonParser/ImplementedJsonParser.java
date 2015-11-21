@@ -10,11 +10,11 @@ import java.util.regex.Pattern;
 
 public class ImplementedJsonParser implements StreamingJsonParser {
     List<Object> list = new ArrayList<>();
-    public JSONArrayImpl JSONArrayImpl = new JSONArrayImpl();
     public JSONObjectImpl jsonObject = new JSONObjectImpl();
-    public JSONPrimitiveImpl jpi;
-    private String s= "";
+    private JSONElement jsonElement;
+    private static final Pattern pattern = Pattern.compile(",");
     public JSONElement parse(Reader r) {
+        list.clear();
         try {
             int data = r.read();
             while (data != -1) {
@@ -27,45 +27,122 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             throw new IllegalStateException("Error!!!!!!");
         }
 
-        if (list.contains("[")&&list.contains(",")&&list.contains("]")){
-            for (Object element : list){
-                if (element.equals("[")||element.equals(",")||element.equals("]")){
-                    continue;
-                }
-                JSONArrayImpl.add(new JSONPrimitiveImpl(element));
-            }
-            return JSONArrayImpl;
-        } else if (list.contains("{")&&list.contains(",")&&list.contains("}")){
+        if (list.contains("{")&&list.contains(":")&&list.contains("}")){
+            String key = "";
+            String value = "";
             for (Object element : list){
                 if (element.equals("{")){
                     continue;
-                } else if (!(element.equals(",")|| element.equals("}"))) {
-                    if (element.equals(" ") || element.equals("\"")) {
+                }
+
+                if (element.equals(":")) {
+                    value+= element;
+                    continue;
+                }
+
+                if ((element.equals("\"")||key.startsWith("\""))&&!value.startsWith(":")){
+                    if (isUncorrectElement(String.valueOf(element))){
                         continue;
                     }
-                    s += element;
-                } else {
-                    String[] parts = s.split(":");
-                    String property = parts[0];
-                    jsonObject.add(property, new JSONPrimitiveImpl(parts[1]));
-                    s="";
+                    key +=element;
+                    continue;
+                }
+
+                    if ((element.equals("[")||value.startsWith(":"))&&!value.endsWith("]")){
+                        value+=element;
+                        continue;
+                    } else if (!(element.equals(",")||element.equals("}"))){
+                        value+=element;
+                        continue;
+                    }
+
+                jsonElement = chooseJson(value.substring(1));
+                jsonObject.add(key.substring(1, key.length()-1), jsonElement);
+                if (element.equals(",")){
+                    continue;
                 }
             }
             return jsonObject;
-        } else {
+        }else if (list.contains("[")&&list.contains("]")){
+            String arr= "";
             for (Object obj : list){
-                s += String.valueOf(obj);
+                if (isUncorrectElement(String.valueOf(obj))){
+                    continue;
+                }
+                arr += obj;
             }
-            if (s.matches("\\d+")){
-                jpi = new JSONPrimitiveImpl(Integer.parseInt(s));
-            } else if (s.toLowerCase().equals("true") || s.toLowerCase().equals("false")){
-                jpi = new JSONPrimitiveImpl(Boolean.parseBoolean(s));
-            } else if (s.matches("\\w+")){
-                jpi = new JSONPrimitiveImpl(s);
-            } else {
-                throw new IllegalArgumentException("Bad syntax");
+            return parseJsonArray(arr);
+        } else {
+            String primitive ="";
+            for (Object obj : list){
+                if (!(obj.equals("\"")||primitive.startsWith("\""))) {
+                    if (isUncorrectElement(String.valueOf(obj))) {
+                        continue;
+                    }
+                }
+                    primitive += String.valueOf(obj);
             }
-            return jpi;
+            primitive = primitive.replace("\\", "");
+            return parseJsonPrimitive(primitive);
+        }
+    }
+
+    private JSONElement chooseJson(String value){
+        if (value.contains("[")&&value.contains("]")){
+            return parseJsonArray(value);
+        } else {
+            return parseJsonPrimitive(value);
+        }
+    }
+
+    private JSONElement parseJsonArray(String value){
+        JSONArrayImpl JSONArrayImpl = new JSONArrayImpl();
+        String[] arrays = pattern.split(value.substring(1, value.length()-1));
+        for (String el : arrays){
+            JSONArrayImpl.add(parseJsonPrimitive(el));
+        }
+        return JSONArrayImpl;
+    }
+
+    private JSONElement parseJsonPrimitive(String value){
+        if (value.matches("[-]?[0-9]+")){
+            jsonElement = new JSONPrimitiveImpl(Integer.parseInt(value));
+        } else if (isQuote(value)) {
+            jsonElement = new JSONPrimitiveImpl(value.substring(1, value.length() - 1));
+        } else if (isNull(value)){
+            jsonElement = JSONNullImpl.getInstance();
+        } else if (isBoolean(value)) {
+            jsonElement = new JSONPrimitiveImpl(Boolean.parseBoolean(value));
+        }
+        return jsonElement;
+    }
+
+    private boolean isBoolean(String value){
+        if (value.equals("true")){
+            return true;
+        } else if (value.equals("false")){
+            return false;
+        }
+        throw new IllegalArgumentException("It's not primitive type.");
+    }
+
+    private boolean isQuote(String value){
+        return value.startsWith("\"")&&value.endsWith("\"");
+    }
+
+    private boolean isNull (String value){
+        return value.equals("null");
+    }
+    private boolean isUncorrectElement(String value){
+        switch (value){
+            case "\t":
+            case "\n":
+            case "\r":
+            case "\\":
+            case " ":
+                return true;
+            default:
+                return false;
         }
     }
 }

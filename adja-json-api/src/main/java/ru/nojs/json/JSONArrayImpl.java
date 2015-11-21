@@ -1,5 +1,8 @@
 package ru.nojs.json;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -10,11 +13,7 @@ import java.util.List;
  * Created by Юыху on 17.10.2015.
  */
 public class JSONArrayImpl implements JSONArray {
-    private final List<JSONElement> list;
-
-    public JSONArrayImpl() {
-        list = new ArrayList<JSONElement>();
-    }
+    private final List<JSONElement> list = new ArrayList<>();
 
     @Override
     public void add(JSONElement element) {
@@ -150,6 +149,16 @@ public class JSONArrayImpl implements JSONArray {
     @Override
     public boolean isJsonPrimitive() {
         return false;
+    }
+
+    @Override
+    public boolean equals (Object obj){
+        return new EqualsBuilder().reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode(){
+        return new HashCodeBuilder().reflectionHashCode(this);
     }
 
 

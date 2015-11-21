@@ -1,5 +1,8 @@
 package ru.nojs.json;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
@@ -8,22 +11,18 @@ import java.util.Objects;
  * Created by Юыху on 20.10.2015.
  */
 public class JSONPrimitiveImpl implements JSONPrimitive {
-    private JSONArrayImpl jar;
     private Object obj;
-    private static final Class<?>[] PRIMITIVE_TYPES = { int.class, long.class, short.class,
-            float.class, double.class, byte.class, boolean.class, char.class, Integer.class, Long.class,
-            Short.class, Float.class, Double.class, Byte.class, Boolean.class, Character.class };
 
-    public JSONPrimitiveImpl (char character){
-        setValue(character);
-    }
-
-    public JSONPrimitiveImpl (int integer){
-        setValue(integer);
+    public JSONPrimitiveImpl (Number number){
+        setValue(number);
     }
 
     public JSONPrimitiveImpl (String string){
         setValue(string);
+    }
+
+    public JSONPrimitiveImpl (Boolean bl) {
+        setValue(bl);
     }
 
     public JSONPrimitiveImpl(Object object) {
@@ -31,22 +30,32 @@ public class JSONPrimitiveImpl implements JSONPrimitive {
     }
 
     void setValue(Object value){
-        if (value instanceof Character){
-            char c = ((Character) value).charValue();
-            this.obj=String.valueOf(c);
-        } else {
-            if ((value instanceof Number) || isTypeValue(value)) {
-                this.obj = value;
-            }
-        }
+        obj = value;
     }
 
     boolean isTypeValue(Object object){
         if (object instanceof String){
             return true;
+        } else if (object instanceof Boolean){
+            return true;
         }
 
         return object.getClass().isPrimitive();
+    }
+
+    @Override
+    public String toString(){
+        return obj.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        return new EqualsBuilder().reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode(){
+        return new HashCodeBuilder().reflectionHashCode(this);
     }
 
     @Override
@@ -62,9 +71,12 @@ public class JSONPrimitiveImpl implements JSONPrimitive {
     @Override
     public boolean getAsBoolean() {
         if (isBoolean()){
-            return Boolean.parseBoolean(getAsString());
-        } else
+            return ((Boolean) obj).booleanValue();
+        } else if (obj.equals("true")||obj.equals("false")){
+            return Boolean.parseBoolean(obj.toString());
+        } else {
             throw new IllegalStateException("This is not boolean type");
+        }
     }
 
     @Override
@@ -138,9 +150,9 @@ public class JSONPrimitiveImpl implements JSONPrimitive {
         if (isNumber()){
             return getAsNumber().toString();
         } else if (isBoolean()){
-            return getAsBooleanWrapper().toString();
+            return ((Boolean) obj).toString();
         }
-        return (String) obj;
+        return obj.toString();
     }
 
     @Override
@@ -150,7 +162,7 @@ public class JSONPrimitiveImpl implements JSONPrimitive {
 
     @Override
     public boolean isJsonNull() {
-        return false;
+        return this instanceof JSONNull;
     }
 
     @Override
@@ -169,9 +181,5 @@ public class JSONPrimitiveImpl implements JSONPrimitive {
 
     public boolean isBoolean() {
         return obj instanceof Boolean;
-    }
-
-    Boolean getAsBooleanWrapper() {
-        return (Boolean) obj;
     }
 }

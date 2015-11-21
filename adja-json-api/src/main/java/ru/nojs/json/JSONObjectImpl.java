@@ -1,8 +1,12 @@
 package ru.nojs.json;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -10,7 +14,7 @@ import java.util.Set;
  * Created by Юыху on 01.11.2015.
  */
 public class JSONObjectImpl implements JSONObject {
-    private final Map<String, JSONElement> map= new HashMap<String, JSONElement>();
+    private final HashMap<String, JSONElement> map= new LinkedHashMap<>();
 
     @Override
     public void add(String property, JSONElement obj) {
@@ -170,5 +174,15 @@ public class JSONObjectImpl implements JSONObject {
     @Override
     public boolean isJsonPrimitive() {
         return this instanceof JSONPrimitive;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        return new EqualsBuilder().reflectionEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode(){
+        return new HashCodeBuilder().reflectionHashCode(this);
     }
 }
