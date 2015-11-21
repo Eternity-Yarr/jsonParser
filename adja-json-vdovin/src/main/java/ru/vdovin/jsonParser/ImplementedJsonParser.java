@@ -41,24 +41,30 @@ public class ImplementedJsonParser implements StreamingJsonParser {
                 }
 
                 if ((element.equals("\"")||key.startsWith("\""))&&!value.startsWith(":")){
-                    if (isUncorrectElement(String.valueOf(element))){
-                        continue;
-                    }
                     key +=element;
+                    continue;
+                } else if (!value.startsWith(":")&&isUncorrectElement((String) element)) {
                     continue;
                 }
 
-                    if ((element.equals("[")||value.startsWith(":"))&&!value.endsWith("]")){
-                        value+=element;
-                        continue;
-                    } else if (!(element.equals(",")||element.equals("}"))){
-                        value+=element;
-                        continue;
+                if (value.startsWith(":")&&(element.equals("[")||value.contains("["))&&!value.endsWith("]")){
+                    value+=element;
+                    continue;
+                } else if (value.startsWith(":")&&!(element.equals(",")||element.equals("}"))){
+                    if (!value.substring(1).startsWith("\"")||value.endsWith("\"")){
+                        if (isUncorrectElement(String.valueOf(element))){
+                            continue;
+                        }
                     }
+                    value+=element;
+                    continue;
+                }
 
                 jsonElement = chooseJson(value.substring(1));
                 jsonObject.add(key.substring(1, key.length()-1), jsonElement);
                 if (element.equals(",")){
+                    key ="";
+                    value ="";
                     continue;
                 }
             }
@@ -80,7 +86,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
                         continue;
                     }
                 }
-                    primitive += String.valueOf(obj);
+                primitive += String.valueOf(obj);
             }
             primitive = primitive.replace("\\", "");
             return parseJsonPrimitive(primitive);
