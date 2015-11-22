@@ -1,10 +1,12 @@
 package ru.nojs.inject;
 
+import com.google.common.base.Preconditions;
 import org.junit.Assert;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -58,7 +60,14 @@ public class ContainerTest {
                 if (ctor.getParameterCount() == 0) {
                         obj = ctor.newInstance();
                 } else {
-                    throw new UnsupportedOperationException();
+                    Parameter[] ctorParams = ctor.getParameters();
+                    List<Object> params = new ArrayList<>(ctorParams.length);
+                    Stream.of(ctorParams)
+                            .forEach(p -> {
+                                params.add(container.getInstance(p.getType()));
+                            });
+                    obj = ctor.newInstance(params.toArray());
+                    //throw new UnsupportedOperationException();
                 }
             } catch (Exception e) {
                 throw new IllegalArgumentException("Can't create instance", e);
@@ -68,7 +77,17 @@ public class ContainerTest {
 
         @Override
         public <T> T getInstance(String name, Class<T> requiredType) {
-            return null;
+
+
+            Preconditions.checkArgument(
+                    requiredType.isAnnotationPresent(Named.class),
+                    "Beans must have @Named annotation");
+            Preconditions.checkArgument(
+                    requiredType.getAnnotation(Named.class).value().equals(name),
+                    "Cant find name = " + name);
+
+
+            return getInstance(requiredType);
         }
 
         @Override
