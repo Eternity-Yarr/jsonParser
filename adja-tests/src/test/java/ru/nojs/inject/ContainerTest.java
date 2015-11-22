@@ -3,11 +3,9 @@ package ru.nojs.inject;
 import com.google.common.base.Preconditions;
 import org.junit.Assert;
 
+import java.io.File;
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 import org.junit.Test;
@@ -19,15 +17,13 @@ import javax.inject.Singleton;
 public class ContainerTest {
     static Container container = new Container() {
 
+        private static final String PACKAGEDIR = "ru/nojs/inject/"; //for test
         private Map<Class, Object> singletonInstances = new HashMap<>();
 
         @Override
         public <T> T getInstance(Class<T> clazz) {
 
             T obj = null;
-
-           // Annotation annotation = clazz.getAnnotations()[0];
-
             if (clazz.isAnnotationPresent(Singleton.class)) {
                obj = getSingleton(clazz);
             }
@@ -78,16 +74,50 @@ public class ContainerTest {
         @Override
         public <T> T getInstance(String name, Class<T> requiredType) {
 
+            List<Class> listClasses = new ArrayList<>();
+            List<Class<T>> implClasses = new ArrayList<>();
 
-            Preconditions.checkArgument(
-                    requiredType.isAnnotationPresent(Named.class),
-                    "Beans must have @Named annotation");
-            Preconditions.checkArgument(
-                    requiredType.getAnnotation(Named.class).value().equals(name),
-                    "Cant find name = " + name);
+           if (requiredType.isInterface()) {
 
+               File dirClasses = new File(ClassLoader.getSystemClassLoader().getResource(PACKAGEDIR).getPath());
+               String[] classes = dirClasses.list();
 
-            return getInstance(requiredType);
+               String packDir = PACKAGEDIR.replace("/", ".");
+               Stream.of(classes)
+                       .forEach(c -> {
+                           try {
+                               listClasses.add(Class.forName(packDir + c.substring(0, c.length() - 6)));
+                           } catch (ClassNotFoundException e) {
+                               throw new IllegalStateException("test... cant class.forName", e);
+                           }
+                       });
+
+               listClasses.forEach(c -> Stream.of(c.getInterfaces())
+                       .forEach(f -> {
+                           if (f == requiredType) {
+                               implClasses.add(c);
+                           }
+                       }));
+
+              Class namedClass = implClasses.stream()
+                       .filter(f -> f.isAnnotationPresent(Named.class) && f.getAnnotation(Named.class).value().equals(name))
+                       .findFirst()
+                       .orElseThrow(() -> new IllegalArgumentException("Beans must have @Named annotation and name = " + name));
+
+               return (T)getInstance(namedClass);
+
+           }
+           else {
+
+               Preconditions.checkArgument(
+                       requiredType.isAnnotationPresent(Named.class),
+                       "Beans must have @Named annotation");
+               Preconditions.checkArgument(
+                       requiredType.getAnnotation(Named.class).value().equals(name),
+                       "Cant find name = " + name);
+
+               return getInstance(requiredType);
+           }
         }
 
         @Override
