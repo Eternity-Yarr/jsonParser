@@ -12,8 +12,10 @@ import java.util.regex.Pattern;
 
 public class JSONPrimitiveClass implements JSONPrimitive{
 
+    private final static int QUOTES_CODE = 34;
 
-    private Object value;
+
+    protected Object value;
 
     public JSONPrimitiveClass(Object o){
         value = o;
@@ -130,11 +132,11 @@ public class JSONPrimitiveClass implements JSONPrimitive{
         Character firstChar = probe.charAt(0);
         Character lastChar = probe.charAt(probe.length()-1);
 
-        if ((firstChar.equals((char)34))&&(!lastChar.equals((char)34))){
+        if ((firstChar.equals((char)QUOTES_CODE))&&(!lastChar.equals((char)QUOTES_CODE))){
             throw new IllegalArgumentException();
         }
 
-        if ((!firstChar.equals((char)34))&&(lastChar.equals((char)34))){
+        if ((!firstChar.equals((char)QUOTES_CODE))&&(lastChar.equals((char)QUOTES_CODE))){
             throw new IllegalArgumentException();
         }
 
@@ -179,9 +181,10 @@ public class JSONPrimitiveClass implements JSONPrimitive{
     private String getRidOfQoutes(String value){
         Character firstChar = value.charAt(0);
         Character lastChar = value.charAt(value.length() - 1);
-        if ((firstChar.equals((char)34))&&(lastChar.equals((char)34))){
+        if ((firstChar.equals((char)QUOTES_CODE))&&(lastChar.equals((char)QUOTES_CODE))){
             value = value.substring(1, value.length()-1);
         }
         return value;
     }
+
 }
