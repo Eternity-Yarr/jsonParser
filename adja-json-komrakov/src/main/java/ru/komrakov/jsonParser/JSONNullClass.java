@@ -1,56 +1,14 @@
-package ru.dkom.jsonParser;
+package ru.komrakov.jsonParser;
 
-import ru.nojs.json.*;
+import ru.nojs.json.JSONArray;
+import ru.nojs.json.JSONNull;
+import ru.nojs.json.JSONObject;
+import ru.nojs.json.JSONPrimitive;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
-public class JSONArrayClass implements JSONArray{
-
-    private List<JSONElement> array;
-
-    public JSONArrayClass(){
-        array = new ArrayList<>();
-    }
-
-    @Override
-    public void add(JSONElement element) {
-        //this.array.add((JSONElementClass) element);
-        this.array.add(element);
-    }
-
-    @Override
-    public void addAll(JSONArray array) {
-        for (JSONElement element:array){
-            this.array.add(element);
-        }
-    }
-
-    @Override
-    public boolean contains(JSONElement element) {
-        return array.contains(element);
-    }
-
-    @Override
-    public JSONElement get(int i) {
-        if(i < 0 || i > array.size()){
-            return null;
-        }
-        return array.get(i);
-    }
-
-    @Override
-    public int size() {
-        return array.size();
-    }
-
-    @Override
-    public Iterator<JSONElement> iterator() {
-        return array.iterator();
-    }
+public class JSONNullClass implements JSONNull {
 
     @Override
     public BigDecimal getAsBigDecimal() {
@@ -89,12 +47,12 @@ public class JSONArrayClass implements JSONArray{
 
     @Override
     public int getAsInt() {
-        return 1;
+        return 0;
     }
 
     @Override
     public JSONArray getAsJsonArray() {
-        return this;
+        return null;
     }
 
     @Override
@@ -134,7 +92,7 @@ public class JSONArrayClass implements JSONArray{
 
     @Override
     public boolean isJsonArray() {
-        return true;
+        return false;
     }
 
     @Override

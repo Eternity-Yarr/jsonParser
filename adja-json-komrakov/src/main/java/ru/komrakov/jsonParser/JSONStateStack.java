@@ -1,4 +1,4 @@
-package ru.dkom.jsonParser;
+package ru.komrakov.jsonParser;
 
 import java.util.ArrayList;
 import java.util.List;

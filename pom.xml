@@ -12,6 +12,7 @@
     <modules>
         <module>adja-json-api</module>
         <module>adja-json-vdovin</module>
+        <module>adja-json-komrakov</module>
         <module>adja-tests</module>
     </modules>
 
