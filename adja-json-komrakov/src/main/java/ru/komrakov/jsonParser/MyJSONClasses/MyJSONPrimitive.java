@@ -1,6 +1,6 @@
-package ru.dkom.jsonParser.MyJSONClasses;
+package ru.komrakov.jsonParser.MyJSONClasses;
 
-import ru.dkom.jsonParser.JSONPrimitiveClass;
+import ru.komrakov.jsonParser.JSONPrimitiveClass;
 import ru.nojs.json.JSONArray;
 import ru.nojs.json.JSONNull;
 import ru.nojs.json.JSONObject;
@@ -9,10 +9,15 @@ import ru.nojs.json.JSONPrimitive;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+//import ru.nojs.json.JSONArray;
+//import ru.nojs.json.JSONNull;
+//import ru.nojs.json.JSONObject;
+//import ru.nojs.json.JSONPrimitive;
+
 /**
  * Created by User on 08.11.2015.
  */
-public class MyJSONPrimitive implements JSONPrimitive{
+public class MyJSONPrimitive implements JSONPrimitive {
 
     JSONPrimitive jsonPrimitive;
 

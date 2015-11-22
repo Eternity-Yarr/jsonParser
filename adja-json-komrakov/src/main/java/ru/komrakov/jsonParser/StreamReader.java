@@ -1,4 +1,4 @@
-package ru.dkom.jsonParser;
+package ru.komrakov.jsonParser;
 
 import java.io.IOException;
 import java.io.Reader;

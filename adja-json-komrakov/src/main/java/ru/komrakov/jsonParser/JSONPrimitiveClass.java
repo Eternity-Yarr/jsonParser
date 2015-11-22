@@ -1,4 +1,4 @@
-package ru.dkom.jsonParser;
+package ru.komrakov.jsonParser;
 
 import ru.nojs.json.JSONArray;
 import ru.nojs.json.JSONNull;
@@ -7,7 +7,6 @@ import ru.nojs.json.JSONPrimitive;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.DoubleSummaryStatistics;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

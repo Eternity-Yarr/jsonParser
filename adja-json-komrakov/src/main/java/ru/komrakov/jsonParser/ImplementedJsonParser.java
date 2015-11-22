@@ -1,6 +1,8 @@
-package ru.dkom.jsonParser;
+package ru.komrakov.jsonParser;
 
-import ru.nojs.json.*;
+import ru.nojs.json.JSONArray;
+import ru.nojs.json.JSONElement;
+import ru.nojs.json.StreamingJsonParser;
 
 import java.io.Reader;
 import java.io.StringReader;

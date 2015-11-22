@@ -1,182 +1,187 @@
-package ru.dkom.jsonParser;
+package ru.komrakov.jsonParser.MyJSONClasses;
 
+import ru.komrakov.jsonParser.JSONObjectClass;
 import ru.nojs.json.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class JSONObjectClass implements JSONObject{
+/**
+ * Created by User on 08.11.2015.
+ */
+public class MyJSONObject implements JSONObject{
 
-    private Map<String,Object> properties;
-    private Set<String> propertiesNames;
+    private JSONObject jsonObject;
 
-    public JSONObjectClass(){
-        properties = new HashMap<>();
+    public MyJSONObject(){
+        jsonObject = new JSONObjectClass();
+    }
+
+    @Override
+    public boolean equals(Object o){
+        /*
+        JSONObject foreignObject = (JSONObjectClass)o;
+        if (jsonObject.isJsonPrimitive()&&(foreignObject.isJsonPrimitive())){
+
+        }*/
+        return false;
     }
 
     @Override
     public void add(String property, JSONElement value) {
-        //properties.put(property,new JSONPrimitiveClass(value));
-        properties.put(property, value);
+        jsonObject.add(property, value);
     }
 
     @Override
     public void addProperty(String property, Boolean value) {
-        properties.put(property,value);
+        jsonObject.addProperty(property, value);
     }
 
     @Override
     public void addProperty(String property, Number value) {
-        properties.put(property,value);
+        jsonObject.addProperty(property, value);
     }
 
     @Override
     public void addProperty(String property, String value) {
-        properties.put(property,new JSONPrimitiveClass(value));
+        jsonObject.addProperty(property, value);
     }
 
     @Override
     public Set<Map.Entry<String, JSONElement>> entrySet() {
+        jsonObject.entrySet();
         return null;
     }
 
     @Override
     public JSONElement get(String memberName) {
-
-        return (JSONElement)properties.get(memberName);
+        return jsonObject.get(memberName);
     }
 
     @Override
     public JSONArray getAsJsonArray(String memberName) {
-        return null;
+        return jsonObject.getAsJsonArray(memberName);
     }
 
     @Override
     public JSONObject getAsJsonObject(String memberName) {
-        return (JSONObject)properties.get(memberName);
+        return jsonObject.getAsJsonObject(memberName);
     }
 
     @Override
     public JSONPrimitive getAsJsonPrimitive(String memberName) {
-        return (JSONPrimitive)properties.get(memberName);
+        return jsonObject.getAsJsonPrimitive(memberName);
     }
 
     @Override
     public boolean has(String memberName) {
-        return false;
+        return jsonObject.has(memberName);
     }
 
     @Override
     public JSONElement remove(String property) {
-        return null;
+        return jsonObject.remove(property);
     }
 
     @Override
     public BigDecimal getAsBigDecimal() {
-        return null;
+        return jsonObject.getAsBigDecimal();
     }
 
     @Override
     public BigInteger getAsBigInteger() {
-        return null;
+        return jsonObject.getAsBigInteger();
     }
 
     @Override
     public boolean getAsBoolean() {
-        return false;
+        return jsonObject.getAsBoolean();
     }
 
     @Override
     public byte getAsByte() {
-        return 0;
+        return jsonObject.getAsByte();
     }
 
     @Override
     public char getAsCharacter() {
-        return 0;
+        return jsonObject.getAsCharacter();
     }
 
     @Override
     public double getAsDouble() {
-        return 0;
+        return jsonObject.getAsDouble();
     }
 
     @Override
     public float getAsFloat() {
-        return 0;
+        return jsonObject.getAsFloat();
     }
 
     @Override
     public int getAsInt() {
-        return 0;
+        return jsonObject.getAsInt();
     }
 
     @Override
     public JSONArray getAsJsonArray() {
-        return null;
+        return jsonObject.getAsJsonArray();
     }
 
     @Override
     public JSONNull getAsJsonNull() {
-        return null;
+        return jsonObject.getAsJsonNull();
     }
 
     @Override
     public JSONObject getAsJsonObject() {
-        //return null;
-        return this;
+        return jsonObject.getAsJsonObject();
     }
 
     @Override
     public JSONPrimitive getAsJsonPrimitive() {
-        return null;
+        return jsonObject.getAsJsonPrimitive();
     }
 
     @Override
     public long getAsLong() {
-        return 0;
+        return jsonObject.getAsLong();
     }
 
     @Override
     public Number getAsNumber() {
-        return null;
+        return jsonObject.getAsNumber();
     }
 
     @Override
     public short getAsShort() {
-        return 0;
+        return jsonObject.getAsShort();
     }
 
     @Override
     public String getAsString() {
-        return null;
+        return jsonObject.getAsString();
     }
 
     @Override
     public boolean isJsonArray() {
-        return false;
+        return jsonObject.isJsonArray();
     }
 
     @Override
     public boolean isJsonNull() {
-        return false;
+        return jsonObject.isJsonNull();
     }
 
     @Override
     public boolean isJsonObject() {
-        return true;
-        /*
-        if (properties.size() > 0){
-            return true;
-        }
-        return false;*/
+        return jsonObject.isJsonObject();
     }
 
     @Override
     public boolean isJsonPrimitive() {
-        return false;
+        return jsonObject.isJsonPrimitive();
     }
 }

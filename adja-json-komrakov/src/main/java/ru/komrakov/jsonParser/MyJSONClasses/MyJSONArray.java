@@ -1,6 +1,6 @@
-package ru.dkom.jsonParser.MyJSONClasses;
+package ru.komrakov.jsonParser.MyJSONClasses;
 
-import ru.dkom.jsonParser.JSONArrayClass;
+import ru.komrakov.jsonParser.JSONArrayClass;
 import ru.nojs.json.*;
 
 import java.math.BigDecimal;

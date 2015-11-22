@@ -4,11 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.junit.Assert;
 import org.junit.Test;
-import ru.dkom.jsonParser.ImplementedJsonParser;
-import ru.dkom.jsonParser.MyJSONClasses.MyJSONArray;
-import ru.dkom.jsonParser.MyJSONClasses.MyJSONObject;
-import ru.dkom.jsonParser.MyJSONClasses.MyJSONPrimitive;
-//import ru.vdovin.jsonParser.*;
+
+import ru.komrakov.jsonParser.ImplementedJsonParser;
+import ru.komrakov.jsonParser.MyJSONClasses.MyJSONArray;
+import ru.komrakov.jsonParser.MyJSONClasses.MyJSONObject;
+import ru.komrakov.jsonParser.MyJSONClasses.MyJSONPrimitive;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
+
 
 public class JsonParserTest {
     final private StreamingJsonParser sjp = new ImplementedJsonParser();
