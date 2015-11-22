@@ -42,6 +42,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
         String stringValue = jsonString.toString().replace("\\", "");
 
+        stringValue = removeInsignificant(stringValue);
         if (enclosedInQuotes(stringValue)) {
             return new MyJSONPrimitive(stringValue.substring(1, stringValue.length() - 1));
         } else {
@@ -62,8 +63,11 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
         String primitiveValue = primitive.toString();
 
-        if (isInteger(primitiveValue)){
+        if (isInteger(primitiveValue)) {
             jp = new MyJSONPrimitive(Integer.parseInt(primitiveValue));
+        }
+        else if (isLong(primitiveValue)) {
+            jp = new MyJSONPrimitive(Long.parseLong(primitiveValue));
         }
         else if (isFloat(primitiveValue)){
             jp = new MyJSONPrimitive(Float.parseFloat(primitiveValue));
@@ -178,11 +182,23 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         return true;
     }
 
-    private boolean  enclosedInQuotes(String value){
-        if (value.endsWith("\n") ||value.endsWith("\t") || value.endsWith("\r")){
-           return enclosedInQuotes(value.substring(0, value.length() - 1));
+    private boolean isLong(String value){
+        try {
+            Long.parseLong(value);
         }
+        catch (Exception e){
+            return false;
+        }
+        return true;
+    }
+
+    private boolean  enclosedInQuotes(String value){
         return value.startsWith("\"") && value.endsWith("\"");
+    }
+    private String removeInsignificant(String value) {
+        if (value.endsWith("\n") || value.endsWith("\t") || value.endsWith("\r") || value.endsWith(" "))
+            return removeInsignificant(value.substring(0, value.length() - 1));
+        return value;
     }
 
     private boolean isNull(String value){

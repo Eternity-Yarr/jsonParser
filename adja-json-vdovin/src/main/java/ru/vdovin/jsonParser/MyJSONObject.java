@@ -79,7 +79,7 @@ public class MyJSONObject extends MyJSONElement implements JSONObject {
 
     @Override
     public boolean has(String memberName) {
-        return false;
+        return members.containsKey(memberName);
     }
 
     @Override
