@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import ru.komrakov.jsonMapper.MapperClass;
 import ru.komrakov.jsonMapper.MappingJSONParserClass;
+import ru.nojs.json.JSONArray;
 import ru.nojs.json.JSONElement;
 import ru.nojs.json.Mapper;
 import ru.nojs.json.MappingJsonParser;
@@ -33,10 +34,21 @@ public class MappingJsonParserTest {
     }
 
     @Test
+    public void testSimpleArrayMapper() {
+        String json = "[1,2,3,4]";
+        Reader r = new StringReader(json);
+        Mapper<JSONArray> arrayMapper = JSONElement::getAsJsonArray;
+        JSONArray result = mjp.parse(r, arrayMapper);
+        result.forEach((arrayEntry) -> System.out.println(arrayEntry.getAsInt()));
+        Assert.assertEquals("I shall not crash", "abcdef", result.toString());
+    }
+
+    @Test
     public void testMapMapper() {
         String json = "{\"a\": \"abcdef\", \"b\": \"bgedf\"}";
         Reader r = new StringReader(json);
         //Mapper<HashMap<String, String>> hashMapMapper = mock(Mapper.class, "replace me");
+        //Mapper<HashMap<String, String>> hashMapMapper = new MapperClass();
         Mapper<HashMap<String, String>> hashMapMapper = new MapperClass();
         HashMap<String, String> result = mjp.parse(r, hashMapMapper);
         Assert.assertEquals("key 'a' bounded correctly", "abcdef", result.get("a"));

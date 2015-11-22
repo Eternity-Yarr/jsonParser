@@ -10,13 +10,9 @@ public class MapperClass implements Mapper{
 
     @Override
     public Object map(JSONElement e) throws NoSuchFieldException, IllegalAccessException {
-        return e.getAsString();
+        //return e.getAsString();
+        return null;
     }
-    /*
-    @Override
-    public Object map(JSONElement e) throws NoSuchFieldException, IllegalAccessException {
-        //return null;
-        return e.getAsString();
-    }*/
+
     
 }
