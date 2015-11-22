@@ -46,8 +46,17 @@ public class MyJSONPrimitive extends JSONPrimitiveClass {
     http://www.javaworld.com/article/2072762/java-app-dev/object-equality.html
      */
 
+    //EqualsBuilder and HashBuilder usage
+    //discussion here: http://stackoverflow.com/questions/10912646/hashcodebuilder-and-equalsbuilder-usage-style
 
-    /* manual comparison
+    //perfomance notes:
+    //....4 objects with different equals implementations. eclipse generated, equalsbuilder.append,
+    // equalsbuilder.reflection, and pojomatic annotations. The baseline was eclipse. equalsbuilder.append took 3.7x.
+    // pojomatic took 5x. reflection based took 25.8x.
+    //http://stackoverflow.com/questions/5038204/apache-commons-equals-hashcode-builder
+
+
+    /* manual implementation
 
     private static final int NULL_HASHCODE = 73;
     private static final int MAX_HASHCODE_LENGTH = 50;
@@ -97,14 +106,7 @@ public class MyJSONPrimitive extends JSONPrimitiveClass {
     }
     */
 
-    //EqualsBuilder and HashBuilder usage
-    //discussion here: http://stackoverflow.com/questions/10912646/hashcodebuilder-and-equalsbuilder-usage-style
 
-    //perfomance notes:
-    //....4 objects with different equals implementations. eclipse generated, equalsbuilder.append,
-    // equalsbuilder.reflection, and pojomatic annotations. The baseline was eclipse. equalsbuilder.append took 3.7x.
-    // pojomatic took 5x. reflection based took 25.8x.
-    //http://stackoverflow.com/questions/5038204/apache-commons-equals-hashcode-builder
 
 
 }
