@@ -1,11 +1,14 @@
 package ru.nojs.inject;
 
 import org.junit.Assert;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.junit.Test;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -13,22 +16,49 @@ import javax.inject.Singleton;
 
 public class ContainerTest {
     static Container container = new Container() {
+
+        private Map<Class, Object> singletonInstances = new HashMap<>();
+
         @Override
         public <T> T getInstance(Class<T> clazz) {
 
-            T obj;
+            T obj = null;
+
+           // Annotation annotation = clazz.getAnnotations()[0];
+
+            if (clazz.isAnnotationPresent(Singleton.class)) {
+               obj = getSingleton(clazz);
+            }
+            else {
+                obj = createObj(clazz);
+            }
+            return obj;
+        }
+
+
+        private <T> T getSingleton(Class<T> clazz) {
+            if (singletonInstances.containsKey(clazz)) {
+                return (T)singletonInstances.get(clazz);
+            }
+            else {
+                T obj = createObj(clazz);
+                singletonInstances.put(clazz, obj);
+                return obj;
+            }
+        }
+
+        private <T> T createObj(Class<T> clazz) {
+            T obj = null;
             try {
                 Constructor<T> ctor =
                         Stream.of(clazz.getConstructors())
                                 .findFirst()
                                 .map(c -> (Constructor<T>) c)
-                                .orElseThrow(() -> new IllegalArgumentException("Beans not have default constructor"));
-                if ( ctor.getParameterCount() == 0 ) {
-                    //ctor.isAnnotationPresent(Singleton);
-                    obj = ctor.newInstance();
-                }
-                else {
-                    throw new NotImplementedException();
+                                .orElseThrow(() -> new IllegalArgumentException("Can't find constructor"));
+                if (ctor.getParameterCount() == 0) {
+                        obj = ctor.newInstance();
+                } else {
+                    throw new UnsupportedOperationException();
                 }
             } catch (Exception e) {
                 throw new IllegalArgumentException("Can't create instance", e);
