@@ -30,6 +30,11 @@
         </dependency>
         <dependency>
             <groupId>ru.nojs</groupId>
+            <artifactId>adja-json-komrakov</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ru.nojs</groupId>
             <artifactId>adja-json-vdovin</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

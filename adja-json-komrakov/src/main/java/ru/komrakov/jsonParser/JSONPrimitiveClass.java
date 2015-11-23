@@ -19,6 +19,7 @@ public class JSONPrimitiveClass implements JSONPrimitive{
 
     public JSONPrimitiveClass(Object o){
         value = o;
+        //FIXME: String::equalsIgnoreCase()
         if (((String)o).toLowerCase().equals("null")){
             value = null;
         }
@@ -48,7 +49,9 @@ public class JSONPrimitiveClass implements JSONPrimitive{
         Character firstChar = probe.charAt(0);
         Character lastChar = probe.charAt(probe.length() - 1);
 
+        //FIXME: DRY: это уже было где-то
         if ((firstChar.equals((char) 34)) && (lastChar.equals((char) 34))) {
+            //FIXME: Лучше добавлять сообщения исключениям, проще жить. Что это за IllegalState?
             throw new IllegalStateException();
         }
 
@@ -132,6 +135,7 @@ public class JSONPrimitiveClass implements JSONPrimitive{
         Character firstChar = probe.charAt(0);
         Character lastChar = probe.charAt(probe.length()-1);
 
+        //FIXME: ^_^
         if ((firstChar.equals((char)QUOTES_CODE))&&(!lastChar.equals((char)QUOTES_CODE))){
             throw new IllegalArgumentException();
         }

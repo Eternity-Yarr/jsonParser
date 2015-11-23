@@ -15,6 +15,8 @@ public class StreamReader {
     public static int END_OF_STREAM = -1;
     public static String NO_MORE_SYMBOLS_TO_READ = "";
 
+    //FIXME: DRY: сколько раз в этом проекте пришлось объявить { } и тп? :) все надо собрать в одну кучу.
+    //FIXME: причем судя по всему токены лучше хранить в enum. (Android отдельная песня)
     public final static String JSON_OBJECT_START = "{";
     public final static String JSON_OBJECT_END = "}";
     public final static String JSON_OBJECT_SEPARATOR = ",";
@@ -26,6 +28,7 @@ public class StreamReader {
     private static int READ_AHEAD_BUFFER_SIZE = 10;
     private Reader reader;
 
+    //FIXME: в яве с большой буквы принято называть только типы/классы. Константы - большими буквами.
     private static Map<Character,String> CharEventMap = new HashMap<Character, String>();
     {
         CharEventMap.put('{',JSON_OBJECT_START);
@@ -49,6 +52,7 @@ public class StreamReader {
         int code = readCharCodeFromStream();
         markStreamPosition();
 
+        //FIXME: лишние скобки
         if((isTerminal(code))){
             Integer[] a = {END_OF_STREAM};
             return a;
@@ -73,6 +77,7 @@ public class StreamReader {
         return convertCodeSequenceToArray(codes);
     }
 
+    //FIXME: DRY: я это видел уже где-то!
     private Integer[] convertCodeSequenceToArray(List<Integer> codes) {
         Integer[] codesSeq = new Integer[codes.size()];
         for (int i = 0; i < codes.size(); i++) {
@@ -83,6 +88,7 @@ public class StreamReader {
     }
 
     private Boolean isTerminal(Integer code){
+        //FIXME: return code == END_OF_STREAM;
         Boolean isTerminal = false;
         if (code == END_OF_STREAM){
             isTerminal = true;
@@ -110,6 +116,7 @@ public class StreamReader {
         }
     }
 
+    //FIXME: private char readCharFromStream() наверное избавил бы от кучи лишних кастов и прочих возможных ошибок
     private int readCharCodeFromStream() {
         int code = -1;
         try {

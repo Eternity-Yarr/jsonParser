@@ -24,6 +24,7 @@ public class MyJSONPrimitive extends JSONPrimitiveClass {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+    //FIXME: Cleanup?
     /*
     "equals()" notes:
     The reason to use getClass is to ensure the symmetric property of the equals contract. From equals' JavaDocs:

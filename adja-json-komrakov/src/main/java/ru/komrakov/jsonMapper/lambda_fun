@@ -1,3 +1,6 @@
+//FIXME: cleanup
+
+
 package ru.komrakov.jsonMapper;
 
 import ru.komrakov.jsonParser.ImplementedJsonParser;

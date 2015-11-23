@@ -13,6 +13,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     public JSONElement parse(Reader r) throws IllegalArgumentException{
         SmartStreamReader reader = new SmartStreamReader(r);
         JSONElement element = null;
+        //FIXME: зачем так делать? только бесить варнингами IDEA-инспектора. Лучше убрать, здесь и везде
         element = buildJSON(element, reader);
 
         return element;
@@ -59,6 +60,9 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     private String getRidOfQoutes(String value){
         Character firstChar = value.charAt(0);
         Character lastChar = value.charAt(value.length()-1);
+        //FIXME: контест по обфускации? :)
+        //String QUOTE = "\"";
+        //FIXME value.startsWith(QUOTE) && value.endsWith(QUOTE)
         if ((firstChar.equals((char)34))&&(lastChar.equals((char)34))){
             value = value.substring(1, value.length()-1);
         }
@@ -67,6 +71,8 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
     public static void main(String[] args) {
         ImplementedJsonParser sjp = new ImplementedJsonParser();
+
+        //FIXME: в vcs обычно не хранят закоменченый код. На то она и vcs. Если нужно что-то старое - чекаут.
         JSONElement je = null;
         JSONArray a = null;
         String str = "";

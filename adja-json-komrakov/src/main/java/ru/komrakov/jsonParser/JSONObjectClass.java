@@ -11,6 +11,7 @@ import java.util.Set;
 public class JSONObjectClass implements JSONObject{
 
     private Map<String,Object> properties;
+    //FIXME: Cleanup!
     private Set<String> propertiesNames;
 
     public JSONObjectClass(){

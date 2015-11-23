@@ -3,6 +3,8 @@ package ru.komrakov.jsonParser;
 import java.util.ArrayList;
 import java.util.List;
 
+
+//FIXME: Cleanup
 public class JSONStateStack {
     private List<String> stack;
     private Integer size;
