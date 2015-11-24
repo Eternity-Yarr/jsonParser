@@ -4,8 +4,16 @@ import com.google.common.base.Preconditions;
 import org.junit.Assert;
 
 import java.io.File;
+import java.io.Reader;
 import java.lang.reflect.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.junit.Test;
@@ -144,6 +152,40 @@ public class ContainerTest {
         SimpleSingleton singleton1 = container.getInstance(SimpleSingleton.class);
         SimpleSingleton singleton2 = container.getInstance(SimpleSingleton.class);
         Assert.assertEquals("No double'tons allowed", singleton1, singleton2);
+    }
+
+    @Test
+    public void testThreadedSingletonInstance() {
+        CountDownLatch latch = new CountDownLatch(3);
+        Callable<SimpleSingleton> s = () -> {
+            latch.await();
+            return container.getInstance(SimpleSingleton.class);
+        };
+
+        ExecutorService es = Executors.newFixedThreadPool(3);
+        List<Future<SimpleSingleton>> fs = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            fs.add(es.submit(s));
+            latch.countDown();
+        }
+
+        List<SimpleSingleton> ss = fs.stream().map(f -> {
+                    try {
+                        return f.get();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        ).collect(Collectors.toList());
+
+
+        SimpleSingleton singleton = ss.get(0);
+        Assert.assertTrue(
+                "No double'tons allowed",
+                ss
+                    .stream()
+                    .peek(System.out::println)
+                    .allMatch(newSingleton -> singleton == newSingleton));
     }
 
     @Test
