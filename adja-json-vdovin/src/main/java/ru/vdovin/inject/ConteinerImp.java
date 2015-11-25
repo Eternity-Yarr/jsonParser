@@ -19,7 +19,7 @@ import javax.inject.Singleton;
 public class ConteinerImp implements Container {
 
     private static final String PACKAGEDIR = "ru/nojs/inject/"; //for test
-    private Map<Class, Object> singletonInstances = new HashMap<>();
+    private static Map<Class, Object> singletonInstances = new HashMap<>();
 
     @Override
     public <T> T getInstance(Class<T> clazz) {
@@ -47,8 +47,7 @@ public class ConteinerImp implements Container {
     }
 
     private <T> T createObj(Class<T> clazz) {
-        T obj = null;
-
+        T obj ;
         Constructor<T>[] ctors = (Constructor<T>[]) clazz.getConstructors();
         Constructor<T> ctor;
 
@@ -73,7 +72,15 @@ public class ConteinerImp implements Container {
                 Parameter[] ctorParams = ctor.getParameters();
                 List<Object> params = new ArrayList<>(ctorParams.length);
                 Stream.of(ctorParams)
-                        .forEach(p -> params.add(getInstance(p.getType())));
+                        .forEach(p -> {
+                            if (p.isAnnotationPresent(Named.class)){
+                                params.add(getInstance(p.getAnnotation(Named.class).value(), p.getType()));
+                            }
+                            else {
+                                params.add(getInstance(p.getType()));
+                            }
+                        });
+
                 obj = ctor.newInstance(params.toArray());
             }
         } catch (Exception e) {
@@ -84,16 +91,6 @@ public class ConteinerImp implements Container {
         return obj;
 
     }
-
- /*   <T> Constructor<T> findConstructor(Constructor<T>[] ctors){
-        Constructor<T> ctor =
-                Stream.of(ctors)
-                .filter(constructor -> constructor.isAnnotationPresent(Inject.class))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Constructor mast have @Inject annotation"));
-        return ctor;
-    }*/
-
 
     @Override
     public <T> T getInstance(String name, Class<T> requiredType) {
