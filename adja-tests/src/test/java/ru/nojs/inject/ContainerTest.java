@@ -122,6 +122,12 @@ public class ContainerTest {
         boolean method() {
             return true;
         }
+
+        public SimpleSingleton() {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ignored) { }
+        }
     }
 
     @Named("namedBean")

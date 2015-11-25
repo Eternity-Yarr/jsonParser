@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -19,7 +20,7 @@ import javax.inject.Singleton;
 public class ConteinerImp implements Container {
 
     private static final String PACKAGEDIR = "ru/nojs/inject/"; //for test
-    private static final Map<Class, Object> singletonInstances = new HashMap<>();
+    private static  ConcurrentHashMap<Class, Object> singletonInstances = new ConcurrentHashMap<>();
 
     @Override
     public <T> T getInstance(Class<T> clazz) {
