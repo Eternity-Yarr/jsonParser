@@ -4,6 +4,7 @@ import ru.nojs.inject.Container;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -46,29 +48,52 @@ public class ConteinerImp implements Container {
 
     private <T> T createObj(Class<T> clazz) {
         T obj = null;
+
+        Constructor<T>[] ctors = (Constructor<T>[]) clazz.getConstructors();
+        Constructor<T> ctor;
+
+        switch (ctors.length) {
+            case 0: { throw new IllegalStateException("Can't find constructor"); }
+            case 1: {
+                ctor = ctors[0];
+                break;
+            }
+            default: {
+                ctor = Stream.of(ctors)
+                        .filter(constructor -> constructor.isAnnotationPresent(Inject.class))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Constructor mast have @Inject annotation"));
+            }
+        }
+
         try {
-            Constructor<T> ctor =
-                    Stream.of(clazz.getConstructors())
-                            .findFirst()
-                            .map(c -> (Constructor<T>) c)
-                            .orElseThrow(() -> new IllegalArgumentException("Can't find constructor"));
             if (ctor.getParameterCount() == 0) {
-                obj = ctor.newInstance();
+                    obj = ctor.newInstance();
             } else {
                 Parameter[] ctorParams = ctor.getParameters();
                 List<Object> params = new ArrayList<>(ctorParams.length);
                 Stream.of(ctorParams)
-                        .forEach(p -> {
-                            params.add(getInstance(p.getType()));
-                        });
+                        .forEach(p -> params.add(getInstance(p.getType())));
                 obj = ctor.newInstance(params.toArray());
-                //throw new UnsupportedOperationException();
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("Can't create instance", e);
+            throw new IllegalStateException("Can't create instance", e);
         }
+
+
         return obj;
+
     }
+
+ /*   <T> Constructor<T> findConstructor(Constructor<T>[] ctors){
+        Constructor<T> ctor =
+                Stream.of(ctors)
+                .filter(constructor -> constructor.isAnnotationPresent(Inject.class))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Constructor mast have @Inject annotation"));
+        return ctor;
+    }*/
+
 
     @Override
     public <T> T getInstance(String name, Class<T> requiredType) {
