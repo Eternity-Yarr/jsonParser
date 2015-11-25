@@ -4,12 +4,9 @@ import ru.nojs.inject.Container;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.*;
 import java.util.stream.Stream;
 
@@ -37,17 +34,7 @@ public class ConteinerImp implements Container {
 
 
     private <T> T getSingleton(Class<T> clazz) {
-
-        if (!singletonInstances.containsKey(clazz)) {
-            synchronized (singletonInstances) {
-                if (!singletonInstances.containsKey(clazz)) {
-                    T obj = createObj(clazz);
-                    singletonInstances.put(clazz, obj);
-                    return obj;
-                }
-            }
-        }
-            return (T)singletonInstances.get(clazz);
+        return (T)singletonInstances.computeIfAbsent(clazz,(c) -> createObj(c));
     }
 
     private <T> T createObj(Class<T> clazz) {
