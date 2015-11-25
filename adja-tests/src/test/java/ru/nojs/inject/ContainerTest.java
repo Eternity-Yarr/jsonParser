@@ -1,9 +1,9 @@
 package ru.nojs.inject;
 
 import org.junit.Assert;
+import org.junit.Test;
 import ru.vdovin.inject.ConteinerImp;
 
-import org.junit.Test;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -37,15 +37,15 @@ public class ContainerTest {
 
     @Test
     public void testThreadedSingletonInstance() {
-        CountDownLatch latch = new CountDownLatch(3);
+        CountDownLatch latch = new CountDownLatch(2);
         Callable<SimpleSingleton> s = () -> {
             latch.await();
             return container.getInstance(SimpleSingleton.class);
         };
 
-        ExecutorService es = Executors.newFixedThreadPool(3);
+        ExecutorService es = Executors.newFixedThreadPool(2);
         List<Future<SimpleSingleton>> fs = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             fs.add(es.submit(s));
             latch.countDown();
         }
@@ -109,6 +109,13 @@ public class ContainerTest {
         container.getInstance(NotQualified.class);
     }
 
+    @Test(expected = IllegalStateException.class) // Bonus level 3
+    public void testCircularDependencyCircuitBreak() throws Exception {
+        CompletableFuture<CircularDependencyA> cf =
+                CompletableFuture.supplyAsync(() -> container.getInstance(CircularDependencyA.class));
+        cf.get(1, TimeUnit.SECONDS);
+    }
+
     public static class SimpleInstance {
         boolean method() {
             return true;
@@ -116,6 +123,11 @@ public class ContainerTest {
     }
 
     @Singleton public static class SimpleSingleton {
+        public SimpleSingleton() {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ignored) { }
+        }
         boolean method() {
             return true;
         }
@@ -219,6 +231,21 @@ public class ContainerTest {
     public static class NotQualified {
         @Inject
         public NotQualified(MultipleImplementations implementations) {
+
+        }
+    }
+
+    @Singleton
+    public static class CircularDependencyA {
+        @Inject
+        public CircularDependencyA(CircularDependencyB b) {}
+
+    }
+
+    @Singleton
+    public static class CircularDependencyB {
+        @Inject
+        public CircularDependencyB(CircularDependencyA a) {
 
         }
     }
