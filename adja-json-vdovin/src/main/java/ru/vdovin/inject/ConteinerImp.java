@@ -35,15 +35,12 @@ public class ConteinerImp implements Container {
     }
 
 
-    private  <T> T getSingleton(Class<T> clazz) {
+    private synchronized <T> T getSingleton(Class<T> clazz) {
 
         if (!singletonInstances.containsKey(clazz)){
-            synchronized (singletonInstances) {
                 T obj = createObj(clazz);
                 singletonInstances.put(clazz, obj);
                 return obj;
-            }
-
         }
             return (T)singletonInstances.get(clazz);
     }
