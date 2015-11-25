@@ -19,7 +19,7 @@ import javax.inject.Singleton;
 public class ConteinerImp implements Container {
 
     private static final String PACKAGEDIR = "ru/nojs/inject/"; //for test
-    public static Map<Class, Object> singletonInstances = new HashMap<>();
+    private static final Map<Class, Object> singletonInstances = new HashMap<>();
 
     @Override
     public <T> T getInstance(Class<T> clazz) {
@@ -35,12 +35,16 @@ public class ConteinerImp implements Container {
     }
 
 
-    private synchronized <T> T getSingleton(Class<T> clazz) {
+    private <T> T getSingleton(Class<T> clazz) {
 
-        if (!singletonInstances.containsKey(clazz)){
-                T obj = createObj(clazz);
-                singletonInstances.put(clazz, obj);
-                return obj;
+        if (!singletonInstances.containsKey(clazz)) {
+            synchronized (singletonInstances) {
+                if (!singletonInstances.containsKey(clazz)) {
+                    T obj = createObj(clazz);
+                    singletonInstances.put(clazz, obj);
+                    return obj;
+                }
+            }
         }
             return (T)singletonInstances.get(clazz);
     }
