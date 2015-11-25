@@ -4,10 +4,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- * Created by ���� on 01.11.2015.
+ * Created by ���� on 01.11.2015.
  */
 public class JSONNullImpl implements JSONNull{
 
+    //FIXME: а это зачем?
     public static final JSONNullImpl getInstance(){
         return new JSONNullImpl();
     }
@@ -97,6 +98,7 @@ public class JSONNullImpl implements JSONNull{
     }
 
     @Override
+    //FIXME: return true;
     public boolean isJsonNull() {
         return this instanceof JSONNull;
     }

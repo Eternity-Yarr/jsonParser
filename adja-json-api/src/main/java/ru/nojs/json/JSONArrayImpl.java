@@ -9,8 +9,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+//FIXME: кодировку в IDEA почини :)
 /**
- * Created by ���� on 17.10.2015.
+ * Created by ���� on 17.10.2015.
  */
 public class JSONArrayImpl implements JSONArray {
     private final List<JSONElement> list = new ArrayList<>();
@@ -91,6 +92,7 @@ public class JSONArrayImpl implements JSONArray {
     @Override
     public JSONArray getAsJsonArray() {
         if (isJsonArray()) {
+            //FIXME: бессмыслено :)
             return (JSONArray) this;
         }
         throw new IllegalStateException("This Json not JsonArray");
@@ -133,6 +135,7 @@ public class JSONArrayImpl implements JSONArray {
 
     @Override
     public boolean isJsonArray() {
+        //FIXME: >_< бессмыслено!
         return this instanceof JSONArray;
     }
 

@@ -8,12 +8,17 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class ImplementedJsonParser implements StreamingJsonParser {
+    //FIXME: модификаторы?
     List<Object> list = new ArrayList<>();
+    //FIXME: public?
     public JSONObjectImpl jsonObject = new JSONObjectImpl();
     private JSONElement jsonElement;
+    //FIXME: константы обычно объявляют первыми в классе, названия дают большими буквами.
     private static final Pattern pattern = Pattern.compile(",");
     public JSONElement parse(Reader r) {
         list.clear();
+        //FIXME: а вообще это не стриминговая имплементация, ты просто весь стрим вычитал в лист.
+        //FIXME: придется переделать :)
         try {
             int data = r.read();
             while (data != -1) {
@@ -26,6 +31,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             throw new IllegalStateException("Error!!!!!!");
         }
 
+        //FIXME: Условие бессмысленное.. ['}','{',':'] тоже содержит эти символы.
         if (list.contains('{')&&list.contains(':')&&list.contains('}')){
             String key = "";
             String value = "";

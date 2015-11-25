@@ -11,9 +11,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by Îëåã on 01.11.2015.
+ * Created by ï¿½ï¿½ï¿½ï¿½ on 01.11.2015.
  */
 public class JSONObjectImpl implements JSONObject {
+    //FIXME: Map
     private final HashMap<String, JSONElement> map= new LinkedHashMap<>();
 
     @Override
@@ -123,6 +124,7 @@ public class JSONObjectImpl implements JSONObject {
     @Override
     public JSONObject getAsJsonObject() {
         if (isJsonObject()){
+            //FIXME: same
             return (JSONObject) this;
         }
         throw new IllegalStateException("This is not JSONObject");
@@ -131,6 +133,7 @@ public class JSONObjectImpl implements JSONObject {
     @Override
     public JSONPrimitive getAsJsonPrimitive() {
         if (isJsonPrimitive()) {
+            //FIXME: Ð§Ñ‚Ð¾? :)
             return null;
         }
         throw new IllegalStateException("This is not JSONPromitive");

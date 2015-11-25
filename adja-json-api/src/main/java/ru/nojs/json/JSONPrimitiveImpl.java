@@ -8,7 +8,7 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 /**
- * Created by ���� on 20.10.2015.
+ * Created by ���� on 20.10.2015.
  */
 public class JSONPrimitiveImpl implements JSONPrimitive {
     private Object obj;
@@ -101,6 +101,7 @@ public class JSONPrimitiveImpl implements JSONPrimitive {
 
     @Override
     public int getAsInt() {
+        //FIXME: загадка какая-то вообще :)
         return isNumber() ? getAsNumber().intValue() : Integer.parseInt(getAsString());
     }
 
@@ -157,6 +158,7 @@ public class JSONPrimitiveImpl implements JSONPrimitive {
 
     @Override
     public boolean isJsonArray() {
+        //FIXME: как примитив может быть instanceof чего либо другого?
         return this instanceof JSONArray;
     }
 
