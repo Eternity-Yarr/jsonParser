@@ -5,7 +5,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +13,7 @@ import java.util.Set;
  * Created by Юыху on 01.11.2015.
  */
 public class JSONObjectImpl implements JSONObject {
-    private final HashMap<String, JSONElement> map= new LinkedHashMap<>();
+    private final Map<String, JSONElement> map= new LinkedHashMap<>();
 
     @Override
     public void add(String property, JSONElement obj) {
@@ -123,7 +122,7 @@ public class JSONObjectImpl implements JSONObject {
     @Override
     public JSONObject getAsJsonObject() {
         if (isJsonObject()){
-            return (JSONObject) this;
+            return  this;
         }
         throw new IllegalStateException("This is not JSONObject");
     }
@@ -131,7 +130,7 @@ public class JSONObjectImpl implements JSONObject {
     @Override
     public JSONPrimitive getAsJsonPrimitive() {
         if (isJsonPrimitive()) {
-            return null;
+            return (JSONPrimitive) this;
         }
         throw new IllegalStateException("This is not JSONPromitive");
     }

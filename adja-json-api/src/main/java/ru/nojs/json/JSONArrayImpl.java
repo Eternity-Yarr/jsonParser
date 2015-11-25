@@ -90,10 +90,7 @@ public class JSONArrayImpl implements JSONArray {
 
     @Override
     public JSONArray getAsJsonArray() {
-        if (isJsonArray()) {
-            return (JSONArray) this;
-        }
-        throw new IllegalStateException("This Json not JsonArray");
+            return this;
     }
 
     @Override
@@ -133,7 +130,7 @@ public class JSONArrayImpl implements JSONArray {
 
     @Override
     public boolean isJsonArray() {
-        return this instanceof JSONArray;
+        return true;
     }
 
     @Override

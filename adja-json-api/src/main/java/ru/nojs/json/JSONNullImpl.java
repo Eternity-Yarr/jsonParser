@@ -8,9 +8,6 @@ import java.math.BigInteger;
  */
 public class JSONNullImpl implements JSONNull{
 
-    public static final JSONNullImpl getInstance(){
-        return new JSONNullImpl();
-    }
     @Override
     public BigDecimal getAsBigDecimal() {
         return null;
@@ -98,7 +95,7 @@ public class JSONNullImpl implements JSONNull{
 
     @Override
     public boolean isJsonNull() {
-        return this instanceof JSONNull;
+        return true;
     }
 
     @Override

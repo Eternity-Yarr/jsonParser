@@ -5,7 +5,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Objects;
 
 /**
  * Created by Юыху on 20.10.2015.
@@ -101,7 +100,7 @@ public class JSONPrimitiveImpl implements JSONPrimitive {
 
     @Override
     public int getAsInt() {
-        return isNumber() ? getAsNumber().intValue() : Integer.parseInt(getAsString());
+        return Integer.parseInt(getAsString());
     }
 
     @Override
@@ -125,7 +124,7 @@ public class JSONPrimitiveImpl implements JSONPrimitive {
     @Override
     public JSONPrimitive getAsJsonPrimitive() {
         if (isJsonPrimitive()) {
-            return (JSONPrimitive) this;
+            return this;
         }
         throw new IllegalStateException("This Json not JsonPrimitive");
     }
@@ -157,7 +156,7 @@ public class JSONPrimitiveImpl implements JSONPrimitive {
 
     @Override
     public boolean isJsonArray() {
-        return this instanceof JSONArray;
+        return false;
     }
 
     @Override

@@ -90,7 +90,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         } else if (isQuote(el)){
             jsonElement = new JSONPrimitiveImpl(el);
         } else if (isNull(el)){
-            jsonElement = JSONNullImpl.getInstance();
+            jsonElement = new JSONNullImpl();
         } else if (isBoolean(el)){
             jsonElement = new JSONPrimitiveImpl(Boolean.parseBoolean(el));
         }
