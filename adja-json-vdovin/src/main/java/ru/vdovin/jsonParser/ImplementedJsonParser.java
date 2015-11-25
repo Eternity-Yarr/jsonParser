@@ -3,7 +3,6 @@ package ru.vdovin.jsonParser;
 import ru.nojs.json.*;
 
 import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -20,17 +19,18 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             while (data != -1) {
                 char str = (char) data;
                 data = r.read();
-                list.add(String.valueOf(str));
+                list.add(str);
             }
             r.close();
         } catch (Exception e) {
             throw new IllegalStateException("Error!!!!!!");
         }
 
-        if (list.contains("{")&&list.contains(":")&&list.contains("}")){
+        if (list.contains('{')&&list.contains(':')&&list.contains('}')){
             String key = "";
             String value = "";
             for (Object element : list){
+                element = String.valueOf(element);
                 if (element.equals("{")){
                     continue;
                 }
@@ -43,7 +43,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
                 if ((element.equals("\"")||key.startsWith("\""))&&!value.startsWith(":")){
                     key +=element;
                     continue;
-                } else if (!value.startsWith(":")&&isUncorrectElement((String) element)) {
+                } else if (!value.startsWith(":")&&isUncorrectElement(String.valueOf(element))) {
                     continue;
                 }
 
@@ -69,13 +69,13 @@ public class ImplementedJsonParser implements StreamingJsonParser {
                 }
             }
             return jsonObject;
-        }else if (list.contains("[")&&list.contains("]")){
+        }else if (list.contains('[')&&list.contains(']')){
             String arr= "";
             for (Object obj : list){
                 if (isUncorrectElement(String.valueOf(obj))){
                     continue;
                 }
-                arr += obj;
+                arr += String.valueOf(obj);
             }
             return parseJsonArray(arr);
         } else {
