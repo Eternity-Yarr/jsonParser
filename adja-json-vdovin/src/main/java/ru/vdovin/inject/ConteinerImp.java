@@ -1,5 +1,6 @@
 package ru.vdovin.inject;
 import com.google.common.base.Preconditions;
+import org.reflections.Reflections;
 import ru.nojs.inject.Container;
 
 import java.io.File;
@@ -7,6 +8,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Stream;
 
@@ -16,22 +18,12 @@ import javax.inject.Singleton;
 
 public class ConteinerImp implements Container {
 
-    private static final String PACKAGEDIR = "ru/nojs/inject/"; //for test
     private static  ConcurrentHashMap<Class, Object> singletonInstances = new ConcurrentHashMap<>();
 
     @Override
     public <T> T getInstance(Class<T> clazz) {
-
-        T obj = null;
-        if (clazz.isAnnotationPresent(Singleton.class)) {
-            obj = getSingleton(clazz);
-        }
-        else {
-            obj = createObj(clazz);
-        }
-        return obj;
+        return (clazz.isAnnotationPresent(Singleton.class)) ? getSingleton(clazz) : createObj(clazz);
     }
-
 
     private <T> T getSingleton(Class<T> clazz) {
         return (T)singletonInstances.computeIfAbsent(clazz,(c) -> createObj(c));
@@ -71,63 +63,36 @@ public class ConteinerImp implements Container {
                                 params.add(getInstance(p.getType()));
                             }
                         });
-
                 obj = ctor.newInstance(params.toArray());
             }
         } catch (Exception e) {
             throw new IllegalStateException("Can't create instance", e);
         }
-
-
         return obj;
-
     }
 
     @Override
     public <T> T getInstance(String name, Class<T> requiredType) {
 
-        List<Class> listClasses = new ArrayList<>();
-        List<Class<T>> implClasses = new ArrayList<>();
-
         if (requiredType.isInterface()) {
+            String packageDir = requiredType.isAnnotationPresent(ScanPackage.class)
+                    ? requiredType.getAnnotation(ScanPackage.class).value() : requiredType.getPackage().getName();
 
-            File dirClasses = new File(ClassLoader.getSystemClassLoader().getResource(PACKAGEDIR).getPath());
-            String[] classes = dirClasses.list();
-
-            String packDir = PACKAGEDIR.replace("/", ".");
-            Stream.of(classes)
-                    .forEach(c -> {
-                        try {
-                            listClasses.add(Class.forName(packDir + c.substring(0, c.length() - 6)));
-                        } catch (ClassNotFoundException e) {
-                            throw new IllegalStateException("test... cant class.forName", e);
-                        }
-                    });
-
-            listClasses.forEach(c -> Stream.of(c.getInterfaces())
-                    .forEach(f -> {
-                        if (f == requiredType) {
-                            implClasses.add(c);
-                        }
-                    }));
-
-            Class namedClass = implClasses.stream()
-                    .filter(f -> f.isAnnotationPresent(Named.class) && f.getAnnotation(Named.class).value().equals(name))
+            Reflections reflections = new Reflections(packageDir);
+            Class namedClass = reflections.getSubTypesOf(requiredType).stream()
+                    .filter(subClass -> subClass.isAnnotationPresent(Named.class)
+                            && subClass.getAnnotation(Named.class).value().equals(name))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("Beans must have @Named annotation and name = " + name));
-
             return (T)getInstance(namedClass);
-
         }
         else {
-
             Preconditions.checkArgument(
                     requiredType.isAnnotationPresent(Named.class),
                     "Beans must have @Named annotation");
             Preconditions.checkArgument(
                     requiredType.getAnnotation(Named.class).value().equals(name),
                     "Cant find name = " + name);
-
             return getInstance(requiredType);
         }
     }
