@@ -1,8 +1,10 @@
 package ru.nojs.inject;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
-import ru.vdovin.inject.ConteinerImp;
+import ru.vdovin.inject.ContainerImp;
+import ru.vdovin.inject.Eager;
 import ru.vdovin.inject.ScanPackage;
 
 import javax.inject.Inject;
@@ -14,7 +16,7 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class ContainerTest {
-    static Container container = new ConteinerImp();
+    static Container container = new ContainerImp("ru.nojs.inject");
 
     @Test
     public void testSimpleInstance() {
@@ -110,14 +112,21 @@ public class ContainerTest {
         container.getInstance(NotQualified.class);
     }
 
-    /*
+    @Ignore
     @Test(expected = IllegalStateException.class) // Bonus level 3
     public void testCircularDependencyCircuitBreak() throws Exception {
         CompletableFuture<CircularDependencyA> cf =
                 CompletableFuture.supplyAsync(() -> container.getInstance(CircularDependencyA.class));
         cf.get(1, TimeUnit.SECONDS);
     }
-    */
+
+    @Test
+    public void testEagerSingletonInstance() {
+        EagerSingleton singleton1 = container.getInstance(EagerSingleton.class);
+        EagerSingleton singleton2 = container.getInstance(EagerSingleton.class);
+        Assert.assertEquals("No double'tons allowed", singleton1, singleton2);
+    }
+
 
     public static class SimpleInstance {
         boolean method() {
@@ -183,7 +192,7 @@ public class ContainerTest {
         }
     }
 
-    @ScanPackage("ru.nojs.inject")
+    //@ScanPackage("ru.nojs.inject")
     public interface MultipleImplementations {
         boolean method();
     }
@@ -246,6 +255,14 @@ public class ContainerTest {
         @Inject
         public CircularDependencyB(CircularDependencyA a) {
 
+        }
+    }
+
+    @Eager
+    @Singleton
+    public static class EagerSingleton {
+        boolean method() {
+            return true;
         }
     }
 }

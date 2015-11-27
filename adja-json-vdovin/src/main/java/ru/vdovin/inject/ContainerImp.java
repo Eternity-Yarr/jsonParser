@@ -16,14 +16,52 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-public class ConteinerImp implements Container {
+public class ContainerImp implements Container {
 
     private static  ConcurrentHashMap<Class, Object> singletonInstances = new ConcurrentHashMap<>();
+    private Reflections reflections;
+
+    public ContainerImp(String packageDir) {
+        reflections = new Reflections(packageDir);
+        reflections.getTypesAnnotatedWith(Eager.class).stream()
+                .filter(c -> c.isAnnotationPresent(Singleton.class))
+                .forEach(this::getInstance);
+    }
+
+
 
     @Override
     public <T> T getInstance(Class<T> clazz) {
         return (clazz.isAnnotationPresent(Singleton.class)) ? getSingleton(clazz) : createObj(clazz);
     }
+
+    @Override
+    public <T> T getInstance(String name, Class<T> requiredType) {
+
+        if (requiredType.isInterface()) {
+            Class namedClass = reflections.getSubTypesOf(requiredType).stream()
+                    .filter(subClass -> subClass.isAnnotationPresent(Named.class)
+                            && subClass.getAnnotation(Named.class).value().equals(name))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Beans must have @Named annotation and name = " + name));
+            return (T)getInstance(namedClass);
+        }
+        else {
+            Preconditions.checkArgument(
+                    requiredType.isAnnotationPresent(Named.class),
+                    "Beans must have @Named annotation");
+            Preconditions.checkArgument(
+                    requiredType.getAnnotation(Named.class).value().equals(name),
+                    "Cant find name = " + name);
+            return getInstance(requiredType);
+        }
+    }
+
+    @Override
+    public Object getInstance(String name) {
+        return null;
+    }
+
 
     private <T> T getSingleton(Class<T> clazz) {
         return (T)singletonInstances.computeIfAbsent(clazz,(c) -> createObj(c));
@@ -50,7 +88,7 @@ public class ConteinerImp implements Container {
 
         try {
             if (ctor.getParameterCount() == 0) {
-                    obj = ctor.newInstance();
+                obj = ctor.newInstance();
             } else {
                 Parameter[] ctorParams = ctor.getParameters();
                 List<Object> params = new ArrayList<>(ctorParams.length);
@@ -71,34 +109,4 @@ public class ConteinerImp implements Container {
         return obj;
     }
 
-    @Override
-    public <T> T getInstance(String name, Class<T> requiredType) {
-
-        if (requiredType.isInterface()) {
-            String packageDir = requiredType.isAnnotationPresent(ScanPackage.class)
-                    ? requiredType.getAnnotation(ScanPackage.class).value() : requiredType.getPackage().getName();
-
-            Reflections reflections = new Reflections(packageDir);
-            Class namedClass = reflections.getSubTypesOf(requiredType).stream()
-                    .filter(subClass -> subClass.isAnnotationPresent(Named.class)
-                            && subClass.getAnnotation(Named.class).value().equals(name))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("Beans must have @Named annotation and name = " + name));
-            return (T)getInstance(namedClass);
-        }
-        else {
-            Preconditions.checkArgument(
-                    requiredType.isAnnotationPresent(Named.class),
-                    "Beans must have @Named annotation");
-            Preconditions.checkArgument(
-                    requiredType.getAnnotation(Named.class).value().equals(name),
-                    "Cant find name = " + name);
-            return getInstance(requiredType);
-        }
-    }
-
-    @Override
-    public Object getInstance(String name) {
-        return null;
-    }
 }
