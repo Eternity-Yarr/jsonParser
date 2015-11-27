@@ -28,8 +28,6 @@ public class ContainerImp implements Container {
                 .forEach(this::getInstance);
     }
 
-
-
     @Override
     public <T> T getInstance(Class<T> clazz) {
         return (clazz.isAnnotationPresent(Singleton.class)) ? getSingleton(clazz) : createObj(clazz);
@@ -70,25 +68,29 @@ public class ContainerImp implements Container {
     private <T> T createObj(Class<T> clazz) {
         T obj ;
         Constructor<T>[] ctors = (Constructor<T>[]) clazz.getConstructors();
-        Constructor<T> ctor;
 
         switch (ctors.length) {
             case 0: { throw new IllegalStateException("Can't find constructor"); }
             case 1: {
-                ctor = ctors[0];
+                obj = createObj(ctors[0]);
                 break;
             }
             default: {
-                ctor = Stream.of(ctors)
+                obj = Stream.of(ctors)
                         .filter(constructor -> constructor.isAnnotationPresent(Inject.class))
                         .findFirst()
+                        .map(this::createObj)
                         .orElseThrow(() -> new IllegalArgumentException("Constructor mast have @Inject annotation"));
             }
         }
 
+        return obj;
+    }
+
+    private <T> T createObj(Constructor<T> ctor) {
         try {
             if (ctor.getParameterCount() == 0) {
-                obj = ctor.newInstance();
+                return ctor.newInstance();
             } else {
                 Parameter[] ctorParams = ctor.getParameters();
                 List<Object> params = new ArrayList<>(ctorParams.length);
@@ -101,12 +103,11 @@ public class ContainerImp implements Container {
                                 params.add(getInstance(p.getType()));
                             }
                         });
-                obj = ctor.newInstance(params.toArray());
+                return ctor.newInstance(params.toArray());
             }
         } catch (Exception e) {
             throw new IllegalStateException("Can't create instance", e);
         }
-        return obj;
     }
 
 }
