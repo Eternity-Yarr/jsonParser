@@ -1,9 +1,13 @@
 package ru.vdovin.jsonParser;
 
 import ru.nojs.json.*;
+
 import java.io.Reader;
+import java.util.Arrays;
+import java.util.List;
 
 public class ImplementedJsonParser implements StreamingJsonParser {
+    private static final List<Character> ELEMENT_REMOVE = Arrays.asList('\n', '\r', '\t', ' ');
     public JSONObjectImpl jsonObject = new JSONObjectImpl();
     private JSONElement jsonElement;
 
@@ -14,7 +18,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
 
     public JSONElement chooseJson(JsonParseReader jpr){
         jpr.nextElement();
-        jpr.checkIsRemove();
+        checkIsRemove(jpr);
         switch (jpr.getElement()){
             case '{': return parseObject(jpr);
             case '[': return parseArray(jpr);
@@ -42,7 +46,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         String key = "";
         do{
             jpr.nextElement();
-            jpr.checkIsRemove();
+            checkIsRemove(jpr);
             if (jpr.getElement() == '"'){
                 jpr.nextElement();
             } else {
@@ -55,7 +59,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             }
 
             jpr.nextElement();
-            jpr.checkIsRemove();
+            checkIsRemove(jpr);
             jsonElement = chooseJson(jpr);
 
             jsonObject.add(key, jsonElement);
@@ -63,7 +67,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             if (jpr.getElement()=='"') {
                 jpr.nextElement();
             }
-            jpr.checkIsRemove();
+            checkIsRemove(jpr);
         } while (jpr.getElement() == ',');
         jpr.nextElement();
         return jsonObject;
@@ -83,7 +87,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         while (!isBlockedSimbols(jpr.getElement())){
             el += (char) jpr.getElement();
             jpr.nextElement();
-            jpr.checkIsRemove();
+            checkIsRemove(jpr);
         }
         if (el.matches("[-]?[0-9]+")){
             jsonElement = new JSONPrimitiveImpl(el);
@@ -123,6 +127,12 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             return false;
         } else {
             throw new IllegalArgumentException("Bad syntax!!");
+        }
+    }
+
+    public void checkIsRemove(JsonParseReader jpr){
+        while (ELEMENT_REMOVE.contains((char)(jpr.getElement()))){
+            jpr.nextElement();
         }
     }
 

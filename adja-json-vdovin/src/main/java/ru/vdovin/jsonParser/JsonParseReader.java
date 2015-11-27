@@ -16,7 +16,7 @@ public class JsonParseReader {
 
     private Reader reader;
 
-    private static final List<Character> ELEMENT_REMOVE = Arrays.asList('\n', '\r', '\t', ' ');
+
 
     private int element;
 
@@ -36,9 +36,5 @@ public class JsonParseReader {
         }
     }
 
-    public void checkIsRemove(){
-        while (ELEMENT_REMOVE.contains((char)getElement())){
-            this.nextElement();
-        }
-    }
+
 }
