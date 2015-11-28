@@ -28,19 +28,19 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     }
 
     public JSONElement parseString(JsonParseReader jpr){
-        String string ="";
+        StringBuffer string = new StringBuffer();
         while (!isBlockedSimbols(jpr.getElement())){
             //FIXME: в яве так нельзя,  в яве строки иммутабельн и += создает каждый
             // раз новый объект, это очень медленно и много мусора. Если хочешь собирать по одной
             // букве используй StringBuilder или StringBuffer
-            string += (char) jpr.getElement();
+            string.append((char) jpr.getElement());
             jpr.nextElement();
         }
-
-        string = string.replace("\\", "");
-        string = removeUncorrectEl(string);
-        if (isQuote(string)){
-            return new JSONPrimitiveImpl(string.substring(1, string.length() -1));
+        String s = string.toString();
+        s = s.replace("\\", "");
+        s = removeUncorrectEl(s);
+        if (isQuote(s)){
+            return new JSONPrimitiveImpl(s.substring(1, s.length() -1));
         }
         throw new IllegalArgumentException("Parse Error!!!");
     }
@@ -86,15 +86,18 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     }
 
     public JSONElement getPrimitive(JsonParseReader jpr){
-        String el = "";
+        StringBuffer string = new StringBuffer();
         while (!isBlockedSimbols(jpr.getElement())){
-            el += (char) jpr.getElement();
+            string.append((char) jpr.getElement());
             jpr.nextElement();
             checkIsRemove(jpr);
         }
+        String el = string.toString();
         if (el.matches("[-]?[0-9]+")){
             jsonElement = new JSONPrimitiveImpl(el);
-        } else if (isQuote(el)){
+        } else if (isDouble(el)){
+            jsonElement = new JSONPrimitiveImpl(Double.parseDouble(el));
+        }else if (isQuote(el)){
             jsonElement = new JSONPrimitiveImpl(el);
         } else if (isNull(el)){
             jsonElement = new JSONNullImpl();
@@ -127,10 +130,19 @@ public class ImplementedJsonParser implements StreamingJsonParser {
         if (value.equals("true")){
             return true;
         } else if (value.equals("false")){
-            return false;
+            return true;
         } else {
             throw new IllegalArgumentException("Bad syntax!!");
         }
+    }
+
+    private boolean isDouble(String value){
+        try{
+            Double.parseDouble(value);
+        }catch (Exception e){
+            return false;
+        }
+        return true;
     }
 
     public void checkIsRemove(JsonParseReader jpr){
@@ -138,5 +150,4 @@ public class ImplementedJsonParser implements StreamingJsonParser {
             jpr.nextElement();
         }
     }
-
 }

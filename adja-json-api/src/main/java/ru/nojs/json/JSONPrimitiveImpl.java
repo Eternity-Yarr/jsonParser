@@ -1,14 +1,9 @@
 package ru.nojs.json;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.*;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.math.*;
 
-/**
- * Created by Юыху on 20.10.2015.
- */
 public class JSONPrimitiveImpl implements JSONPrimitive {
     private Object obj;
 
@@ -24,8 +19,8 @@ public class JSONPrimitiveImpl implements JSONPrimitive {
         setValue(bl);
     }
 
-    public JSONPrimitiveImpl(Object object) {
-        setValue(object);
+    public JSONPrimitiveImpl(Double value){
+        setValue(value);
     }
 
     void setValue(Object value){
@@ -90,12 +85,12 @@ public class JSONPrimitiveImpl implements JSONPrimitive {
 
     @Override
     public double getAsDouble() {
-        return 0;
+        return Double.parseDouble(getAsString());
     }
 
     @Override
     public float getAsFloat() {
-        return 0;
+        return Float.parseFloat(getAsString());
     }
 
     @Override

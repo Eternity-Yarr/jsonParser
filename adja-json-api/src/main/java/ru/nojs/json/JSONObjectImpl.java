@@ -1,17 +1,10 @@
 package ru.nojs.json;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.*;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.math.*;
+import java.util.*;
 
-/**
- * Created by Юыху on 01.11.2015.
- */
 public class JSONObjectImpl implements JSONObject {
     private final Map<String, JSONElement> map= new LinkedHashMap<>();
 

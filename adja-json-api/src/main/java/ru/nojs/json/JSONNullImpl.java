@@ -1,11 +1,7 @@
 package ru.nojs.json;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.math.*;
 
-/**
- * Created by Юыху on 01.11.2015.
- */
 public class JSONNullImpl implements JSONNull{
 
     @Override

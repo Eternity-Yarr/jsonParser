@@ -1,19 +1,10 @@
 package ru.nojs.json;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.*;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.math.*;
+import java.util.*;
 
-
-//FIXME: унеси в свой пакет
-/**
- * Created by ���� on 17.10.2015.
- */
 public class JSONArrayImpl implements JSONArray {
     private final List<JSONElement> list = new ArrayList<>();
 
@@ -34,7 +25,7 @@ public class JSONArrayImpl implements JSONArray {
 
     @Override
     public JSONElement get(int i) {
-        return null;
+        return list.get(i);
     }
 
     @Override
