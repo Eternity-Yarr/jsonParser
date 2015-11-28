@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+
+//FIXME: унеси в свой пакет
 /**
- * Created by ���� on 17.10.2015.
+ * Created by ���� on 17.10.2015.
  */
 public class JSONArrayImpl implements JSONArray {
     private final List<JSONElement> list = new ArrayList<>();

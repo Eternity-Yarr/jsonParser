@@ -30,6 +30,9 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     public JSONElement parseString(JsonParseReader jpr){
         String string ="";
         while (!isBlockedSimbols(jpr.getElement())){
+            //FIXME: в яве так нельзя,  в яве строки иммутабельн и += создает каждый
+            // раз новый объект, это очень медленно и много мусора. Если хочешь собирать по одной
+            // букве используй StringBuilder или StringBuffer
             string += (char) jpr.getElement();
             jpr.nextElement();
         }
