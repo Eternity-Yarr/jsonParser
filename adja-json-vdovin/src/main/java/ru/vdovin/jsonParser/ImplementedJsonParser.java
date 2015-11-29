@@ -127,9 +127,7 @@ public class ImplementedJsonParser implements StreamingJsonParser {
     }
 
     private boolean isBoolean(String value){
-        if (value.equals("true")){
-            return true;
-        } else if (value.equals("false")){
+        if (value.equals("true")||value.equals("false")){
             return true;
         } else {
             throw new IllegalArgumentException("Bad syntax!!");
