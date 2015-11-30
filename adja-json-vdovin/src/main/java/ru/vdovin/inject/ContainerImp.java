@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.stream.Stream;
 
@@ -107,7 +108,7 @@ public class ContainerImp implements Container {
         }
     }
 
-    public ConcurrentHashMap<Class, Object> getSingletonInstances() {
+    public Map<Class, Object> getSingletonInstances() {
         return singletonInstances;
     }
 
