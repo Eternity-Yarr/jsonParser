@@ -3,12 +3,10 @@ import com.google.common.base.Preconditions;
 import org.reflections.Reflections;
 import ru.nojs.inject.Container;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Stream;
 
@@ -60,7 +58,6 @@ public class ContainerImp implements Container {
         return null;
     }
 
-
     private <T> T getSingleton(Class<T> clazz) {
         return (T)singletonInstances.computeIfAbsent(clazz,(c) -> createObj(c));
     }
@@ -108,6 +105,10 @@ public class ContainerImp implements Container {
         } catch (Exception e) {
             throw new IllegalStateException("Can't create instance", e);
         }
+    }
+
+    public ConcurrentHashMap<Class, Object> getSingletonInstances() {
+        return singletonInstances;
     }
 
 }

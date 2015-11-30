@@ -1,24 +1,19 @@
 package ru.nojs.inject;
 
-import com.google.common.reflect.Reflection;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import ru.vdovin.inject.ContainerImp;
 import ru.vdovin.inject.Eager;
+import ru.vdovin.inject.ContainerImp;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.concurrent.*;
-
-import org.reflections.Reflections;
 
 public class ContainerTest {
     static Container container = new ContainerImp("ru.nojs.inject");
@@ -126,19 +121,11 @@ public class ContainerTest {
     }
 
     @Test
-    public void testEagerSingletonInstance() {
-
-        try {
-            Field f = container.getClass().getDeclaredField("singletonInstances");
-            f.setAccessible(true);
-            ConcurrentHashMap<Class, Object> eagerSingleton = (ConcurrentHashMap<Class, Object>) f.get(container);
-            Assert.assertEquals("Eager instance ok", true, eagerSingleton.containsKey(EagerSingleton.class));
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void testEagerSingletonInstance() throws Exception {
+            Map<Class, Object> eagerSingleton = ((ContainerImp)container).getSingletonInstances();
+            Assert.assertTrue("Eager instance ok", eagerSingleton.containsKey(EagerSingleton.class));
+        Assert.assertFalse("No Eager  - no instance", eagerSingleton.containsKey(NotEagerSingleton.class));
     }
-
 
     public static class SimpleInstance {
         boolean method() {
@@ -272,6 +259,13 @@ public class ContainerTest {
     @Eager
     @Singleton
     public static class EagerSingleton {
+        boolean method() {
+            return true;
+        }
+    }
+
+    @Singleton
+    public static class NotEagerSingleton {
         boolean method() {
             return true;
         }
