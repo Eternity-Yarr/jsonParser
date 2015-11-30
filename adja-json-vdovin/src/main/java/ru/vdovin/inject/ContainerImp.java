@@ -21,8 +21,8 @@ public class ContainerImp implements Container {
     private static  ConcurrentHashMap<Class, Object> singletonInstances = new ConcurrentHashMap<>();
     private Reflections reflections;
 
-    public ContainerImp(String packageDir) {
-        reflections = new Reflections(packageDir);
+    public ContainerImp(String basePackage) {
+        reflections = new Reflections(basePackage);
         reflections.getTypesAnnotatedWith(Eager.class).stream()
                 .filter(c -> c.isAnnotationPresent(Singleton.class))
                 .forEach(this::getInstance);

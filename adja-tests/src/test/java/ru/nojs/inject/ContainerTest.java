@@ -1,19 +1,24 @@
 package ru.nojs.inject;
 
+import com.google.common.reflect.Reflection;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import ru.vdovin.inject.ContainerImp;
 import ru.vdovin.inject.Eager;
-import ru.vdovin.inject.ScanPackage;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.concurrent.*;
+
+import org.reflections.Reflections;
 
 public class ContainerTest {
     static Container container = new ContainerImp("ru.nojs.inject");
@@ -122,9 +127,16 @@ public class ContainerTest {
 
     @Test
     public void testEagerSingletonInstance() {
-        EagerSingleton singleton1 = container.getInstance(EagerSingleton.class);
-        EagerSingleton singleton2 = container.getInstance(EagerSingleton.class);
-        Assert.assertEquals("No double'tons allowed", singleton1, singleton2);
+
+        try {
+            Field f = container.getClass().getDeclaredField("singletonInstances");
+            f.setAccessible(true);
+            ConcurrentHashMap<Class, Object> eagerSingleton = (ConcurrentHashMap<Class, Object>) f.get(container);
+            Assert.assertEquals("Eager instance ok", true, eagerSingleton.containsKey(EagerSingleton.class));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -192,7 +204,6 @@ public class ContainerTest {
         }
     }
 
-    //@ScanPackage("ru.nojs.inject")
     public interface MultipleImplementations {
         boolean method();
     }
