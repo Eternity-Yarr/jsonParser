@@ -111,7 +111,6 @@ public class ContainerTest {
     public void testAmbiguousInstanceInjection() {
         container.getInstance(NotQualified.class);
     }
-
     @Ignore
     @Test(expected = IllegalStateException.class) // Bonus level 3
     public void testCircularDependencyCircuitBreak() throws Exception {
@@ -120,11 +119,16 @@ public class ContainerTest {
         cf.get(1, TimeUnit.SECONDS);
     }
 
+    @Test(expected = IllegalStateException.class) // Bonus level 3
+    public void testCircularDependencyCircuitBreak2() throws Exception {
+        container.getInstance(CircularDependencyA.class);
+    }
+
     @Test
     public void testEagerSingletonInstance() throws Exception {
-            Map<Class, Object> eagerSingleton = ((ContainerImp)container).getSingletonInstances();
-            Assert.assertTrue("Eager instance ok", eagerSingleton.containsKey(EagerSingleton.class));
-        Assert.assertFalse("No Eager  - no instance", eagerSingleton.containsKey(NotEagerSingleton.class));
+        Map<Class, Object> eagerSingleton = ((ContainerImp)container).getAllSingletonObj();
+        Assert.assertTrue("Eager instance ok", eagerSingleton.containsKey(EagerSingleton.class));
+        Assert.assertFalse("No Eager  - no instance", eagerSingleton.containsKey(LazySingleton.class));
     }
 
     public static class SimpleInstance {
@@ -265,7 +269,7 @@ public class ContainerTest {
     }
 
     @Singleton
-    public static class NotEagerSingleton {
+    public static class LazySingleton {
         boolean method() {
             return true;
         }
