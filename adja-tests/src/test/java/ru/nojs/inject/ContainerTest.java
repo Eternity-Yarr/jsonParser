@@ -1,22 +1,40 @@
 package ru.nojs.inject;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
+import ru.vdovin.inject.Digraph;
 import ru.vdovin.inject.Eager;
 import ru.vdovin.inject.ContainerImp;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class ContainerTest {
     static Container container = new ContainerImp("ru.nojs.inject");
+
+
+
+    @Test
+    public void testGraph() {
+
+        Digraph<Integer> dg = new Digraph<>();
+        dg.add(1,2);
+        dg.add(1,3);
+        dg.add(1,4);
+        dg.add(4, 5);
+        Assert.assertTrue("Circular", dg.isCircular(5, 1));
+
+        dg.add(2, 5);
+        Assert.assertTrue("Circular", dg.isCircular(5, 1));
+
+        dg.add(6);
+        Assert.assertFalse("Not Circular", dg.isCircular(5, 6));
+    }
+
 
     @Test
     public void testSimpleInstance() {
@@ -111,17 +129,36 @@ public class ContainerTest {
     public void testAmbiguousInstanceInjection() {
         container.getInstance(NotQualified.class);
     }
-    @Ignore
-    @Test(expected = IllegalStateException.class) // Bonus level 3
+
+    @Test // Bonus level 3
     public void testCircularDependencyCircuitBreak() throws Exception {
         CompletableFuture<CircularDependencyA> cf =
                 CompletableFuture.supplyAsync(() -> container.getInstance(CircularDependencyA.class));
-        cf.get(1, TimeUnit.SECONDS);
+        cf.handle(
+                (instance, th) -> {
+                    Assert.assertNull("Should be empty", instance);
+                    Assert.assertTrue("Cause of exception is IAE", th.getCause() instanceof IllegalStateException);
+                    return null;
+                }).get(1, TimeUnit.SECONDS);
     }
 
-    @Test(expected = IllegalStateException.class) // Bonus level 3
-    public void testCircularDependencyCircuitBreak2() throws Exception {
-        container.getInstance(CircularDependencyA.class);
+    @Test
+    public void testNotCircularDependencyEasy() throws Exception {
+        RootClass rc = container.getInstance(RootClass.class);
+        Assert.assertNotNull("It's not a circular dependency", rc);
+    }
+
+
+    @Test
+    public void testNotCircularDependency() throws Exception {
+        CompletableFuture.supplyAsync(() -> container.getInstance(RootClass.class))
+                .handle(
+                        (rc, t) -> {
+                            Assert.assertNotNull("Instance created", rc);
+                            Assert.assertNull("Exception not thrown", t);
+                            return null;
+                        }
+                ).get(1, TimeUnit.SECONDS);
     }
 
     @Test
@@ -260,6 +297,46 @@ public class ContainerTest {
         }
     }
 
+    @Singleton
+    public static class RootClass {
+        @Inject
+        public RootClass(NotSoCircularDependencyA a, NotSoCircularDependencyB b) {
+
+        }
+    }
+
+    @Singleton
+    public static class NotSoCircularDependencyA {
+        @Inject
+        public NotSoCircularDependencyA(@Named("first") MultipleImplementations first) {
+
+        }
+    }
+
+    @Singleton
+    public static class NotSoCircularDependencyB {
+        @Inject
+        public NotSoCircularDependencyB(@Named("first") MultipleImplementations first) {
+
+        }
+    }
+
+    @Singleton
+    public static class NotSoCircularDependencyE {
+        @Inject
+        public NotSoCircularDependencyE(SimpleSingleton singleton) {
+
+        }
+    }
+
+    @Singleton
+    public static class NotSoCircularDependencyD {
+        @Inject
+        public NotSoCircularDependencyD(SimpleSingleton singleton) {
+
+        }
+    }
+
     @Eager
     @Singleton
     public static class EagerSingleton {
@@ -274,4 +351,5 @@ public class ContainerTest {
             return true;
         }
     }
+
 }
