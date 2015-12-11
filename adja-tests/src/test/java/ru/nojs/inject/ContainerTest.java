@@ -16,8 +16,6 @@ import java.util.stream.Collectors;
 public class ContainerTest {
     static Container container = new ContainerImp("ru.nojs.inject");
 
-
-
     @Test
     public void testGraph() {
 
