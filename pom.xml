@@ -48,6 +48,11 @@
                 <artifactId>jgrapht-core</artifactId>
                 <version>0.9.1</version>
             </dependency>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>jaxrs-api</artifactId>
+                <version>3.0.11.Final</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <build>

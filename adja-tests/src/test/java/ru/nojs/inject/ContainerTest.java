@@ -128,7 +128,7 @@ public class ContainerTest {
         container.getInstance(NotQualified.class);
     }
 
-    @Test // Bonus level 3
+    @Test(timeout = 1500) // Bonus level 3
     public void testCircularDependencyCircuitBreak() throws Exception {
         CompletableFuture<CircularDependencyA> cf =
                 CompletableFuture.supplyAsync(() -> container.getInstance(CircularDependencyA.class));
@@ -140,14 +140,14 @@ public class ContainerTest {
                 }).get(1, TimeUnit.SECONDS);
     }
 
-    @Test
+    @Test(timeout = 1500)
     public void testNotCircularDependencyEasy() throws Exception {
         RootClass rc = container.getInstance(RootClass.class);
         Assert.assertNotNull("It's not a circular dependency", rc);
     }
 
 
-    @Test
+    @Test(timeout = 1500)
     public void testNotCircularDependency() throws Exception {
         CompletableFuture.supplyAsync(() -> container.getInstance(RootClass.class))
                 .handle(
